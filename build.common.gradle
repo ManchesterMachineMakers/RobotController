@@ -112,6 +112,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    // Don't fail on lint errors (ftc16221/FreightFrenzy#1)
+    android {
+        lintOptions {
+            abortOnError false
+        }
+    }
+
     packagingOptions {
         pickFirst '**/*.so'
     }
