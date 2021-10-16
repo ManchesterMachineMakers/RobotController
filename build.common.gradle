@@ -113,10 +113,8 @@ android {
     }
 
     // Don't fail on lint errors (ftc16221/FreightFrenzy#1)
-    android {
-        lintOptions {
-            abortOnError false
-        }
+    lintOptions {
+        abortOnError false
     }
 
     packagingOptions {
