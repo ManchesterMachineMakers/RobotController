@@ -1,3 +1,6 @@
+## Note on documentation
+Documentation specific to our team and for how to do stuff with this code is in [the wiki](https://gitlab.com/ftc16221/FreightFrenzy/-/wikis/home).
+
 ## NOTICE
 
 This repository contains the public FTC SDK for the Freight Frenzy (2021-2022) competition season.
