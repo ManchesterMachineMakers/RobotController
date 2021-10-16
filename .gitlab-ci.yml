@@ -71,7 +71,7 @@ assembleDebug:
   interruptible: true
   stage: build
   script:
-    - ./gradew -Pci --console=plain assembleDebug
+    - ./gradlew -Pci --console=plain assembleDebug
   # artifacts:
   #   paths:
   #     - app/build/outputs/
