@@ -44,30 +44,30 @@ menu() {
 
     \e[1;32mWhat would you like to do?\e[0m
     \e[1;33m (1) \e[0mInstall dependencies with Homebrew
-    \e[1;33m (2) \e[0mBuild project
-    \e[1;33m (3) \e[0mInstall on control hub or smartphone
+    \e[1;33m (2) \e[0mInstall Android SDK
+    \e[1;33m (3) \e[0mInstall required Android SDK components
     \e[1;33m (4) \e[0m(First build) Remove signed FtcRobotController from smartphone
-    \e[1;33m (5) \e[0mSet Android SDK location
-    \e[1;33m (6) \e[0mInstall required Android SDK components
-    \e[1;33m (7) \e[0mInstall Android SDK
-    \e[1;33m (8) \e[0mReboot Control Hub (after installation)
-    \e[1;33m (9) \e[0mBuild, install, run & watch logs
+    \e[1;33m (5) \e[0mBuild project \e[2m(default)\e[0m
+    \e[1;33m (6) \e[0mInstall on control hub or smartphone
+    \e[1;33m (7) \e[0mReboot Control Hub (after installation)
+    \e[1;33m (8) \e[0mBuild, install, run & watch logs
+    \e[1;33m (9) \e[0mSet Android SDK location
     \e[1;33m (q) \e[0mQuit
     "
     printf "\e[33m> \e[0m"
     read -n1 choice
     case $choice in
         1) indeps; key; menu;;
-        2) build; key; menu;;
-        3) install; key; menu;;
+        2) asdk_install_tools; key; menu;;
+        3) asdkman; key; menu;;
         4) page; adb uninstall com.qualcomm.ftcrobotcontroller; key; menu;;
-        5) asdk; menu;;
-        6) asdkman; key; menu;;
-	7) asdk_install_tools; key; menu;;
-        8) adb reboot; menu;;
-        9) run; menu;;
+        5) build; key; menu;;
+        6) install; key; menu;;
+        7) adb reboot; menu;;
+        8) run; menu;;
+        9) asdk; menu;;
         q) clear; exit 0;;
-        *) printf "\e[1K\b\b\e[1;31mPlease choose from the menu. Press any key to continue.\e[0m"; read -n1 dummy; menu;;
+        *) build; key; menu;;
     esac
 }
 indeps() {
