@@ -1,0 +1,4 @@
+terminal:
+  image: openjdk:11.0.12-buster
+  script: sleep 60
+  variables:
