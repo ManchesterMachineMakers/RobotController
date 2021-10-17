@@ -70,6 +70,7 @@ before_script:
 assembleDebug:
   interruptible: true
   stage: build
+  when: manual
   script:
     - ./gradlew -Pci --console=plain assembleDebug
   artifacts:
@@ -77,8 +78,8 @@ assembleDebug:
       - TeamCode/build/outputs/
 
 # Run all tests, if any fails, interrupt the pipeline(fail it)
-debugTests:
-  interruptible: true
-  stage: test
-  script:
-    - ./gradlew -Pci --console=plain testDebug
+# debugTests:
+#   interruptible: true
+#   stage: test
+#   script:
+#     - ./gradlew -Pci --console=plain testDebug
