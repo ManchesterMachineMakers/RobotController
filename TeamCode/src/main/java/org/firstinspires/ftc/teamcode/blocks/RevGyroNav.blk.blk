@@ -1,0 +1,1051 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="CdAhDpO~IbAe2}a?R?p9">IMU-Parameters</variable>
+<variable id="(;]]F}}Mm{;uKBe#kQae">ElapsedTime</variable>
+<variable id=")^5M=2Gy|I2Ug!{sDZ]%">M1-Power</variable>
+<variable id="9!L*]c`]XP+:E+IJXzD@">M2-Power</variable>
+<variable id="BlClGM(x]tLtNk)qW5(4">YawValue</variable>
+</variables>
+<block type="procedures_defnoreturn" id="sKts3vRDFL;BqHB]U)_B" deletable="false" editable="false" x="-126" y="-707">
+<field name="NAME">runOpMode</field>
+<comment pinned="false" h="80" w="160">This function is executed when this Op Mode is selected from the Driver Station.</comment>
+<statement name="STACK">
+<block type="comment" id="LM[0ztyRp[)_tlOq]kWL">
+<field name="COMMENT">This op mode recognizes RELIC RECOVERY</field>
+<next>
+<block type="comment" id="]0x2sHQ7z:RZLEWb!dyY">
+<field name="COMMENT">VuMark targets and reports which target has </field>
+<next>
+<block type="comment" id="|:eT#uVVFE=d^5b}H=5`">
+<field name="COMMENT">been seen and its position relative to the robot.</field>
+<next>
+<block type="comment" id="zDRJNGIdHrC-y9C|j_6b">
+<field name="COMMENT">The op mode assume you have</field>
+<next>
+<block type="comment" id="vyUCrnuCf+H!7?#[GhDM">
+<field name="COMMENT">(1) Connected two motors to the expansion</field>
+<next>
+<block type="comment" id="8VVugy-c@B:A*7f|3q{b">
+<field name="COMMENT">      hub.</field>
+<next>
+<block type="comment" id="4-bbYjD,+/u|caspGIhc">
+<field name="COMMENT">(2) Created a config file that </field>
+<next>
+<block type="comment" id="FmjgHSGmQ,$3?jp~^0:a">
+<field name="COMMENT">(a) names the motors "motor1" and "motor2"</field>
+<next>
+<block type="comment" id="yYMiuFYJuy}lXm?g)7D-">
+<field name="COMMENT">(b) configures the imu on I2C bus 0 port 0</field>
+<next>
+<block type="comment" id="g4V#tVlCODG(jtGc`Ux,">
+<field name="COMMENT">     as a REV Expansion Hub IMU</field>
+<next>
+<block type="comment" id="OxB8{hr[,!wqt?{PT0as">
+<field name="COMMENT">     with the name "imu".</field>
+<next>
+<block type="comment" id="c^.}8Z%:TR/gl]~fm]mX">
+<field name="COMMENT">Reverse direction of one motor so robot moves forward </field>
+<next>
+<block type="comment" id="e6A$iiiZ]z{){1*xl={y">
+<field name="COMMENT">rather than spin in place.</field>
+<next>
+<block type="dcMotor_setProperty_Direction" id="ocp5[y!S^Io4/|$fr0#Z">
+<field name="IDENTIFIER">motorLeftAsDcMotor</field>
+<field name="PROP">Direction</field>
+<data>{"IDENTIFIER":"motorLeft"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_direction" id=".pwHI@}D0gjfd{xyx3zY">
+<field name="DIRECTION">REVERSE</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="QBHN5qwpQ)Rxq`tpm7Ba">
+<field name="COMMENT">Create an IMU parameters object.</field>
+<next>
+<block type="variables_set" id="W$?iP|s3/n92^l++X;cJ">
+<field name="VAR" id="CdAhDpO~IbAe2}a?R?p9">IMU-Parameters</field>
+<value name="VALUE">
+<block type="bno055imuParameters_create" id="6NBn)dbTo^tf[/H,3v$+"/>
+</value>
+<next>
+<block type="comment" id="r+yMlL3212zQGst0h@)h">
+<field name="COMMENT">Set the IMU sensor mode to IMU. This mode uses </field>
+<next>
+<block type="comment" id="(HKd]-4d`.b)4p:2s9Rn">
+<field name="COMMENT">the IMU accelerometer and gyroscope data to </field>
+<next>
+<block type="comment" id="bT`U$gF{6@H0wk(u3P7?">
+<field name="COMMENT">calculate the relative orientation of hub and</field>
+<next>
+<block type="comment" id="O*X]XzXvyQ8k=O`G/F9h">
+<field name="COMMENT">therefore the robot.</field>
+<next>
+<block type="bno055imuParameters_setSensorMode" id="hjW!Cqf=_~,XrYKHPyXe">
+<value name="BNO055IMU_PARAMETERS">
+<block type="variables_get" id="EUs2O{WuwpEk.JZ{Ief/">
+<field name="VAR" id="CdAhDpO~IbAe2}a?R?p9">IMU-Parameters</field>
+</block>
+</value>
+<value name="SENSOR_MODE">
+<shadow type="bno055imuParameters_typedEnum_sensorMode" id="kt7kSyahYI9RlP3HZBA-">
+<field name="SENSOR_MODE">IMU</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="s(11nvD5OSSW{i)[m**v">
+<field name="COMMENT">Intialize the IMU using parameters object.</field>
+<next>
+<block type="bno055imu_initialize" id="TNl4Uukm)CZFuoxn]rqX">
+<field name="IDENTIFIER">imuAsBNO055IMU</field>
+<data>{"IDENTIFIER":"imu"}</data>
+<value name="PARAMETERS">
+<block type="variables_get" id="|h)Miv9auEtBfhtfRqL9">
+<field name="VAR" id="CdAhDpO~IbAe2}a?R?p9">IMU-Parameters</field>
+</block>
+</value>
+<next>
+<block type="comment" id="$U2R_d/WS$Z(-I9.7Mn.">
+<field name="COMMENT">Report the initialization to the Driver Station.</field>
+<next>
+<block type="telemetry_addTextData_All" id="Y8]f4`$m(jqpDcPTGh@3">
+<value name="KEY">
+<shadow type="text" id="ZYi6e!vY@X4P1Pi74V!;">
+<field name="TEXT">Status</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="}@MJt.eh!j/%7mkNN^w)">
+<field name="TEXT">IMU initialized</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_update" id="_q)-p7vIZNu++Mszm:?.">
+<next>
+<block type="comment" id="Gum$!^C%h%Zn_i45{0@a">
+<field name="COMMENT">Wait one second to ensure the IMU is ready.</field>
+<next>
+<block type="linearOpMode_sleep_Number" id="Jl%Hiv9mGeYAsYc!qIvG">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="e6b.+|7BP@/|?FtAnSJq">
+<field name="NUM">1000</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="(!FoiCcdo|7Mn[_yHRO`">
+<field name="COMMENT">Loop until IMU has been calibrated.</field>
+<next>
+<block type="controls_whileUntil" id="2n?..K3ht?H#8bhHsT|X">
+<field name="MODE">UNTIL</field>
+<value name="BOOL">
+<block type="procedures_callreturn" id="^~W^Bf=ltTp|fvp,)I?s">
+<mutation name="IMU-Calibrated"/>
+</block>
+</value>
+<statement name="DO">
+<block type="telemetry_addTextData_All" id="h1rl2oCE.TdS^M3[^iQ@">
+<value name="KEY">
+<shadow type="text" id="3yikQ#~`9f7L10%7|+Pa">
+<field name="TEXT">If calibration </field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id="^C|3=_F-%*s9]kuW`%5Z">
+<field name="TEXT">doesn't complete after 3 seconds, move through 90 degree pitch, roll and yaw motions until calibration complete </field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_update" id=".:RSeCnh}(2hhRXY,fh=">
+<next>
+<block type="comment" id="}.w]oy+m_$A2TJg*xnh+">
+<field name="COMMENT">Wait one second before checking calibration</field>
+<next>
+<block type="comment" id=",g_o{5i%lK_sUk?Z$rF7">
+<field name="COMMENT">status again.</field>
+<next>
+<block type="linearOpMode_sleep_Number" id="}}BU@R-|[mC(|esj08aZ">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="EI?Xi=)S(!(brgP8ah(S">
+<field name="NUM">1000</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="comment" id="?/iA9vJyiKMqqg$BD+ct">
+<field name="COMMENT">Report calibration complete to Driver Station.</field>
+<next>
+<block type="telemetry_addTextData_All" id="=cW`{#|O+sMsX}U(oEv]">
+<value name="KEY">
+<shadow type="text" id="kh4[73rkh`Z|vM/IB4wv">
+<field name="TEXT">Status</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow type="text" id=";Ew/:A~jg`:+Ct0@3g1D">
+<field name="TEXT">Calibration Complete</field>
+</shadow>
+</value>
+<next>
+<block type="telemetry_update" id="f+y5wkx`HYxklZV]m!;*">
+<next>
+<block type="comment" id="B61(}kPW]Exuwn{{mCcY">
+<field name="COMMENT">Wait for Start to be pressed on Driver Station.</field>
+<next>
+<block type="linearOpMode_waitForStart" id="Kbk?QcUUc|2hM#ZJ4:]u">
+<next>
+<block type="comment" id="D.~`oOv~A:?S|{MAyz.:">
+<field name="COMMENT">Create a timer object with millisecond</field>
+<next>
+<block type="comment" id="l%j6C6GbabO%slTW^zh?">
+<field name="COMMENT">resolution and save in ElapsedTime variable.</field>
+<next>
+<block type="variables_set" id="T;E(@_HnZJ2)|P{@w?P.">
+<field name="VAR" id="(;]]F}}Mm{;uKBe#kQae">ElapsedTime</field>
+<value name="VALUE">
+<block type="elapsedTime2_create_withResolution" id="-U~$C0t{$,uTJSoMHqk(">
+<value name="RESOLUTION">
+<shadow type="elapsedTime2_typedEnum_resolution" id="rLNPRg8*%A1mHV;eM.F.">
+<field name="RESOLUTION">MILLISECONDS</field>
+</shadow>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="zWm`ZW3r=e/$|t_o+i?D">
+<field name="COMMENT">Initialize motor power variables to 30%.</field>
+<next>
+<block type="variables_set" id="-aCV_J10#9~uquYqn;C7">
+<field name="VAR" id=")^5M=2Gy|I2Ug!{sDZ]%">M1-Power</field>
+<value name="VALUE">
+<block type="math_number" id="B|CZ|qBpNx=x+^#4!6Ud">
+<field name="NUM">0.3</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="hI)0`EF31y1bJbsgC}kt">
+<field name="VAR" id="9!L*]c`]XP+:E+IJXzD@">M2-Power</field>
+<value name="VALUE">
+<block type="math_number" id="wMf,2~pXl?^SmuV{/c{+">
+<field name="NUM">0.3</field>
+</block>
+</value>
+<next>
+<block type="comment" id="!jwS1*:?O5yA^nke[PEf">
+<field name="COMMENT">Set motor powers to the variable values.</field>
+<next>
+<block type="dcMotor_setDualProperty_Number" id="hI$R;$o0@(BVBnHR+n.T">
+<field name="PROP">Power</field>
+<field name="IDENTIFIER1">motorLeftAsDcMotor</field>
+<field name="IDENTIFIER2">motorRightAsDcMotor</field>
+<data>{"IDENTIFIER1":"motorLeft","IDENTIFIER2":"motorRight"}</data>
+<value name="VALUE1">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="math_number" id="j^Gef9jDq;XiDy/n-_iA">
+<field name="NUM">0.5</field>
+</shadow>
+<block type="variables_get" id=",#:[YO?_:14h7~/]d^4*">
+<field name="VAR" id=")^5M=2Gy|I2Ug!{sDZ]%">M1-Power</field>
+</block>
+</value>
+<value name="VALUE2">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="math_number" id="+Wc-izn0?:r,E]LSJDQN">
+<field name="NUM">0.5</field>
+</shadow>
+<block type="variables_get" id="KU6(pCyuM6@`*x:3dYg.">
+<field name="VAR" id="9!L*]c`]XP+:E+IJXzD@">M2-Power</field>
+</block>
+</value>
+<next>
+<block type="comment" id="rU`B=K-HC@#K@3,ay~5I">
+<field name="COMMENT">Move robot forward for 2 seconds or until stop</field>
+<next>
+<block type="comment" id="Lpi3p+?i21,wMFJ,BK{%">
+<field name="COMMENT">is pressed on Driver Station.</field>
+<next>
+<block type="comment" id="45#z[m9;QYCGbD@soQ|u">
+<field name="COMMENT">elapsed.</field>
+<next>
+<block type="controls_whileUntil" id="!dg9:Q]JHeHr`af60A%R">
+<field name="MODE">UNTIL</field>
+<value name="BOOL">
+<block type="logic_operation" id="fUS(WCH1}Pu,X0DaLZ-j">
+<field name="OP">OR</field>
+<value name="A">
+<block type="logic_compare" id="rg!mXVIGNiGp36KQHd[6">
+<field name="OP">GTE</field>
+<value name="A">
+<block type="elapsedTime2_getProperty_Number" id="t2LpDU]JBi[FfSZzI.]Z">
+<field name="PROP">Milliseconds</field>
+<value name="ELAPSED_TIME">
+<block type="variables_get" id="NR;wlz}UgydkLtD}D]%U">
+<field name="VAR" id="(;]]F}}Mm{;uKBe#kQae">ElapsedTime</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="$`(8AaNP_6Nr3*)PCAD?">
+<field name="NUM">2000</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="linearOpMode_isStopRequested" id="ZEsBcDef#-MXl,r$$}Rx"/>
+</value>
+</block>
+</value>
+<statement name="DO">
+<block type="comment" id="~]%04-N_.%yp8B?G?lpn">
+<field name="COMMENT">Save gyro's yaw orientation</field>
+<next>
+<block type="variables_set" id="VCdgVY)i@wa{jjKGa^v.">
+<field name="VAR" id="BlClGM(x]tLtNk)qW5(4">YawValue</field>
+<value name="VALUE">
+<block type="orientation_getProperty_Number" id="#7OPdH[H1MGOh/NMB/gh">
+<field name="PROP">ThirdAngle</field>
+<value name="ORIENTATION">
+<block type="bno055imu_getAngularOrientation" id="Z[[Z5ie3s;Z0SR{ej4vV">
+<field name="IDENTIFIER">imuAsBNO055IMU</field>
+<data>{"IDENTIFIER":"imu"}</data>
+<value name="AXES_REFERENCE">
+<shadow type="navigation_typedEnum_axesReference" id="C1c7!B%XO.dp}9~(fpcP">
+<field name="AXES_REFERENCE">INTRINSIC</field>
+</shadow>
+</value>
+<value name="AXES_ORDER">
+<shadow type="navigation_typedEnum_axesOrder" id=";xP(;/(O0Ef)/4tZ!r]V">
+<field name="AXES_ORDER">XYZ</field>
+</shadow>
+</value>
+<value name="ANGLE_UNIT">
+<shadow type="navigation_typedEnum_angleUnit" id="wb4tXy*hOR-z0G`4GEt5">
+<field name="ANGLE_UNIT">DEGREES</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="Y?/yY4W)iVs@fE(c?.MZ">
+<field name="COMMENT">Report yaw orientation to Driver Station.</field>
+<next>
+<block type="telemetry_addNumericData_Number" id="x*8EP[9utUsAiMN:kPBL">
+<value name="KEY">
+<shadow type="text" id="e//NwZ)h[}7os6^2PO)k">
+<field name="TEXT">Yaw value</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="math_number" id="OAp1OSPpzQ1u0eO53+:a">
+<field name="NUM">123</field>
+</shadow>
+<block type="variables_get" id="GyIw+-V|9wmmX16h|oV9">
+<field name="VAR" id="BlClGM(x]tLtNk)qW5(4">YawValue</field>
+</block>
+</value>
+<next>
+<block type="comment" id="glYhwQrXUM,w@a31?%XH">
+<field name="COMMENT">If the robot is moving straight ahead the</field>
+<next>
+<block type="comment" id="/)hR)h}Ffb`oC/,_Q~}b">
+<field name="COMMENT">yaw value will be close to zero. If it's not, we</field>
+<next>
+<block type="comment" id="mK[ofnQnoyG*mbQVgb%C">
+<field name="COMMENT">need to adjust the motor powers to adjust heading.</field>
+<next>
+<block type="comment" id="M-ZfM-WE*Pv3${N,e?w2">
+<field name="COMMENT">If robot yaws right or left by 5 or more,</field>
+<next>
+<block type="comment" id="5Hr%d~wz1AlcLiJGV^]*">
+<field name="COMMENT">adjust motor power variables to compensation.</field>
+<next>
+<block type="controls_if" id="(F6CEBbWMhz;%)cMKUiQ">
+<mutation elseif="1" else="1"/>
+<value name="IF0">
+<block type="logic_compare" id="=Nre*`Eim.*iO#etO*ek">
+<field name="OP">LT</field>
+<value name="A">
+<block type="variables_get" id="6u`#k:)FBjddHrC1(Fou">
+<field name="VAR" id="BlClGM(x]tLtNk)qW5(4">YawValue</field>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="xahc!~[QA31+s=h2wlw3">
+<field name="NUM">-5</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="xR?=[%{L}D9,mWQCm%NT">
+<field name="COMMENT">Turn left</field>
+<next>
+<block type="variables_set" id="K6y/Jk_BA:6Vufm^F5/B">
+<field name="VAR" id=")^5M=2Gy|I2Ug!{sDZ]%">M1-Power</field>
+<value name="VALUE">
+<block type="math_number" id="8bL62=4IWF9/A:/S4sMk">
+<field name="NUM">0.25</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="h-(^XPQaW2=}D2BVfeX#">
+<field name="VAR" id="9!L*]c`]XP+:E+IJXzD@">M2-Power</field>
+<value name="VALUE">
+<block type="math_number" id="JDA!c?9oiIxJ;?e30j.*">
+<field name="NUM">0.35</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<value name="IF1">
+<block type="logic_compare" id="BQxo|ep2E)#ob(u64NTY">
+<field name="OP">GT</field>
+<value name="A">
+<block type="variables_get" id="#B6?!}Q}TfN7^kJbI:{w">
+<field name="VAR" id="BlClGM(x]tLtNk)qW5(4">YawValue</field>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="N(H/OtwEL`jhx_f?tP`a">
+<field name="NUM">5</field>
+</block>
+</value>
+</block>
+</value>
+<statement name="DO1">
+<block type="comment" id="f3S~7S%A(3I~XL@1g/zN">
+<field name="COMMENT">Turn right.</field>
+<next>
+<block type="variables_set" id="A:`M1A3fW-K~w.j.g-@u">
+<field name="VAR" id=")^5M=2Gy|I2Ug!{sDZ]%">M1-Power</field>
+<value name="VALUE">
+<block type="math_number" id="$l#`KA)K/H(=Pxm[8wyB">
+<field name="NUM">0.35</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="**Qg=+L{,20v*9oE=.dK">
+<field name="VAR" id="9!L*]c`]XP+:E+IJXzD@">M2-Power</field>
+<value name="VALUE">
+<block type="math_number" id="E:DP_XbL8X{j,#=o8a{%">
+<field name="NUM">0.25</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="comment" id="FU-)wOP+Get`+rfqFmXC">
+<field name="COMMENT">Continue straight</field>
+<next>
+<block type="variables_set" id="OAGXmNIN:F:*5$rQ3yo!">
+<field name="VAR" id=")^5M=2Gy|I2Ug!{sDZ]%">M1-Power</field>
+<value name="VALUE">
+<block type="math_number" id="PAC.r-X*EYW+k(3Tn1$L">
+<field name="NUM">0.3</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="c?UAfd)coh}s{Dg7e.6!">
+<field name="VAR" id="9!L*]c`]XP+:E+IJXzD@">M2-Power</field>
+<value name="VALUE">
+<block type="math_number" id="2H]kkw@F0(Akj.oTc:SY">
+<field name="NUM">0.3</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="comment" id=";R?kJP-y6)],h_ELy)GS">
+<field name="COMMENT">Report the new power levels to the Driver Station.</field>
+<next>
+<block type="telemetry_addNumericData_Number" id=".kRV)F-gRi)fkc`/EAoK">
+<value name="KEY">
+<shadow type="text" id="^$icag~2:=~MBG5k4!{F">
+<field name="TEXT">Motor 1 Power</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="math_number" id="v(ER@jGDv$Vn_MrJ-45F">
+<field name="NUM">123</field>
+</shadow>
+<block type="variables_get" id="}vj~rf^fII*+p/GgP}AL">
+<field name="VAR" id=")^5M=2Gy|I2Ug!{sDZ]%">M1-Power</field>
+</block>
+</value>
+<next>
+<block type="telemetry_addNumericData_Number" id="viHZu+na78Z~KQ`l)Bbm">
+<value name="KEY">
+<shadow type="text" id="?62D7Yq@;w`~xT0yg~z)">
+<field name="TEXT">Motor 2 Power</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="math_number" id="v(ER@jGDv$Vn_MrJ-45F">
+<field name="NUM">123</field>
+</shadow>
+<block type="variables_get" id="Q$9Z25UX*oH4PDuZGsbc">
+<field name="VAR" id="9!L*]c`]XP+:E+IJXzD@">M2-Power</field>
+</block>
+</value>
+<next>
+<block type="comment" id="Rl%-@0-tC`{N6@fFkVx_">
+<field name="COMMENT">Update the motors to the new power levels.</field>
+<next>
+<block type="dcMotor_setDualProperty_Number" id=".vpm=7BP9lDJ.~cntDwf">
+<field name="PROP">Power</field>
+<field name="IDENTIFIER1">motorLeftAsDcMotor</field>
+<field name="IDENTIFIER2">motorRightAsDcMotor</field>
+<data>{"IDENTIFIER1":"motorLeft","IDENTIFIER2":"motorRight"}</data>
+<value name="VALUE1">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="math_number" id="j^Gef9jDq;XiDy/n-_iA">
+<field name="NUM">0.5</field>
+</shadow>
+<block type="variables_get" id="|Y-[%%NXg.,yoHlq,Fov">
+<field name="VAR" id=")^5M=2Gy|I2Ug!{sDZ]%">M1-Power</field>
+</block>
+</value>
+<value name="VALUE2">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="math_number" id="+Wc-izn0?:r,E]LSJDQN">
+<field name="NUM">0.5</field>
+</shadow>
+<block type="variables_get" id="67{G|3-q=BV?v0OJr:L+">
+<field name="VAR" id="9!L*]c`]XP+:E+IJXzD@">M2-Power</field>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="P9c/U?5]CF2X.]IERu*x">
+<next>
+<block type="comment" id="~?x~C*RZO/b$bf_g!#CX">
+<field name="COMMENT">Wait 1/5 second before checking again.</field>
+<next>
+<block type="linearOpMode_sleep_Number" id="|ZqBem~TEMzy-RL,x#;K">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="LAX+({PP:0/6852.:C51">
+<field name="NUM">200</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="comment" id="(jk-3H=EH4[:n?#3YWDp">
+<field name="COMMENT">Stop robot and wait 2 seconds</field>
+<next>
+<block type="dcMotor_setDualProperty_Number" id="G{dno/)SpC[tFJb=ls[-">
+<field name="PROP">Power</field>
+<field name="IDENTIFIER1">motorLeftAsDcMotor</field>
+<field name="IDENTIFIER2">motorRightAsDcMotor</field>
+<data>{"IDENTIFIER1":"motorLeft","IDENTIFIER2":"motorRight"}</data>
+<value name="VALUE1">
+<shadow type="math_number" id=",E?,=b`#e~c;oVdH_CaK">
+<field name="NUM">0</field>
+</shadow>
+</value>
+<value name="VALUE2">
+<shadow type="math_number" id="URo(Tw{TZp3oBrlxO/-=">
+<field name="NUM">0</field>
+</shadow>
+</value>
+<next>
+<block type="linearOpMode_sleep_Number" id=")@%dSR{h596/B]F+(PI0">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="t0bpOSD!}cRX}r;opILI">
+<field name="NUM">2000</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="6!YM-9yca^LCzdXb%jj1">
+<field name="COMMENT">Now let's execute a turn starting with a power</field>
+<next>
+<block type="comment" id="`XU=q4p4hn5Ed~BdKn=[">
+<field name="COMMENT">levels that will cause a turn in place.</field>
+<next>
+<block type="comment" id="7t9q3El,Tr8i~p%WiEMw">
+<field name="COMMENT">Update motor power variables</field>
+<next>
+<block type="variables_set" id="IZtv^CUw53w$3%s,i(40">
+<field name="VAR" id=")^5M=2Gy|I2Ug!{sDZ]%">M1-Power</field>
+<value name="VALUE">
+<block type="math_number" id="R+F2~+H[fA!F9ODc={16">
+<field name="NUM">0.1</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="%YU`Wfnc!YG(7$[:II:a">
+<field name="VAR" id="9!L*]c`]XP+:E+IJXzD@">M2-Power</field>
+<value name="VALUE">
+<block type="math_number" id="]jM)Y*p~4?L,?A(=XrbB">
+<field name="NUM">-0.1</field>
+</block>
+</value>
+<next>
+<block type="comment" id="`QeTOcaF3x_%_%tmmO]X">
+<field name="COMMENT">Continue until robot yaws right by 90 degrees</field>
+<next>
+<block type="comment" id="?x)O#/*ujmJ;JP__*tvB">
+<field name="COMMENT">or stop is pressed on Driver Station.</field>
+<next>
+<block type="controls_whileUntil" id="y0LxWJfYe$2k^DZ_QnjX">
+<field name="MODE">UNTIL</field>
+<value name="BOOL">
+<block type="logic_operation" id="e/_}tCSThZ%Kj)H*w}}u">
+<field name="OP">OR</field>
+<value name="A">
+<block type="logic_compare" id="1]Jd[CGuC^9fU/{]xV@7">
+<field name="OP">LTE</field>
+<value name="A">
+<block type="variables_get" id="|;zO.Cg70pGx#k/jorGE">
+<field name="VAR" id="BlClGM(x]tLtNk)qW5(4">YawValue</field>
+</block>
+</value>
+<value name="B">
+<block type="math_number" id="^_+FY+P?XWiF?VeZ-2UK">
+<field name="NUM">-90</field>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<block type="linearOpMode_isStopRequested" id="|/G$tsGOz]#*S~{9]J+S"/>
+</value>
+</block>
+</value>
+<statement name="DO">
+<block type="comment" id="QI;$xt}+#miN1hE;jMd/">
+<field name="COMMENT">Update motor powers</field>
+<next>
+<block type="dcMotor_setDualProperty_Number" id="r!Bg6Fe)ymshNQ2gk$#x">
+<field name="PROP">Power</field>
+<field name="IDENTIFIER1">motorLeftAsDcMotor</field>
+<field name="IDENTIFIER2">motorRightAsDcMotor</field>
+<data>{"IDENTIFIER1":"motorLeft","IDENTIFIER2":"motorRight"}</data>
+<value name="VALUE1">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="math_number" id="j^Gef9jDq;XiDy/n-_iA">
+<field name="NUM">0.5</field>
+</shadow>
+<block type="variables_get" id="-oA#;W0m:JdKNMn~WE={">
+<field name="VAR" id=")^5M=2Gy|I2Ug!{sDZ]%">M1-Power</field>
+</block>
+</value>
+<value name="VALUE2">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="math_number" id="+Wc-izn0?:r,E]LSJDQN">
+<field name="NUM">0.5</field>
+</shadow>
+<block type="variables_get" id="V?rDIPUz;O_g,!1g5UG.">
+<field name="VAR" id="9!L*]c`]XP+:E+IJXzD@">M2-Power</field>
+</block>
+</value>
+<next>
+<block type="comment" id=";.6kk`N!Qd1-)qs~!_l~">
+<field name="COMMENT">Report motor power levels to Driver Station.</field>
+<next>
+<block type="telemetry_addNumericData_Number" id="Mls20kt+R32b^poLy=z)">
+<value name="KEY">
+<shadow type="text" id="dw,8GP-.Cv0QVzhf!JzY">
+<field name="TEXT">Motor 1 Power</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="math_number" id="v(ER@jGDv$Vn_MrJ-45F">
+<field name="NUM">123</field>
+</shadow>
+<block type="variables_get" id="njNMBrVXJB`5Q)=1E^Iy">
+<field name="VAR" id=")^5M=2Gy|I2Ug!{sDZ]%">M1-Power</field>
+</block>
+</value>
+<next>
+<block type="telemetry_addNumericData_Number" id="Z,XyRy,Fyrvfs6AD^iJK">
+<value name="KEY">
+<shadow type="text" id="R!fbZOGppF%u[kzgLnqD">
+<field name="TEXT">Motor 2 Power</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="math_number" id="v(ER@jGDv$Vn_MrJ-45F">
+<field name="NUM">123</field>
+</shadow>
+<block type="variables_get" id="0gP;U:+eN[C$IM!;Xjd{">
+<field name="VAR" id="9!L*]c`]XP+:E+IJXzD@">M2-Power</field>
+</block>
+</value>
+<next>
+<block type="comment" id="Zpxg*A#{1DyC#n`8+Xcn">
+<field name="COMMENT">Report yaw orientation to Driver Station.</field>
+<next>
+<block type="telemetry_addNumericData_Number" id="g[k!2ed8xnq_CLvNS-1Z">
+<value name="KEY">
+<shadow type="text" id="ORtx@89#4=d^ebLG#.Rg">
+<field name="TEXT">Yaw value</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="math_number" id="OAp1OSPpzQ1u0eO53+:a">
+<field name="NUM">123</field>
+</shadow>
+<block type="variables_get" id="iTT]HKaU#i*(gskegGDQ">
+<field name="VAR" id="BlClGM(x]tLtNk)qW5(4">YawValue</field>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="Vncl!;_feG?4[Jzv5/E*">
+<next>
+<block type="comment" id="yw0.F:8$ng]^J{}Z%(2}">
+<field name="COMMENT">Wait 1/5 second</field>
+<next>
+<block type="linearOpMode_sleep_Number" id="YZTsOZxj/pkAAoQ^KhXt">
+<value name="MILLISECONDS">
+<shadow type="math_number" id="8QS!FSf4hz%B87BsWmX9">
+<field name="NUM">200</field>
+</shadow>
+</value>
+<next>
+<block type="variables_set" id="F3$5br)SsW*ot_BgU.B@">
+<field name="VAR" id="BlClGM(x]tLtNk)qW5(4">YawValue</field>
+<value name="VALUE">
+<block type="orientation_getProperty_Number" id="8o0j;:`B{xRgLkS+C?LP">
+<field name="PROP">ThirdAngle</field>
+<value name="ORIENTATION">
+<block type="bno055imu_getAngularOrientation" id="-Mtdz;wzP?$//t{l]5HN">
+<field name="IDENTIFIER">imuAsBNO055IMU</field>
+<data>{"IDENTIFIER":"imu"}</data>
+<value name="AXES_REFERENCE">
+<shadow type="navigation_typedEnum_axesReference" id="5cmYL*j|7@)-W;F{Aw:6">
+<field name="AXES_REFERENCE">INTRINSIC</field>
+</shadow>
+</value>
+<value name="AXES_ORDER">
+<shadow type="navigation_typedEnum_axesOrder" id="h0aU=rHS|j;JyNsOWzVd">
+<field name="AXES_ORDER">XYZ</field>
+</shadow>
+</value>
+<value name="ANGLE_UNIT">
+<shadow type="navigation_typedEnum_angleUnit" id="Xcj0RE*l[~]15+M7U.y)">
+<field name="ANGLE_UNIT">DEGREES</field>
+</shadow>
+</value>
+</block>
+</value>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<next>
+<block type="comment" id="}qVwIE:kbGm,;Xis%`i%">
+<field name="COMMENT">We're done. Turn off motors</field>
+<next>
+<block type="dcMotor_setDualProperty_Number" id="0@_RmZ4Xzk6i9%//@;8=">
+<field name="PROP">Power</field>
+<field name="IDENTIFIER1">motorLeftAsDcMotor</field>
+<field name="IDENTIFIER2">motorRightAsDcMotor</field>
+<data>{"IDENTIFIER1":"motorLeft","IDENTIFIER2":"motorRight"}</data>
+<value name="VALUE1">
+<shadow type="math_number" id="Bj2~^c{rN89B_f^}.vB_">
+<field name="NUM">0</field>
+</shadow>
+</value>
+<value name="VALUE2">
+<shadow type="math_number" id="S]w+,IY;WGiFuh3)n3GX">
+<field name="NUM">0</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defreturn" id="(vXHj!y+_;GF9W0-rlVG" x="360" y="-637">
+<field name="NAME">IMU-Calibrated</field>
+<comment pinned="false" h="84" w="369">Function that becomes true when gyro is calibrated and reports calibration status to Driver Station in the meantime.</comment>
+<statement name="STACK">
+<block type="telemetry_addTextData_All" id="|*w52.QlZ[PtuuLfHq9W">
+<value name="KEY">
+<shadow type="text" id="kf!-*k)$LrAKJI9Y!qsx">
+<field name="TEXT">IMU Calibration Status</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="text" id="!W_v6X?PAdL%,~ij,h|H">
+<field name="TEXT">text</field>
+</shadow>
+<block type="bno055imu_getProperty_String" id="c8w,:_y|$.E@97m8mb7l">
+<field name="IDENTIFIER">imuAsBNO055IMU</field>
+<field name="PROP">CalibrationStatus</field>
+<data>{"IDENTIFIER":"imu"}</data>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="Rm^8}n$GC4Ozq#@txkhH">
+<value name="KEY">
+<shadow type="text" id="#MkV/lX47k6c`09,e[vP">
+<field name="TEXT">Gyro Calibrated</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="text" id="}@dI3@i_#NxvAdyf#IU,">
+<field name="TEXT">text</field>
+</shadow>
+<block type="logic_ternary" id="On_.8wkC84IW,jig]?%X">
+<value name="IF">
+<block type="bno055imu_isGyroCalibrated" id="/N8,0idY7T_tgAiR0][S">
+<field name="IDENTIFIER">imuAsBNO055IMU</field>
+<data>{"IDENTIFIER":"imu"}</data>
+</block>
+</value>
+<value name="THEN">
+<block type="text" id="=G?ENC6YE/3/}v%;qpHt">
+<field name="TEXT">True</field>
+</block>
+</value>
+<value name="ELSE">
+<block type="text" id="os9[=}x!B=b;!gPC]8Z{">
+<field name="TEXT">False</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="telemetry_addTextData_All" id="1HK~nU5?KQ;iV.n2Qm+W">
+<value name="KEY">
+<shadow type="text" id="0|t;!JYKpC0_3zWMX]I(">
+<field name="TEXT">System Status</field>
+</shadow>
+</value>
+<value name="TEXT">
+<shadow xmlns="http://www.w3.org/1999/xhtml" type="text" id="}@dI3@i_#NxvAdyf#IU,">
+<field name="TEXT">text</field>
+</shadow>
+<block type="bno055imu_getProperty_String" id="0@X384c6H/A]Ako+Hr%%">
+<field name="IDENTIFIER">imuAsBNO055IMU</field>
+<field name="PROP">SystemStatus</field>
+<data>{"IDENTIFIER":"imu"}</data>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<value name="RETURN">
+<block type="bno055imu_isGyroCalibrated" id="HV:v-MWY@.kW|8vBk)c/">
+<field name="IDENTIFIER">imuAsBNO055IMU</field>
+<data>{"IDENTIFIER":"imu"}</data>
+</block>
+</value>
+</block>
+<block type="logic_operation" id="cC+9w:](jD##k+Ke@6w-" x="733" y="4178">
+<field name="OP">AND</field>
+<value name="B">
+<block type="logic_operation" id=")x[h{uN0_;8NAs:aBn5/">
+<field name="OP">AND</field>
+<value name="A">
+<block type="bno055imu_isMagnetometerCalibrated" id="C:6s`J3o)lwbk+rv5Pob">
+<field name="IDENTIFIER">imuAsBNO055IMU</field>
+<data>{"IDENTIFIER":"imu"}</data>
+</block>
+</value>
+<value name="B">
+<block type="bno055imu_isSystemCalibrated" id="!U_RT.*LqFyV7uUXk$@N">
+<field name="IDENTIFIER">imuAsBNO055IMU</field>
+<data>{"IDENTIFIER":"imu"}</data>
+</block>
+</value>
+</block>
+</value>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" />
+<Enabled value="true" />
+</Extra>

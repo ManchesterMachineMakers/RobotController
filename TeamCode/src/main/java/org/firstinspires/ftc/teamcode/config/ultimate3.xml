@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC">
+    <LynxUsbDevice name="Expansion Hub Portal 1" serialNumber="DQ3MBP78" parentModuleAddress="1">
+        <LynxModule name="Expansion Hub 1" port="1">
+            <goBILDA5202SeriesMotor name="left_drive" port="0" />
+            <goBILDA5202SeriesMotor name="right_drive" port="1" />
+            <LynxEmbeddedIMU name="imu" port="0" bus="0" />
+            <REV_VL53L0X_RANGE_SENSOR name="2M_front" port="1" bus="0" />
+            <REV_VL53L0X_RANGE_SENSOR name="2M_behind" port="0" bus="1" />
+            <REV_VL53L0X_RANGE_SENSOR name="2M_left" port="0" bus="2" />
+            <REV_VL53L0X_RANGE_SENSOR name="2M_right" port="0" bus="3" />
+        </LynxModule>
+        <LynxModule name="Expansion Hub 2" port="2">
+            <LynxEmbeddedIMU name="imu 1" port="0" bus="0" />
+            <RevColorSensorV3 name="color_sensor" port="1" bus="0" />
+        </LynxModule>
+    </LynxUsbDevice>
+</Robot>
