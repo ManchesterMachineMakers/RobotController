@@ -72,9 +72,9 @@ assembleDebug:
   stage: build
   script:
     - ./gradlew -Pci --console=plain assembleDebug
-  # artifacts:
-  #   paths:
-  #     - app/build/outputs/
+  artifacts:
+    paths:
+      - TeamCode/build/outputs/
 
 # Run all tests, if any fails, interrupt the pipeline(fail it)
 debugTests:
