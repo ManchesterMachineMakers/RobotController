@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.subassemblies;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.util.Names;
+
 /**
  * Delivery mechanism for Freight Frenzy
  * Drawer slide to extend to the proper height
@@ -12,8 +14,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Delivery {
 
     public Delivery(HardwareMap hardwareMap) {
-        deliveryServo = hardwareMap.servo.get("arm");
-        grabberServo = hardwareMap.servo.get("claw");
+        deliveryServo = hardwareMap.servo.get(Names.servo_DeliverySlide);
+        grabberServo = hardwareMap.servo.get(Names.servo_GrabberClaw);
     }
 
     public Servo deliveryServo;

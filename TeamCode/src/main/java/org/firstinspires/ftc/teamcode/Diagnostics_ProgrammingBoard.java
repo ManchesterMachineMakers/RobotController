@@ -35,7 +35,7 @@ public class Diagnostics_ProgrammingBoard extends LinearOpMode {
 
             @Override
             public Selector<Blinkin> lightingSelector() {
-                return null;
+                return new LightingSelector(ledUtil);
             }
 
             @Override
