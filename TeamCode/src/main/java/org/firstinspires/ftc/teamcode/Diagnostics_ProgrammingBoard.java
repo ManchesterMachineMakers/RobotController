@@ -23,10 +23,10 @@ public class Diagnostics_ProgrammingBoard extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Blinkin ledUtil = new Blinkin(hardwareMap);
+//        Blinkin ledUtil = new Blinkin(hardwareMap);
         DriveBase driveBase = new ProgrammingBoardDriveBase(hardwareMap);
-        Delivery delivery = new Delivery(hardwareMap);
-        ActiveIntake intake = new ActiveIntake(hardwareMap, this);
+//        Delivery delivery = new Delivery(hardwareMap);
+//        ActiveIntake intake = new ActiveIntake(hardwareMap, this);
         Runner runner = new Runner(new Selectors() {
             @Override
             public Selector<DriveBase> driveBaseSelector() {
@@ -35,17 +35,20 @@ public class Diagnostics_ProgrammingBoard extends LinearOpMode {
 
             @Override
             public Selector<Blinkin> lightingSelector() {
-                return new LightingSelector(ledUtil);
+                return null;
+//                return new LightingSelector(ledUtil);
             }
 
             @Override
             public Selector<Delivery> deliverySelector() {
-                return new DeliverySelector(delivery);
+                return null;
+//                return new DeliverySelector(delivery);
             }
 
             @Override
             public Selector<ActiveIntake> activeIntakeSelector() {
-                return new IntakeSelector(intake);
+                return null;
+//                return new IntakeSelector(intake);
             }
         }, this);
         RobotLog.i("16221 Diagnostics Opmode: Initialization complete.");

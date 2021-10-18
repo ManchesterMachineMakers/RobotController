@@ -4,10 +4,11 @@ import org.firstinspires.ftc.teamcode.diagnostics.Runner;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 
-@Test("Wobble Goal Grabber Test")
+@Test("Delivery Test")
 public class DeliveryTest implements Base {
 
     public boolean run(Selectors sel, Runner runner) throws InterruptedException {
+        if (sel.deliverySelector() == null) { return false; }
         Delivery delivery = sel.deliverySelector().get();
         runner.log("Up");
         delivery.up();

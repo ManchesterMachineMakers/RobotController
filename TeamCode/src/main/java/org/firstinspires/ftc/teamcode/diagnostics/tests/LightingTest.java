@@ -25,7 +25,7 @@ public class LightingTest implements Base {
     @Override
     public boolean run(Selectors sel, Runner runner) {
         try {
-
+            if (sel.lightingSelector() == null) { return false; }
             boolean ok = true;
             ledUtil = sel.lightingSelector().get();
             init(runner, ledUtil);

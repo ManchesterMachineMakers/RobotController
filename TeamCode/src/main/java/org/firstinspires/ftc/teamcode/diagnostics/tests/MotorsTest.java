@@ -41,6 +41,7 @@ public class MotorsTest implements Base {
 
     @Override
     public boolean run(Selectors sel, Runner runner) {
+        if (sel.driveBaseSelector() == null) { return false; }
         driveBase = sel.driveBaseSelector().get();
         init(runner.opMode, driveBase);
 
@@ -53,7 +54,7 @@ public class MotorsTest implements Base {
         RobotLog.i("Stopped and reset encoders");
 
         runner.opMode.telemetry.update();
-        /*** test each motor ***/
+        /** test each motor **/
 
         double testPower = 0.2;
 

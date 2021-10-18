@@ -17,7 +17,7 @@ public class IntakeTest implements Base {
 
     @Override
     public boolean run(Selectors sel, Runner runner) {
-
+        if (sel.activeIntakeSelector() == null) { return false; }
         intake = sel.activeIntakeSelector().get();
 
         runner.opMode.telemetry.setAutoClear(false);
