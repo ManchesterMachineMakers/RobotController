@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.subassemblies.Camera;
 import org.firstinspires.ftc.teamcode.subassemblies.RingSensor;
 import org.firstinspires.ftc.teamcode.subassemblies.Shooter;
 import org.firstinspires.ftc.teamcode.subassemblies.TensorFlowObjectDetector;
-import org.firstinspires.ftc.teamcode.subassemblies.WobbleGoalGrabber;
+import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 
 import java.util.ArrayList;
 
@@ -39,7 +39,7 @@ public abstract class MMMUltimateGoalOpMode extends LinearOpMode {
     public ActiveIntake intake;
     public Shooter shooter;
     public RingSensor ringSensor;
-    public WobbleGoalGrabber wobbleGoalGrabber;
+    public Delivery wobbleGoalGrabber;
 
     // navigation tools
     public PIDReckoning reckoning;
@@ -70,7 +70,7 @@ public abstract class MMMUltimateGoalOpMode extends LinearOpMode {
         intake = new ActiveIntake(hardwareMap, this);
         shooter = new Shooter(hardwareMap);
         reckoning = new PIDReckoning(hardwareMap, this);
-        wobbleGoalGrabber = new WobbleGoalGrabber(hardwareMap);
+        wobbleGoalGrabber = new Delivery(hardwareMap);
 
         // vision
         camera = new Camera(hardwareMap, this);

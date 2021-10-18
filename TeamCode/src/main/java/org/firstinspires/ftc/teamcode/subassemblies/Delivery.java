@@ -4,29 +4,32 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
- * Grabber must mount on the _right hand rear_ corner
- * Grabber must mount __ inches high.
- * 312 rpm motor
- * servo
+ * Delivery mechanism for Freight Frenzy
+ * Drawer slide to extend to the proper height
+ * Grabber to keep or release the freight.
  *
  */
-public class WobbleGoalGrabber {
+public class Delivery {
 
-    public WobbleGoalGrabber(HardwareMap hardwareMap) {
-        wggServo = hardwareMap.servo.get("arm");
+    public Delivery(HardwareMap hardwareMap) {
+        deliveryServo = hardwareMap.servo.get("arm");
         grabberServo = hardwareMap.servo.get("claw");
     }
 
-    public Servo wggServo;
+    public Servo deliveryServo;
     public Servo grabberServo;
 
     public void down() {
-        wggServo.setPosition(0.2);
+        deliveryServo.setPosition(0.2);
     }
+    public void deliverLow() { deliveryServo.setPosition(0.35); }
+    public void deliverMid() { deliveryServo.setPosition(0.4); }
+    public void deliverHigh() { deliveryServo.setPosition(0.5); }
     public void up() {
-        wggServo.setPosition(0.55);
+        deliveryServo.setPosition(0.55);
     }
-    public void rest() {wggServo.setPosition(0.75);}
+    public void rest() {
+        deliveryServo.setPosition(0.75);}
     public void grab() {
       grabberServo.setPosition(0.8);
     }

@@ -2,33 +2,33 @@ package org.firstinspires.ftc.teamcode.diagnostics.tests;
 
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
-import org.firstinspires.ftc.teamcode.subassemblies.WobbleGoalGrabber;
+import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 
 @Test("Wobble Goal Grabber Test")
-public class WobbleGoalTest implements Base {
+public class DeliveryTest implements Base {
 
     public boolean run(Selectors sel, Runner runner) throws InterruptedException {
-        WobbleGoalGrabber wgg = sel.wggSelector().get();
+        Delivery delivery = sel.deliverySelector().get();
         runner.log("Up");
-        wgg.up();
+        delivery.up();
         Thread.sleep(1000);
         runner.log("Grab");
-        wgg.grab();
+        delivery.grab();
         Thread.sleep(1000);
         runner.log("Release");
-        wgg.release();
+        delivery.release();
         Thread.sleep(1000);
         runner.log("Down");
-        wgg.down();
+        delivery.down();
         Thread.sleep(1000);
         runner.log("Up");
-        wgg.up();
+        delivery.up();
         Thread.sleep(1000);
         runner.log("Grab (wrapper)");
-        wgg.grabWrapper();
+        delivery.grabWrapper();
         Thread.sleep(1000);
         runner.log("Release (wrapper)");
-        wgg.releaseWrapper();
+        delivery.releaseWrapper();
         Thread.sleep(1000);
         runner.log("Done");
         return true;

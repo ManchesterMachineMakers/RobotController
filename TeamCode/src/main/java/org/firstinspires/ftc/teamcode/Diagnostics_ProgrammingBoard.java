@@ -5,25 +5,28 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
+import org.firstinspires.ftc.teamcode.diagnostics.util.DeliverySelector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.DriveBaseSelector;
+import org.firstinspires.ftc.teamcode.diagnostics.util.IntakeSelector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.LightingSelector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Selector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
-import org.firstinspires.ftc.teamcode.diagnostics.util.DeliverySelector;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
+import org.firstinspires.ftc.teamcode.drivebase.ProgrammingBoardDriveBase;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 
 @TeleOp
-public class Diagnostics extends LinearOpMode {
+public class Diagnostics_ProgrammingBoard extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
         Blinkin ledUtil = new Blinkin(hardwareMap);
-        DriveBase driveBase = new MecanumDriveBase(hardwareMap);
-        Delivery wgg = new Delivery(hardwareMap);
+        DriveBase driveBase = new ProgrammingBoardDriveBase(hardwareMap);
+        Delivery delivery = new Delivery(hardwareMap);
+        ActiveIntake intake = new ActiveIntake(hardwareMap, this);
         Runner runner = new Runner(new Selectors() {
             @Override
             public Selector<DriveBase> driveBaseSelector() {
@@ -32,17 +35,17 @@ public class Diagnostics extends LinearOpMode {
 
             @Override
             public Selector<Blinkin> lightingSelector() {
-                return new LightingSelector(ledUtil);
+                return null;
             }
 
             @Override
             public Selector<Delivery> deliverySelector() {
-                return new DeliverySelector(wgg);
+                return new DeliverySelector(delivery);
             }
 
             @Override
             public Selector<ActiveIntake> activeIntakeSelector() {
-                return null;
+                return new IntakeSelector(intake);
             }
         }, this);
         RobotLog.i("16221 Diagnostics Opmode: Initialization complete.");

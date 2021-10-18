@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
-import org.firstinspires.ftc.teamcode.subassemblies.WobbleGoalGrabber;
+import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 
 @TeleOp
 public class Diagnostics_IntakeOnly extends LinearOpMode {
@@ -34,7 +34,7 @@ public class Diagnostics_IntakeOnly extends LinearOpMode {
             }
 
             @Override
-            public Selector<WobbleGoalGrabber> wggSelector() {
+            public Selector<Delivery> deliverySelector() {
                 return null;
             }
 

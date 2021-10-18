@@ -16,13 +16,9 @@ import org.firstinspires.ftc.teamcode.navigation.Movement;
 import org.firstinspires.ftc.teamcode.navigation.MyPath;
 import org.firstinspires.ftc.teamcode.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.navigation.PIDReckoning;
-import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 import org.firstinspires.ftc.teamcode.subassemblies.Camera;
-import org.firstinspires.ftc.teamcode.subassemblies.RingSensor;
-import org.firstinspires.ftc.teamcode.subassemblies.Shooter;
 import org.firstinspires.ftc.teamcode.subassemblies.TensorFlowObjectDetector;
-import org.firstinspires.ftc.teamcode.subassemblies.WobbleGoalGrabber;
 
 import java.util.ArrayList;
 
