@@ -1,0 +1,13 @@
+{
+	"name": "Freight Frenzy Robot Controller",
+	"files": {
+		"git": 1,
+	},
+	"build": {
+		"targets": {"build": "./builder.sh build", "run": "./builder.sh run"},
+		"default_target": "build",
+	},
+	"ctags": {
+		"enable": 1
+	}
+}
