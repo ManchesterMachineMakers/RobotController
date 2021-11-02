@@ -88,3 +88,6 @@ lint/tmp/
 
 # Builder script
 asdk_location.dat
+
+# IDEA
+.idea/
