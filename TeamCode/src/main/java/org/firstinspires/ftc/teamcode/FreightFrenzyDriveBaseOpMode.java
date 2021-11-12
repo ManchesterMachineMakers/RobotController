@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.util.MMMFreightFrenzyOpMode;
 
+@TeleOp(name = "Drive Base Demo")
 public class FreightFrenzyDriveBaseOpMode extends MMMFreightFrenzyOpMode {
     double r;
     double robotAngle;
