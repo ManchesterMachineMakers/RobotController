@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
-import org.firstinspires.ftc.teamcode.drivebase.InchwormMecanumDriveBase;
+import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.navigation.Destination;
 import org.firstinspires.ftc.teamcode.navigation.FourCorners;
 import org.firstinspires.ftc.teamcode.navigation.LineSensor;
@@ -66,7 +66,7 @@ public abstract class MMMUltimateGoalOpMode extends LinearOpMode {
      * Set up all the robot subassemblies.
      */
     public void initHardware() {
-        driveBase = new InchwormMecanumDriveBase(hardwareMap);
+        driveBase = new MecanumDriveBase(hardwareMap);
         intake = new ActiveIntake(hardwareMap, this);
         shooter = new Shooter(hardwareMap);
         reckoning = new PIDReckoning(hardwareMap, this);
