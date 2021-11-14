@@ -35,8 +35,6 @@ jobs:
         files: |
           TeamCode-debug-mecanum.apk
           TeamCode-debug-programming-board.apk
-          TeamCode-debug-inchworm.apk
-          TeamCode-release-mecanum.apk
           TeamCode-release-programming-board.apk
           TeamCode-release-inchworm.apk
           
