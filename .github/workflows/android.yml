@@ -23,9 +23,7 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew assembleDebug
-    - name: Move output to root
-      run: mv TeamCode/build/outputs/apk/debug/TeamCode-debug.apk .
+      run: ./build-versions.sh
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
@@ -33,5 +31,10 @@ jobs:
         prerelease: true
         title: "Development Build"
         files: |
-          TeamCode-debug.apk
+          TeamCode-debug-mecanum.apk
+          TeamCode-debug-programming-board.apk
+          TeamCode-debug-inchworm.apk
+          TeamCode-release-mecanum.apk
+          TeamCode-release-programming-board.apk
+          TeamCode-release-inchworm.apk
           
