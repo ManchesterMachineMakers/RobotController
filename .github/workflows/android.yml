@@ -36,5 +36,4 @@ jobs:
           TeamCode-debug-mecanum.apk
           TeamCode-debug-programming-board.apk
           TeamCode-release-programming-board.apk
-          TeamCode-release-inchworm.apk
           
