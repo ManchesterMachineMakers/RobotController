@@ -4,6 +4,12 @@ import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 
 public class DeliverySelector implements Selector<Delivery> {
     Delivery delivery;
+
+    @Override
+    public Class<Delivery> type() {
+        return Delivery.class;
+    }
+
     public DeliverySelector(Delivery delivery) {
         select(delivery);
     }

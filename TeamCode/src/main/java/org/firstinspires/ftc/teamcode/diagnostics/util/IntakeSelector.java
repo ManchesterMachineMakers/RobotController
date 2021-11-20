@@ -7,6 +7,12 @@ public class IntakeSelector implements Selector<ActiveIntake> {
         this.select(activeIntake);
     }
     private ActiveIntake selection;
+
+    @Override
+    public Class<ActiveIntake> type() {
+        return ActiveIntake.class;
+    }
+
     @Override
     public void select(ActiveIntake inst) {
         selection = inst;

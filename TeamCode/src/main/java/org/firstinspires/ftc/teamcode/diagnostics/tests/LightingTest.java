@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Selector;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 
 public class LightingTest implements Base {
@@ -23,11 +23,11 @@ public class LightingTest implements Base {
     }
 
     @Override
-    public boolean run(Selectors sel, Runner runner) {
+    public boolean run(Selector[] sel, Runner runner) {
         try {
 
             boolean ok = true;
-            ledUtil = sel.lightingSelector().get();
+            ledUtil = Selector.getOrDie(sel, Blinkin.class).get();
             init(runner, ledUtil);
 
             // every 3 seconds, change mode.

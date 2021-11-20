@@ -7,6 +7,12 @@ public class LightingSelector implements Selector<Blinkin> {
         this.select(ledUtil);
     }
     private Blinkin selection;
+
+    @Override
+    public Class<Blinkin> type() {
+        return Blinkin.class;
+    }
+
     @Override
     public void select(Blinkin inst) {
         selection = inst;

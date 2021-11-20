@@ -17,4 +17,9 @@ public class DriveBaseSelector implements Selector<DriveBase> {
     public DriveBase get() {
         return selection;
     }
+
+    @Override
+    public Class<DriveBase> type() {
+        return DriveBase.class;
+    }
 }

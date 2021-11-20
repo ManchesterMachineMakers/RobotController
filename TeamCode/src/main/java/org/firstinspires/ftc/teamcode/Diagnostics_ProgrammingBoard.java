@@ -10,9 +10,7 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.DriveBaseSelector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.IntakeSelector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.LightingSelector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Selector;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
-import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.ProgrammingBoardDriveBase;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
@@ -27,26 +25,14 @@ public class Diagnostics_ProgrammingBoard extends LinearOpMode {
         DriveBase driveBase = new ProgrammingBoardDriveBase(hardwareMap);
         Delivery delivery = new Delivery(hardwareMap);
         ActiveIntake intake = new ActiveIntake(hardwareMap, this);
-        Runner runner = new Runner(new Selectors() {
-            @Override
-            public Selector<DriveBase> driveBaseSelector() {
-                return new DriveBaseSelector(driveBase);
-            }
+        Runner runner = new Runner(new Selector[] {
+            new DriveBaseSelector(driveBase),
 
-            @Override
-            public Selector<Blinkin> lightingSelector() {
-                return new LightingSelector(ledUtil);
-            }
+            new LightingSelector(ledUtil),
 
-            @Override
-            public Selector<Delivery> deliverySelector() {
-                return new DeliverySelector(delivery);
-            }
+            new DeliverySelector(delivery),
 
-            @Override
-            public Selector<ActiveIntake> activeIntakeSelector() {
-                return new IntakeSelector(intake);
-            }
+            new IntakeSelector(intake)
         }, this);
         RobotLog.i("16221 Diagnostics Opmode: Initialization complete.");
         telemetry.addLine("Initialized.");

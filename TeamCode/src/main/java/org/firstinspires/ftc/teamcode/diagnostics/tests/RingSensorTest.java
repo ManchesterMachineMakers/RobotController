@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Selector;
 import org.firstinspires.ftc.teamcode.navigation.LineSensor;
 import org.firstinspires.ftc.teamcode.subassemblies.RingSensor;
 
@@ -20,7 +20,7 @@ public class RingSensorTest implements Base {
     }
 
     @Override
-    public boolean run(Selectors sel, Runner runner) {
+    public boolean run(Selector[] sel, Runner runner) {
         // Place the robot in a known location on the field, verify coordinates.
         telemetry = runner.opMode.telemetry;
         Telemetry.Line distanceLine = telemetry.addLine("Looking for orange rings: ");

@@ -3,14 +3,14 @@ package org.firstinspires.ftc.teamcode.diagnostics.tests;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Selector;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 
 @Test("Drive Base")
 public class DriveBaseTest implements Base {
     @Override
-    public boolean run(Selectors sel, Runner runner) throws InterruptedException {
-        DriveBase driveBase = sel.driveBaseSelector().get();
+    public boolean run(Selector[] sel, Runner runner) throws Exception {
+        DriveBase driveBase = Selector.getOrDie(sel, DriveBase.class).get();
         double power = 0.2;
 
         runner.log("Moving forward 500 ticks w/ encoder");

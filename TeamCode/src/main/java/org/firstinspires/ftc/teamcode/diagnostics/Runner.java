@@ -8,16 +8,16 @@ import org.firstinspires.ftc.teamcode.diagnostics.tests.DriveBaseTest;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.GamepadTest;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.Test;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.DeliveryTest;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Selector;
 
 import java.lang.annotation.Annotation;
 
 public class Runner {
     public final Base[] tests = { new DriveBaseTest(), /*new LightingTest(),*/ new DeliveryTest(), /*new RingSensorTest(),*/ new GamepadTest() };
     public final LinearOpMode opMode;
-    private Selectors sel;
+    private Selector[] sel;
     private String currentTest = null;
-    public Runner(Selectors sel, LinearOpMode opMode) {
+    public Runner(Selector[] sel, LinearOpMode opMode) {
         this.sel = sel;
         this.opMode = opMode;
     }
@@ -42,9 +42,13 @@ public class Runner {
         }
         log("Running test: " + name);
         this.currentTest = name;
-        boolean result = test.run(sel, this);
-        if(!result) {
-            log("Failed to run: " + name);
+        try {
+            boolean result = test.run(sel, this);
+            if (!result) {
+                throw new Exception("Test failed");
+            }
+        } catch(Exception e) {
+            log("Failed to run: " + name + ", reason: " + e.getMessage());
             return false;
         }
         log("Completed successfully: " + name);

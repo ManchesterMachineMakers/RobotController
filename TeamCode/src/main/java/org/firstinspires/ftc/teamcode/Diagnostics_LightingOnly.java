@@ -8,11 +8,7 @@ import org.firstinspires.ftc.teamcode.diagnostics.Runner;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.LightingTest;
 import org.firstinspires.ftc.teamcode.diagnostics.util.LightingSelector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Selector;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
-import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
-import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
-import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 
 @TeleOp
 public class Diagnostics_LightingOnly extends LinearOpMode {
@@ -20,27 +16,7 @@ public class Diagnostics_LightingOnly extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Blinkin ledUtil = new Blinkin(hardwareMap);
-        Runner runner = new Runner(new Selectors() {
-            @Override
-            public Selector<DriveBase> driveBaseSelector() {
-                return null;
-            }
-
-            @Override
-            public Selector<Blinkin> lightingSelector() {
-                return new LightingSelector(ledUtil);
-            }
-
-            @Override
-            public Selector<Delivery> deliverySelector() {
-                return null;
-            }
-
-            @Override
-            public Selector<ActiveIntake> activeIntakeSelector() {
-                return null;
-            }
-        }, this);
+        Runner runner = new Runner(new Selector[] {new LightingSelector(ledUtil)}, this);
         RobotLog.i("16221 Diagnostics Opmode: Initialization complete.");
         telemetry.addLine("Initialized.");
         telemetry.update();

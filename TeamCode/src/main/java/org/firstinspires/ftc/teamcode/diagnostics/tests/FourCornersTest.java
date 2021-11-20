@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.diagnostics.tests;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Selector;
 import org.firstinspires.ftc.teamcode.navigation.FourCorners;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ public class FourCornersTest implements Base {
     }
 
     @Override
-    public boolean run(Selectors sel, Runner runner) {
+    public boolean run(Selector[] sel, Runner runner) {
         // Place the robot in a known location on the field, verify coordinates.
         telemetry = runner.opMode.telemetry;
         Telemetry.Line distanceLine = telemetry.addLine("Measured Distances");

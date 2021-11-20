@@ -13,6 +13,11 @@ public class RingSensorSelector implements Selector<RingSensor> {
     }
 
     @Override
+    public Class<RingSensor> type() {
+        return RingSensor.class;
+    }
+
+    @Override
     public void select(RingSensor inst) {
         ;
     }
