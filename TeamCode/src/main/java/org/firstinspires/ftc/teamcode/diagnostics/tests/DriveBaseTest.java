@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 public class DriveBaseTest implements Base {
     @Override
     public boolean run(Selectors sel, Runner runner) throws InterruptedException {
+        if (sel.driveBaseSelector() == null) { return false; }
         DriveBase driveBase = sel.driveBaseSelector().get();
         double power = 0.2;
 

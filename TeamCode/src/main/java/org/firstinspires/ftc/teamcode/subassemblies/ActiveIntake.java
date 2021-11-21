@@ -26,7 +26,7 @@ public class ActiveIntake {
 
     LinearOpMode opMode;
     double timeLastRingTaken;
-    public static int maxRingsAllowedOnBot = 3;
+    public static int maxRingsAllowedOnBot = 1;
 
     /**
      * Pass in the hardware map in the constructor in order to get the motor.

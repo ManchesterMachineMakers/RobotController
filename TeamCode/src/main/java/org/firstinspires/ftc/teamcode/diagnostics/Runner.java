@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.Base;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.DriveBaseTest;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.GamepadTest;
+import org.firstinspires.ftc.teamcode.diagnostics.tests.IntakeTest;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.Test;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.DeliveryTest;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
@@ -13,7 +14,13 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
 import java.lang.annotation.Annotation;
 
 public class Runner {
-    public final Base[] tests = { new DriveBaseTest(), /*new LightingTest(),*/ new DeliveryTest(), /*new RingSensorTest(),*/ new GamepadTest() };
+    public final Base[] tests = {
+            new DriveBaseTest(),
+            /*new LightingTest(),*/
+            new DeliveryTest(),
+            new IntakeTest() };
+            /*new RingSensorTest(),*/
+            /*new GamepadTest() }; */
     public final LinearOpMode opMode;
     private Selectors sel;
     private String currentTest = null;

@@ -21,9 +21,9 @@ public class Diagnostics extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Blinkin ledUtil = new Blinkin(hardwareMap);
+       // Blinkin ledUtil = new Blinkin(hardwareMap);
         DriveBase driveBase = new MecanumDriveBase(hardwareMap);
-        Delivery delivery = new Delivery(hardwareMap);
+//        Delivery delivery = new Delivery(hardwareMap);
         Runner runner = new Runner(new Selectors() {
             @Override
             public Selector<DriveBase> driveBaseSelector() {
@@ -32,12 +32,14 @@ public class Diagnostics extends LinearOpMode {
 
             @Override
             public Selector<Blinkin> lightingSelector() {
-                return new LightingSelector(ledUtil);
+//                return new LightingSelector(ledUtil);
+                return null;
             }
 
             @Override
             public Selector<Delivery> deliverySelector() {
-                return new DeliverySelector(delivery);
+//                return new DeliverySelector(delivery);
+                return null;
             }
 
             @Override

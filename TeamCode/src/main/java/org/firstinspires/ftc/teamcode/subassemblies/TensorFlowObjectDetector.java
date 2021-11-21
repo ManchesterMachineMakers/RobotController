@@ -14,9 +14,10 @@ import java.util.List;
 public class TensorFlowObjectDetector {
 
     // TensorFlow Lite Object Detection
-    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
-    private static final String LABEL_FIRST_ELEMENT = "Quad";
-    private static final String LABEL_SECOND_ELEMENT = "Single";
+    private static final String TFOD_MODEL_RUBBER_DUCKY = "model_20211109_175047.tflite";
+    private static final String TFOD_MODEL_CUSTOM_ELEMENT = "";
+    private static final String LABEL_RUBBER_DUCKY = "duck";
+    private static final String LABEL_CUSTOM_ELEMENT = "muffin";
 
     public TFObjectDetector tfod = null;
 
@@ -32,9 +33,10 @@ public class TensorFlowObjectDetector {
         tfodParameters.minResultConfidence = 0.8f;
 //        tfodParameters.
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        // this loads the model for the rings.
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
-        // to detect the wobble goal, we will need a custom model.
+        // this loads the model for the duck.
+        tfod.loadModelFromAsset(TFOD_MODEL_RUBBER_DUCKY, LABEL_RUBBER_DUCKY);
+        // to detect the custom element, we will need a custom model.
+        // tfod.loadModelFromAsset(TFOD_MODEL_CUSTOM_ELEMENT, LABEL_CUSTOM_ELEMENT);
 
 
         /**

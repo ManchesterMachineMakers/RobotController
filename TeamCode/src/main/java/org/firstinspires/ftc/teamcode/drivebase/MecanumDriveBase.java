@@ -121,11 +121,12 @@ public class MecanumDriveBase extends DriveBase {
     }
     // reverse the motor direction for the motors on the right side of the bot.
     private static Direction leftMotorDirection(Direction externalDirection) {
-        if (externalDirection == Direction.FORWARD) {
-            return Direction.REVERSE;
-        } else {
-            return Direction.FORWARD;
-        }
+        return externalDirection;
+//        if (externalDirection == Direction.FORWARD) {
+//            return Direction.REVERSE;
+//        } else {
+//            return Direction.FORWARD;
+//        }
     }
 
 }
