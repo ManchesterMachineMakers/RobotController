@@ -68,6 +68,13 @@ public abstract class DriveBase {
      * A predefined set of travel directions. Set motor configurations for each direction in initMotorConfigurations().
      */
     public enum TravelDirection {
+        base,
+
+        forward,
+        reverse,
+        pivotLeft,
+        pivotRight,
+
         strafeLeft,
         strafeLeftForward,
         strafeLeftBackward,
@@ -75,12 +82,6 @@ public abstract class DriveBase {
         strafeRight,
         strafeRightForward,
         strafeRightBackward,
-
-        pivotLeft,
-        pivotRight,
-        forward,
-        reverse,
-
         pitch
     }
 
@@ -162,12 +163,17 @@ public abstract class DriveBase {
         RobotLog.i("Motor encoder events per wheel rotation: " + String.valueOf(motorEncoderEventsPerRotation));
         RobotLog.i("Motor encoder events per inch of floor distance: " + String.valueOf(motorEncoderEventsPerInch));
         RobotLog.i("Maximum power to motors: " + String.valueOf(maxPower));
+        RobotLog.i("Base wheel directions: ");
+        DcMotorSimple.Direction[] wheelDirectionsBase = getMotorConfigurations(TravelDirection.base);
+        for (int i=0; i < wheelMotors.length; i++) {
+            RobotLog.i("Motor " + String.valueOf(i) + ": " + String.valueOf(wheelDirectionsBase[i]));
+        }
         RobotLog.i("*******  *******");
 
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setStopMode(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        setTravelDirection(TravelDirection.forward);
+        setTravelDirection(TravelDirection.base);
 
         // set motor power to 0.
         stop();
@@ -307,6 +313,10 @@ public abstract class DriveBase {
         try {
             DcMotor[] motors = getMotors();
             DcMotorSimple.Direction[] directions = getMotorConfigurations(travelDirection);
+            if (directions == null) {
+                stop();
+                return false;
+            }
             for (int i = 0; i < motors.length; i++) {
                 motors[i].setDirection(directions[i]);
             }
@@ -441,13 +451,20 @@ public abstract class DriveBase {
      */
     public double go(DcMotorSimple.Direction[] directions, double power) {
         try {
+            if (directions == null) {
+                // we asked for a direction we haven't defined.
+                RobotLog.i("DriveBase::go: Cannot go in an undefined direction.");
+                return stop();
+            }
             RobotLog.i("Power: " + String.valueOf(power) + " Directions: " + Arrays.toString(directions));
             DcMotor[] motors = getMotors();
+            double motorPower = power;
             for (int i = 0; i < motors.length; i++) {
-                motors[i].setDirection(directions[i]);
-                motors[i].setPower(power);
-                //motors[i].setPower(directions[i] == Direction.FORWARD ? power : -(power));
-                //motors[i].setPower(directions[i] == null ? 0 : power);
+                // motors should always be set to the base direction.
+                // power varies by the directions given.  If forward, positive.
+                // if reverse, negative.
+                motorPower = power * (directions[i] == DcMotorSimple.Direction.FORWARD ? 1 : -1);
+                motors[i].setPower(motorPower);
             }
             return power;
         }
@@ -514,22 +531,23 @@ public abstract class DriveBase {
     public double go(TravelDirection travelDirection, double power, int encoderTicks, int tolerance) {
         DcMotorSimple.Direction[] driveConfiguration = getMotorConfigurations(travelDirection);
         int[] wheelEncoderTicks = new int[driveConfiguration.length];
-        Arrays.fill(wheelEncoderTicks, encoderTicks);
-        return go(driveConfiguration, power, wheelEncoderTicks, tolerance);
+        DcMotor[] motors = getMotors();
+        for (int i = 0; i < motors.length; i++) {
+            wheelEncoderTicks[i] = encoderTicks * (driveConfiguration[i] == DcMotorSimple.Direction.FORWARD ? 1 : -1);
+        }
+        return go(power, wheelEncoderTicks, tolerance);
     }
 
     /**
      * Drive a number of ticks in a particular direction. Stops on exception.
-     * @param driveConfiguration is a list of Directions, which represent the motor direction for each wheel.
      * @param power the power to each motor (we can make this a list if  needed)
      * @param encoderTicks a  list of  encoder tick values,  distances  that each motor should go by the encoders.
      * @param tolerance the tolerance to set on each motor
      */
-    public double go(DcMotorSimple.Direction[] driveConfiguration, double power, int[] encoderTicks, int tolerance) {
+    public double go(double power, int[] encoderTicks, int tolerance) {
         int [] currentPositions = getEncoderPositions();
 
         RobotLog.i("Current Positions when driving ticks: " + Arrays.toString(currentPositions));
-        RobotLog.i("Drive Configuration: " + Arrays.toString(driveConfiguration));
         RobotLog.i("Power: " + String.valueOf(power) + " Encoder Ticks: " + Arrays.toString(encoderTicks));
         RobotLog.i("Tolerance: " + String.valueOf(tolerance));
 
@@ -538,8 +556,7 @@ public abstract class DriveBase {
         // set each motor, based on drive configuration/travel direction
         for (int i = 0; i < motors.length; i++) {
             motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motors[i].setDirection(driveConfiguration[i]);
-            motors[i].setTargetPosition(encoderTicks[i]);
+            motors[i].setTargetPosition(calcTargetPosition(motors[i].getDirection(), currentPositions[i], encoderTicks[i]));
             ((DcMotorEx) motors[i]).setTargetPositionTolerance(tolerance);
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motors[i].setPower(power);
@@ -575,13 +592,12 @@ public abstract class DriveBase {
 
     /**
      * Utility method for use in setting encoder values.  Is this correct for reverse directions??
-     * I think this may be completely unnecessary.
-     * @param motorDirection which way should the bot  go?
+     * @param motorDirection which way is the motor turning?
      * @param currentPosition where are we now?
      * @param encoderTicks how far should we go?
      * @return the encoder value we're shooting for.
      */
-    private double calcTargetPosition(DcMotorSimple.Direction motorDirection, double currentPosition, double encoderTicks) {
+    private int calcTargetPosition(DcMotorSimple.Direction motorDirection, int currentPosition, int encoderTicks) {
         switch (motorDirection) {
             case FORWARD:
                 return currentPosition + encoderTicks;
@@ -655,7 +671,7 @@ public abstract class DriveBase {
     }
 
     public void pitch(int degrees) {
-        RobotLog.w("16221 Drive Base", "Pitching not available for this drive base");
+        RobotLog.ww("16221 Drive Base", "Pitching not available for this drive base");
     }
     //TODO: Get Isaac's encoder value for MM routine.
 }
