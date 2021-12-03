@@ -28,13 +28,13 @@ public class FreightFrenzyDriveBaseOpMode extends MMMFreightFrenzyOpMode {
         // our driving loop goes here
         while (opModeIsActive()) {
 
-            led.teleOpDefault();
+//            led.teleOpDefault();
 
             loopOpMode();
 
             if ((!inEndgame) && (runtime.seconds() >= (periodLength - endgameLength)))  {
                 inEndgame = true;
-                led.endgameDefault();
+//                led.endgameDefault();
             }
         }
 
