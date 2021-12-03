@@ -163,11 +163,8 @@ public abstract class DriveBase {
         RobotLog.i("Motor encoder events per wheel rotation: " + String.valueOf(motorEncoderEventsPerRotation));
         RobotLog.i("Motor encoder events per inch of floor distance: " + String.valueOf(motorEncoderEventsPerInch));
         RobotLog.i("Maximum power to motors: " + String.valueOf(maxPower));
-        RobotLog.i("Base wheel directions: ");
-        DcMotorSimple.Direction[] wheelDirectionsBase = getMotorConfigurations(TravelDirection.base);
-        for (int i=0; i < wheelMotors.length; i++) {
-            RobotLog.i("Motor " + String.valueOf(i) + ": " + String.valueOf(wheelDirectionsBase[i]));
-        }
+        RobotLog.i("Base wheel directions: " + Arrays.toString(getMotorConfigurations(TravelDirection.base)));
+
         RobotLog.i("*******  *******");
 
         setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -556,7 +553,7 @@ public abstract class DriveBase {
         // set each motor, based on drive configuration/travel direction
         for (int i = 0; i < motors.length; i++) {
             motors[i].setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motors[i].setTargetPosition(calcTargetPosition(motors[i].getDirection(), currentPositions[i], encoderTicks[i]));
+            motors[i].setTargetPosition(encoderTicks[i]); //calcTargetPosition(motors[i].getDirection(), currentPositions[i], encoderTicks[i]));
             ((DcMotorEx) motors[i]).setTargetPositionTolerance(tolerance);
             motors[i].setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motors[i].setPower(power);
@@ -592,6 +589,7 @@ public abstract class DriveBase {
 
     /**
      * Utility method for use in setting encoder values.  Is this correct for reverse directions??
+     * NOT NEEDED - this is handled in the DCMotorImpl.
      * @param motorDirection which way is the motor turning?
      * @param currentPosition where are we now?
      * @param encoderTicks how far should we go?

@@ -15,10 +15,10 @@ import java.lang.annotation.Annotation;
 
 public class Runner {
     public final Base[] tests = {
-            new DriveBaseTest(),
+            new DriveBaseTest() };
             /*new LightingTest(),*/
-            new DeliveryTest(),
-            new IntakeTest() };
+            /* new DeliveryTest(),*/
+            /* new IntakeTest() }; */
             /*new RingSensorTest(),*/
             /*new GamepadTest() }; */
     public final LinearOpMode opMode;

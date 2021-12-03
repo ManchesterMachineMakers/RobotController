@@ -46,7 +46,7 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
 
     // driver feedback
 //    public Blinkin led;
-    public RobotReport robotReport;
+//    public RobotReport robotReport;
     public int stage  =  0;
 
     /**
@@ -55,7 +55,7 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
     public void initReporting() {
         telemetry.setAutoClear(false);
 //        led = null; // new Blinkin(hardwareMap);
-        robotReport = new RobotReport(telemetry, null);
+//        robotReport = new RobotReport(telemetry, null);
     }
 
     /**
@@ -132,27 +132,18 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
      * reporting systems, all hardware, measurement sensors, visual navigation, and timer.
      */
     public void initOpMode() {
-        // we set up the RobotReport instance so that we can get full logging of the bot's status whenever we like.
-        initReporting();
-        robotReport.itemRunReport.setValue("Reporting Initialized");
-        robotReport.update();
 
         // we set up all our various hardware bits: shooter, grabber, intake, drive base, etc.
         initHardware();
-        robotReport.itemRunReport.setValue("Hardware Initialized");
-        robotReport.update();
+        telemetry.addLine("Hardware Initialized.");
+        telemetry.update();
 
-        // we start our various multi-threaded sensors.
-        // initMeasuring();
-        // robotReport.itemRunReport.setValue("Measuring Initialized");
-        // robotReport.update();
 
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
 
-        robotReport.itemRunReport.setValue("Waiting for Start . . .");
-        robotReport.update();
-        robotReport.logReport();
+        telemetry.addLine("Waiting for Start...");
+        telemetry.update();
     }
 
 
