@@ -6,12 +6,13 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaBase;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaCurrentGame;
-import org.firstinspires.ftc.teamcode.subassemblies.Camera;
+import org.firstinspires.ftc.teamcode.sensors.Camera;
+import org.firstinspires.ftc.teamcode.sensors.FourCorners;
+import org.firstinspires.ftc.teamcode.sensors.IMUSensor;
 
 import java.util.ArrayList;
 import java.util.Hashtable;

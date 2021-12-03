@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.navigation;
+package org.firstinspires.ftc.teamcode.sensors;
 
 import android.graphics.Color;
 

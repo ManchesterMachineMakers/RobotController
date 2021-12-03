@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.diagnostics.tests;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
-import org.firstinspires.ftc.teamcode.navigation.FourCorners;
+import org.firstinspires.ftc.teamcode.sensors.FourCorners;
 
 import java.util.ArrayList;
 

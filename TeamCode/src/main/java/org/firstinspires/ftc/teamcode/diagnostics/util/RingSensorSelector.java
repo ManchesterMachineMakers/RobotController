@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.diagnostics.util;
 
-import org.firstinspires.ftc.teamcode.subassemblies.RingSensor;
+import org.firstinspires.ftc.teamcode.sensors.RingSensor;
 
 /**
  * This is for a threaded detector - the test will instantiate the

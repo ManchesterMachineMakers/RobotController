@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subassemblies;
+package org.firstinspires.ftc.teamcode.sensors;
 
 import com.qualcomm.robotcore.util.RobotLog;
 

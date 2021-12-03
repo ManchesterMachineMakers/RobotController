@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
-import org.firstinspires.ftc.teamcode.navigation.LineSensor;
-import org.firstinspires.ftc.teamcode.subassemblies.RingSensor;
+import org.firstinspires.ftc.teamcode.sensors.LineSensor;
+import org.firstinspires.ftc.teamcode.sensors.RingSensor;
 
 public class RingSensorTest implements Base {
     Telemetry telemetry;

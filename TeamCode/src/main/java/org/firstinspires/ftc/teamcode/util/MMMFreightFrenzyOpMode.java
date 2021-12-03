@@ -1,24 +1,17 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.navigation.Destination;
-import org.firstinspires.ftc.teamcode.navigation.FourCorners;
-import org.firstinspires.ftc.teamcode.navigation.LineSensor;
+import org.firstinspires.ftc.teamcode.sensors.FourCorners;
+import org.firstinspires.ftc.teamcode.sensors.LineSensor;
 import org.firstinspires.ftc.teamcode.navigation.Location;
-import org.firstinspires.ftc.teamcode.navigation.Movement;
 import org.firstinspires.ftc.teamcode.navigation.MyPath;
 import org.firstinspires.ftc.teamcode.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.navigation.PIDReckoning;
-import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
-import org.firstinspires.ftc.teamcode.subassemblies.Camera;
-import org.firstinspires.ftc.teamcode.subassemblies.TensorFlowObjectDetector;
 
 import java.util.ArrayList;
 
