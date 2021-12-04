@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
+import org.firstinspires.ftc.teamcode.diagnostics.util.CameraSelector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.DeliverySelector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.DriveBaseSelector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.IntakeSelector;
@@ -26,8 +27,10 @@ public class Diagnostics_ProgrammingBoard extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 //        Blinkin ledUtil = new Blinkin(hardwareMap);
         DriveBase driveBase = new ProgrammingBoardDriveBase(hardwareMap);
-        Delivery delivery = new Delivery(hardwareMap);
-        ActiveIntake intake = new ActiveIntake(hardwareMap, this);
+//        Delivery delivery = new Delivery(hardwareMap);
+//        ActiveIntake intake = new ActiveIntake(hardwareMap, this);
+        Camera camera = new Camera(hardwareMap, this);
+
         Runner runner = new Runner(new Selectors() {
             @Override
             public Selector<DriveBase> driveBaseSelector() {
@@ -42,19 +45,20 @@ public class Diagnostics_ProgrammingBoard extends LinearOpMode {
 
             @Override
             public Selector<Delivery> deliverySelector() {
-//                return null;
-                return new DeliverySelector(delivery);
+                return null;
+//                return new DeliverySelector(delivery);
             }
 
             @Override
             public Selector<ActiveIntake> activeIntakeSelector() {
-//                return null;
-                return new IntakeSelector(intake);
+                return null;
+//                return new IntakeSelector(intake);
             }
 
             @Override
             public Selector<Camera> cameraSelector() {
-                return null;
+
+                return new CameraSelector(camera);
             }
         }, this);
         RobotLog.i("16221 Diagnostics Opmode: Initialization complete.");
