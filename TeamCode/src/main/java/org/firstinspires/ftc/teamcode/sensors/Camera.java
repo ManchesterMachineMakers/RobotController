@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaCurrentGame;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
@@ -34,7 +35,7 @@ public class Camera {
 
     //public VuforiaNavCamera vuforia;
     private LinearOpMode opMode;
-    private VuforiaCurrentGame vuforiaUltimateGoal;
+    private VuforiaCurrentGame vuforiaCurrentGame;
 
     public Camera(HardwareMap hardwareMap, LinearOpMode opMode) {
         /**
@@ -52,12 +53,12 @@ public class Camera {
         initVision(cameraMonitorViewId, tfodMonitorViewId, opMode);
     }
     // keep this instance safe; we don't want to update it once we have it.
-    private RecognitionMatrix detectedRingStack;
+    private RecognitionMatrix detectedDucks;
     public RecognitionMatrix getRingStack() {
-        if (detectedRingStack == null) {
-            detectedRingStack = detectRingsUsingTensorFlow();
+        if (detectedDucks == null) {
+            detectedDucks = detectDucksUsingTensorFlow();
         }
-        return detectedRingStack;
+        return detectedDucks;
     }
 
     //public VuforiaNavCamera vuforiaForTfod = new VuforiaNavCamera();
@@ -69,55 +70,34 @@ public class Camera {
     //public int cameraMonitorViewId = 0;
     //public int tfodMonitorViewId = 0;
 
-    public int getCountOfRings(RecognitionMatrix ringStack) {
-        if(ringStack == null) { // No rings detected
-            return 0;
+    public boolean isItADuck(RecognitionMatrix duck) {
+        if (duck.recognition.getConfidence() > 0.7) {
+            // it's probably a duck.
+            return true;
         }
-        switch(ringStack.recognition.getLabel()) {
-            case "Single":
-                return 1;
-            case "Quad":
-                return 4;
-            default:
-                return 0;
-        }
-    }
-    public int getCountOfRings() {
-        return getCountOfRings(getRingStack());
+        return false;
     }
 
-//    public Destination getTargetZone(int rings) {
-//        switch(rings) {
-//            case 1:
-//                return FieldDestinations.TZB;
-//            case 4:
-//                return FieldDestinations.TZC;
-//            default:
-//                return FieldDestinations.TZA;
-//        }
-//    }
-//    public Destination getTargetZone(RecognitionMatrix recog) {
-//        return getTargetZone(getCountOfRings(recog));
-//    }
-//    public Destination getTargetZone() {
-//        return getTargetZone(getCountOfRings());
-//    }
 
-    public RecognitionMatrix detectRingsUsingTensorFlow() {
-        // implement detectRings using TensorFlowLite (built in to TFL)
+    public RecognitionMatrix detectDucksUsingTensorFlow() {
+        // implement detectDucks using TensorFlowLite
         List<Recognition> recognitions = tfod.getRecognitions();
         if (recognitions == null) { return null; }
 
         tfod.printRecognitions(recognitions, telemetry);
-        List<Recognition> recognizedRingStacks = tfod.recognitionsByLabel(recognitions, "Quad");
-        recognizedRingStacks.addAll(tfod.recognitionsByLabel(recognitions, "Single"));
-        if(recognizedRingStacks.size() > 0) {
-            Recognition first = recognizedRingStacks.get(0);
-            RobotLog.i("*16221 Camera*", "Recognized some ring(s): [" + first.getLabel() + "] (" + first.getConfidence() + ")");
-            return new RecognitionMatrix(first);
-        } else {
-            return null;
-        }
+        List<Recognition> recognitionList = tfod.recognitionsByLabel(recognitions, "duck");
+        // recognitionList.addAll(tfod.recognitionsByLabel(recognitions, "Single"));
+        if(recognitionList.size() > 0) {
+            for (Recognition duck: recognitionList
+                 ) {
+                RobotLog.i("*16221 Camera*", "Recognized a duck: [" + duck.getLabel() + "] (" + duck.getConfidence() + ")");
+                RecognitionMatrix matrix = new RecognitionMatrix(duck);
+                if (isItADuck(matrix)) {
+                    return matrix;
+                }
+            }
+        } 
+        return null;
     }
 
     public OpenGLMatrix detectWobbleGoalUsingTensorFlow() {
@@ -136,44 +116,39 @@ public class Camera {
     public void initVision(int cameraMonitorViewId, int tfodMonitorViewId, LinearOpMode opMode) {
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first, then the object detector.
-        /*
-        VuforiaLocalizer vl2 = vuforiaForTfod.initVuforia(cameraMonitorViewId, webCam2);
-        TFObjectDetector tfod = tensorflow.initTfod(tfodMonitorViewId, vl2);
-         */
-//        vuforia = new VuforiaNavCamera(opMode);
 
         // create Vuforia object
-        vuforiaUltimateGoal = new VuforiaCurrentGame();
+        vuforiaCurrentGame = new VuforiaCurrentGame();
 
-
-        vuforiaUltimateGoal.initialize(
-                VUFORIA_KEY, // vuforiaLicenseKey
-                CAMERA_CHOICE, // cameraDirection
-                true, // useExtendedTracking
-                true, // enableCameraMonitoring
-                VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES, // cameraMonitorFeedback
-                0, // dx
-                0, // dy
-                0, // dz
-                0, // xAngle
-                0, // yAngle
-                0, // zAngle
-                true); // useCompetitionFieldTargetLocations
-
+        VuforiaLocalizer vl1;
+        vuforiaCurrentGame.initialize(
+            VUFORIA_KEY, //java.lang.String vuforiaLicenseKey,
+            CAMERA_CHOICE, //VuforiaLocalizer.CameraDirection cameraDirection,
+            true, //boolean useExtendedTracking,
+            true, //boolean enableCameraMonitoring,
+            VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES, //VuforiaLocalizer.Parameters.CameraMonitorFeedback cameraMonitorFeedback,
+            0, //float dx,
+            0, //float dy,
+            0, //float dz,
+            AxesOrder.XYZ, //AxesOrder axesOrder,
+            0, //float firstAngle,
+            0, //float secondAngle,
+            0, //float thirdAngle,
+            true //boolean useCompetitionFieldTargetLocations
+        );
 
         // The other camera is for navigation using vumarks.  We will load all trackables to it.
-        VuforiaLocalizer vl1 = vuforiaUltimateGoal.getVuforiaLocalizer(); // vuforia.initVuforia(cameraMonitorViewId, webCam1, telemetry);
+        vl1 = vuforiaCurrentGame.getVuforiaLocalizer(); // vuforia.initVuforia(cameraMonitorViewId, webCam1, telemetry);
         //vuMarkTargets = vuforia.initTrackables(vl1);
 
         tfod = new TensorFlowObjectDetector(tfodMonitorViewId, vl1);
-        // tfod.initTfod(tfodMonitorViewId, vl1);
     }
 
     public void cleanupVision() {
-        vuforiaUltimateGoal.deactivate();
+        vuforiaCurrentGame.deactivate();
         //vuforia.cleanupVuforia();
         tfod.cleanupTfod();
-        vuforiaUltimateGoal = null;
+        vuforiaCurrentGame = null;
         vuMarkTargets = null;
         this.telemetry.addLine("Cleaning up vision functionality.");
     }

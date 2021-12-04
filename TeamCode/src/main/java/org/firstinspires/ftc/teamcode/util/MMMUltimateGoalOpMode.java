@@ -46,7 +46,7 @@ public abstract class MMMUltimateGoalOpMode extends LinearOpMode {
     public Camera camera;
     public TensorFlowObjectDetector tfod;
 
-    public RingDetectorTimeout.Detection rings; // Ring stack
+    //public RingDetectorTimeout.Detection rings; // Ring stack
 
     // driver feedback
     public Blinkin led;

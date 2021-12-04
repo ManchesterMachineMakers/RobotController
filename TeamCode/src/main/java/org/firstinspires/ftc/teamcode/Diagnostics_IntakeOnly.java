@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.IntakeSelector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Selector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
+import org.firstinspires.ftc.teamcode.sensors.Camera;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
@@ -42,6 +43,11 @@ public class Diagnostics_IntakeOnly extends LinearOpMode {
             public Selector<ActiveIntake> activeIntakeSelector() {
                 return new IntakeSelector(intake);
             }
+
+            @Override
+            public Selector<Camera> cameraSelector() {
+                return null;
+            }
         }, this);
         RobotLog.i("16221 Diagnostics Opmode: Initialization complete.");
         telemetry.addLine("Initialized.");
@@ -51,7 +57,7 @@ public class Diagnostics_IntakeOnly extends LinearOpMode {
             RobotLog.i("16221 Diagnostics Opmode: Running intake tests.");
             telemetry.addLine("Running tests. Please watch the log.");
             telemetry.update();
-            //runner.run(new RingSensorTest());
+            //runner.run(new DuckyVisionTest());
             runner.run(new IntakeTest());
         }
     }

@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
 import org.firstinspires.ftc.teamcode.diagnostics.util.DeliverySelector;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
+import org.firstinspires.ftc.teamcode.sensors.Camera;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
@@ -44,6 +45,11 @@ public class Diagnostics extends LinearOpMode {
 
             @Override
             public Selector<ActiveIntake> activeIntakeSelector() {
+                return null;
+            }
+
+            @Override
+            public Selector<Camera> cameraSelector() {
                 return null;
             }
         }, this);

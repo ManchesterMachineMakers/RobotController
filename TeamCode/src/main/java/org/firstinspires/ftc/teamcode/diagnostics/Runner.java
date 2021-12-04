@@ -19,7 +19,7 @@ public class Runner {
             /*new LightingTest(),*/
             /* new DeliveryTest(),*/
             /* new IntakeTest() }; */
-            /*new RingSensorTest(),*/
+            /*new DuckyVisionTest(),*/
             /*new GamepadTest() }; */
     public final LinearOpMode opMode;
     private Selectors sel;

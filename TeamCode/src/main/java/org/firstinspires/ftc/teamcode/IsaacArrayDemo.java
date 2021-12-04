@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaBase;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaCurrentGame;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.teamcode.sensors.Camera;
-import org.firstinspires.ftc.teamcode.util.RingDetectorTimeout;
+//import org.firstinspires.ftc.teamcode.util.RingDetectorTimeout;
 
 import java.util.List;
 
@@ -388,7 +388,7 @@ public class IsaacArrayDemo extends LinearOpMode {
 //------------------------------------------------------------------------------------
     // Tensorflow
 
-    RingDetectorTimeout.Detection rings; // Ring stack
+//    RingDetectorTimeout.Detection rings; // Ring stack
     org.firstinspires.ftc.teamcode.navigation.Destination targetZone = org.firstinspires.ftc.teamcode.navigation.FieldDestinations.TZA; // default Target Zone A
 
     /*
@@ -675,7 +675,7 @@ public class IsaacArrayDemo extends LinearOpMode {
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%       
       //translate - move    
       if (stage == 4){
-         ringCount = camera.getCountOfRings();
+//         ringCount = camera.getCountOfRings();
          if (ringCount == 0){
            TZD = TZA;
           }

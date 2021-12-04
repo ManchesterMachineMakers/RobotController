@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.ProgrammingBoardDriveBase;
+import org.firstinspires.ftc.teamcode.sensors.Camera;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
@@ -49,6 +50,11 @@ public class Diagnostics_ProgrammingBoard extends LinearOpMode {
             public Selector<ActiveIntake> activeIntakeSelector() {
 //                return null;
                 return new IntakeSelector(intake);
+            }
+
+            @Override
+            public Selector<Camera> cameraSelector() {
+                return null;
             }
         }, this);
         RobotLog.i("16221 Diagnostics Opmode: Initialization complete.");
