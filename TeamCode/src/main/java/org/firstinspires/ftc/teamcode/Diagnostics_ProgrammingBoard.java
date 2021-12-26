@@ -21,13 +21,12 @@ public class Diagnostics_ProgrammingBoard extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Blinkin ledUtil = new Blinkin(hardwareMap);
+//        Blinkin ledUtil = new Blinkin(hardwareMap);
         DriveBase driveBase = new ProgrammingBoardDriveBase(hardwareMap);
         Delivery delivery = new Delivery(hardwareMap);
         ActiveIntake intake = new ActiveIntake(hardwareMap, this);
         Runner runner = new Runner(new Selector[] {
             new DriveBaseSelector(driveBase),
-
             new LightingSelector(ledUtil),
 
             new DeliverySelector(delivery),

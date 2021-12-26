@@ -58,13 +58,13 @@ public class RobotReport {
         this.telemetry = telemetry;
         itemRunReport = telemetry.addLine("RUNNING: ").addData("Stage", "Telemetry Initialization");
         Telemetry.Line intakeLine = telemetry.addLine("Intake");
-        itemIntakeSpeed = intakeLine.addData("Intake Speed", 0);
-        itemRingsOnBot = intakeLine.addData("Rings on the bot", 0);
+        itemIntakeSpeed = intakeLine.addData("Intake Speed", (Object)0);
+        itemRingsOnBot = intakeLine.addData("Rings on the bot", (Object)0);
 
         Telemetry.Line shooterLine = telemetry.addLine("Shooter");
-        itemFlywheelSpeed = shooterLine.addData("Flywheel Speed", 0);
-        itemInchwormAngle = shooterLine.addData("Inchworm Base Angle", 0);
-        itemShooterAngle = shooterLine.addData("Shooter Angle", 0);
+        itemFlywheelSpeed = shooterLine.addData("Flywheel Speed", (Object)0);
+        itemInchwormAngle = shooterLine.addData("Inchworm Base Angle", (Object)0);
+        itemShooterAngle = shooterLine.addData("Shooter Angle", (Object)0);
         itemShooterTarget = shooterLine.addData("Target", FieldDestinations.TOW);
 
         Telemetry.Line travelLine = telemetry.addLine("Travel");
@@ -102,32 +102,17 @@ public class RobotReport {
      */
     public void update(int ringsOnBot, float flywheelSpeed, boolean isShooterUpToSpeed, float intakeSpeed, Destination shooterTarget, Destination fieldPosition, Orientation fieldOrientation,
                        float inchwormAngle, float shooterAngle, Destination originDestination, Destination targetDestination) {
-        this.ringsOnBot = ringsOnBot;
-        this.itemRingsOnBot.setValue(ringsOnBot);
-
-        this.isShooterUpToSpeed = isShooterUpToSpeed;
-        this.flywheelSpeed = flywheelSpeed;
-        this.itemFlywheelSpeed.setValue(flywheelSpeed);
-
-        this.shooterTarget = shooterTarget;
-        this.itemShooterTarget.setValue(shooterTarget);
 
         this.intakeSpeed = intakeSpeed;
-        this.itemIntakeSpeed.setValue(intakeSpeed);
+        this.itemIntakeSpeed.setValue(String.valueOf(intakeSpeed));
 
         this.fieldPosition = fieldPosition;
         this.itemFieldPosition.setValue(String.valueOf(fieldPosition.getX()) + ", " + String.valueOf(fieldPosition.getY()));
 
         this.fieldOrientation = fieldOrientation;
         if (fieldOrientation!=null) {
-            this.itemFieldOrientation.setValue(fieldOrientation.psi);
+            this.itemFieldOrientation.setValue(String.valueOf(fieldOrientation.psi));
         }
-
-        this.inchwormAngle = inchwormAngle;
-        this.itemInchwormAngle.setValue(inchwormAngle);
-
-        this.shooterAngle = shooterAngle;
-        this.itemShooterAngle.setValue(shooterAngle);
 
         this.originDestination = originDestination;
         this.itemOriginDestination.setValue(originDestination.getName());

@@ -30,8 +30,7 @@ public class Delivery {
     public void up() {
         deliveryServo.setPosition(0.55);
     }
-    public void rest() {
-        deliveryServo.setPosition(0.75);}
+    public void rest() { deliveryServo.setPosition(0.75);}
     public void grab() {
       grabberServo.setPosition(0.8);
     }

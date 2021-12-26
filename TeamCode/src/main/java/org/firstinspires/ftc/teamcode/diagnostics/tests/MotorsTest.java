@@ -53,7 +53,7 @@ public class MotorsTest implements Base {
         RobotLog.i("Stopped and reset encoders");
 
         runner.opMode.telemetry.update();
-        /*** test each motor ***/
+        /** test each motor **/
 
         double testPower = 0.2;
 

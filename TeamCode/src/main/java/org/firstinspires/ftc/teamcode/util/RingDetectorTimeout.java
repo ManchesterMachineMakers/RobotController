@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.util;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 //import org.firstinspires.ftc.teamcode.navigation.Destination;
-import org.firstinspires.ftc.teamcode.subassemblies.Camera;
+import org.firstinspires.ftc.teamcode.sensors.Camera;
 
 public class RingDetectorTimeout {
     public static class Detection {

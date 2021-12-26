@@ -12,6 +12,7 @@ public class GamepadTest implements Base {
             runner.opMode.telemetry.addData("Left Stick Y", runner.opMode.gamepad1.left_stick_y);
             runner.opMode.telemetry.addData("Right Stick X", runner.opMode.gamepad1.right_stick_x);
             runner.opMode.telemetry.addData("Right Stick Y", runner.opMode.gamepad1.right_stick_y);
+            //TODO: This fails with the exception "Cannot have more than 255 string data points."
             runner.opMode.telemetry.update();
         }
         return true;

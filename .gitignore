@@ -93,3 +93,5 @@ asdk_location.dat
 
 # IDEA
 .idea/
+.settings/org.eclipse.buildship.core.prefs
+.settings/org.eclipse.buildship.core.prefs

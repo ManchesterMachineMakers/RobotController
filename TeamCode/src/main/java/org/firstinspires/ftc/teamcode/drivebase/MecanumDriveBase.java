@@ -39,77 +39,85 @@ public class MecanumDriveBase extends DriveBase {
             motorLeftRear, motorRightRear 
         };
 
+        // We use the motorConfigurations to determine whether the power and encoder
+        // values should be positive or negative when attempting any particular direction.
+        // The directions are typically used in Autonomous programming.
+        // TeleOp should use the TravelDirection.forward configuration.
+        motorConfigurations.put(TravelDirection.base,
+                new Direction[]{
+                        Direction.FORWARD, Direction.FORWARD,
+                        Direction.REVERSE, Direction.REVERSE
+                });
         motorConfigurations.put(
-            TravelDirection.strafeLeftForward, 
+                TravelDirection.forward,
+                new Direction[]{
+                        Direction.FORWARD, Direction.FORWARD,
+                        Direction.FORWARD, Direction.FORWARD
+                });
+        motorConfigurations.put(
+                TravelDirection.reverse,
+                new Direction[]{
+                        Direction.REVERSE, Direction.REVERSE,
+                        Direction.REVERSE, Direction.REVERSE
+                });
+
+        motorConfigurations.put(
+                TravelDirection.pivotLeft,
+                new Direction[]{
+                        Direction.REVERSE, Direction.FORWARD,
+                        Direction.REVERSE, Direction.FORWARD
+                });
+        motorConfigurations.put(
+                TravelDirection.pivotRight,
+                new Direction[]{
+                        Direction.FORWARD, Direction.REVERSE,
+                        Direction.FORWARD, Direction.REVERSE
+                });
+        motorConfigurations.put(
+            TravelDirection.strafeLeftForward,
             new Direction[]{
-                null, rightMotorDirection(Direction.FORWARD),
-                leftMotorDirection(Direction.FORWARD), null
+                null, Direction.FORWARD,
+                Direction.FORWARD, null
             });
 
         motorConfigurations.put(
-            TravelDirection.strafeLeft, 
+            TravelDirection.strafeLeft,
             new Direction[]{
-                leftMotorDirection(Direction.REVERSE), rightMotorDirection(Direction.FORWARD), 
-                leftMotorDirection(Direction.FORWARD), rightMotorDirection(Direction.REVERSE)
+                    Direction.REVERSE, Direction.FORWARD,
+                    Direction.FORWARD, Direction.REVERSE
             });
         motorConfigurations.put(
-            TravelDirection.strafeLeftBackward, 
+            TravelDirection.strafeLeftBackward,
             new Direction[]{
-                leftMotorDirection(Direction.REVERSE), null,
-                null, rightMotorDirection(Direction.REVERSE)
-            });
-
-        motorConfigurations.put(
-            TravelDirection.strafeRightForward, 
-            new Direction[]{
-                leftMotorDirection(Direction.FORWARD), null, 
-                null, rightMotorDirection(Direction.FORWARD)
-            });
-        motorConfigurations.put(
-            TravelDirection.strafeRight, 
-            new Direction[]{
-                leftMotorDirection(Direction.FORWARD), rightMotorDirection(Direction.REVERSE), 
-                leftMotorDirection(Direction.REVERSE), rightMotorDirection(Direction.FORWARD)
-            });
-        motorConfigurations.put(
-            TravelDirection.strafeRightBackward, 
-            new Direction[]{
-                null, rightMotorDirection(Direction.REVERSE), 
-                leftMotorDirection(Direction.REVERSE), null
+                Direction.REVERSE, null,
+                null, Direction.REVERSE
             });
 
         motorConfigurations.put(
-            TravelDirection.forward, 
+            TravelDirection.strafeRightForward,
             new Direction[]{
-                leftMotorDirection(Direction.FORWARD), rightMotorDirection(Direction.FORWARD), 
-                leftMotorDirection(Direction.FORWARD), rightMotorDirection(Direction.FORWARD)
+                Direction.FORWARD, null,
+                null, Direction.FORWARD
             });
         motorConfigurations.put(
-            TravelDirection.reverse, 
+            TravelDirection.strafeRight,
             new Direction[]{
-                leftMotorDirection(Direction.REVERSE), rightMotorDirection(Direction.REVERSE), 
-                leftMotorDirection(Direction.REVERSE), rightMotorDirection(Direction.REVERSE)
-            });
-
-        motorConfigurations.put(
-            TravelDirection.pivotLeft, 
-            new Direction[]{
-                leftMotorDirection(Direction.REVERSE), rightMotorDirection(Direction.FORWARD), 
-                leftMotorDirection(Direction.REVERSE), rightMotorDirection(Direction.FORWARD)
+                    Direction.FORWARD, Direction.REVERSE,
+                    Direction.REVERSE, Direction.FORWARD
             });
         motorConfigurations.put(
-            TravelDirection.pivotRight, 
+            TravelDirection.strafeRightBackward,
             new Direction[]{
-                leftMotorDirection(Direction.FORWARD), rightMotorDirection(Direction.REVERSE), 
-                leftMotorDirection(Direction.FORWARD), rightMotorDirection(Direction.REVERSE)
+                null, Direction.REVERSE,
+                Direction.REVERSE, null
             });
-        motorConfigurations.put(
-            TravelDirection.pitch,
-            new Direction[]{
-                null, null,
-                leftMotorDirection(Direction.FORWARD), rightMotorDirection(Direction.REVERSE)
-            }
-        );
+//        motorConfigurations.put(
+//            TravelDirection.pitch,
+//            new Direction[]{
+//                null, null,
+//                leftMotorDirection(Direction.FORWARD), rightMotorDirection(Direction.REVERSE)
+//            }
+//        );
 
         // super.initMotorConfigurations();
     }
@@ -121,11 +129,12 @@ public class MecanumDriveBase extends DriveBase {
     }
     // reverse the motor direction for the motors on the right side of the bot.
     private static Direction leftMotorDirection(Direction externalDirection) {
-        if (externalDirection == Direction.FORWARD) {
-            return Direction.REVERSE;
-        } else {
-            return Direction.FORWARD;
-        }
+        return externalDirection;
+//        if (externalDirection == Direction.FORWARD) {
+//            return Direction.REVERSE;
+//        } else {
+//            return Direction.FORWARD;
+//        }
     }
 
 }

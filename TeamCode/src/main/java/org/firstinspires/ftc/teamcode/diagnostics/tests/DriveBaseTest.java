@@ -13,6 +13,21 @@ public class DriveBaseTest implements Base {
         DriveBase driveBase = Selector.getOrDie(sel, DriveBase.class).get();
         double power = 0.2;
 
+        runner.log("Testing each motor");
+        driveBase.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        DcMotor[] motors = driveBase.getMotors();
+        for (DcMotor motor: motors
+             ) {
+            runner.log("Motor: " + motor.getDeviceName());
+            motor.setPower(power);
+            runner.opMode.sleep(500);
+            motor.setPower(0-power);
+            runner.opMode.sleep(500);
+            motor.setPower(0);
+        }
+
+        runner.log("Testing coordinated motion");
+
         runner.log("Moving forward 500 ticks w/ encoder");
 //        driveBase.setTravelDirection(DriveBase.TravelDirection.forward);
         driveBase.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -51,13 +66,14 @@ public class DriveBaseTest implements Base {
 	driveBase.go(DriveBase.TravelDirection.strafeRight, power,500, 50);
         while(driveBase.isBusy());
 
-        runner.log("Pitching to 30 degrees");
-        driveBase.pitch(30);
-        Thread.sleep(1000);
-        runner.log("Returning to straight");
-        driveBase.pitch(0);
-        Thread.sleep(1000);
+//        runner.log("Pitching to 30 degrees");
+//        driveBase.pitch(30);
+//        Thread.sleep(1000);
+//        runner.log("Returning to straight");
+//        driveBase.pitch(0);
+//        Thread.sleep(1000);
 
+        runner.log("Finished Drive Base Test.");
         return true;
     }
 }
