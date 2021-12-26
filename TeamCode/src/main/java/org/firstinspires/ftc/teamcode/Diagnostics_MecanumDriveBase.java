@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.DeliverySelector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.DriveBaseSelector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.IntakeSelector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Selector;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.ProgrammingBoardDriveBase;
@@ -23,26 +22,8 @@ public class Diagnostics_MecanumDriveBase extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         DriveBase driveBase = new MecanumDriveBase(hardwareMap);
-        Runner runner = new Runner(new Selectors() {
-            @Override
-            public Selector<DriveBase> driveBaseSelector() {
-                return new DriveBaseSelector(driveBase);
-            }
-
-            @Override
-            public Selector<Blinkin> lightingSelector() {
-                return null;
-            }
-
-            @Override
-            public Selector<Delivery> deliverySelector() {
-                return null;
-            }
-
-            @Override
-            public Selector<ActiveIntake> activeIntakeSelector() {
-                return null;
-            }
+        Runner runner = new Runner(new Selector[] {
+            new DriveBaseSelector(driveBase)
         }, this);
         RobotLog.i("16221 Diagnostics Opmode: Initialization complete.");
         telemetry.addLine("Initialized.");

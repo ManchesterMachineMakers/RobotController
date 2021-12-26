@@ -27,7 +27,7 @@ public class Diagnostics_ProgrammingBoard extends LinearOpMode {
         ActiveIntake intake = new ActiveIntake(hardwareMap, this);
         Runner runner = new Runner(new Selector[] {
             new DriveBaseSelector(driveBase),
-            new LightingSelector(ledUtil),
+//            new LightingSelector(ledUtil),
 
             new DeliverySelector(delivery),
 

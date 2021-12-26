@@ -23,7 +23,9 @@ public class Diagnostics extends LinearOpMode {
         DriveBase driveBase = new MecanumDriveBase(hardwareMap);
         Delivery delivery = new Delivery(hardwareMap);
         Runner runner = new Runner(new Selector[] {
-                new DriveBaseSelector(driveBase), /*new LightingSelector(ledUtil)*/, new DeliverySelector(delivery)
+                new DriveBaseSelector(driveBase),
+                /*new LightingSelector(ledUtil),*/
+                new DeliverySelector(delivery)
         }, this);
 		
         RobotLog.i("16221 Diagnostics Opmode: Initialization complete.");
