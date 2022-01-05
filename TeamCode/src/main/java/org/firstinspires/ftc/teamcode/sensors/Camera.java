@@ -54,7 +54,7 @@ public class Camera {
     }
     // keep this instance safe; we don't want to update it once we have it.
     private RecognitionMatrix detectedDucks;
-    public RecognitionMatrix getRingStack() {
+    public RecognitionMatrix getDucks() {
         if (detectedDucks == null) {
             detectedDucks = detectDucksUsingTensorFlow();
         }

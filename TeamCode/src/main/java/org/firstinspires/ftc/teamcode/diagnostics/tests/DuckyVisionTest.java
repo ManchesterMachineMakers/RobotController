@@ -9,11 +9,12 @@ import org.firstinspires.ftc.teamcode.sensors.Camera;
 import org.firstinspires.ftc.teamcode.sensors.LineSensor;
 import org.firstinspires.ftc.teamcode.sensors.RingSensor;
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RecognitionMatrix;
 
 public class DuckyVisionTest implements Base {
     Telemetry telemetry;
     Camera camera;
-    int duckyCounter = 0;
+    RecognitionMatrix duckyCounter = null;
 
     public void init(Runner runner, Camera camera) {
         this.camera = camera;
@@ -29,8 +30,9 @@ public class DuckyVisionTest implements Base {
 
         runner.log("Started at " + String.valueOf(runner.opMode.getRuntime()));
 
-        while (runner.opMode.opModeIsActive()) {
-
+        while (runner.opMode.opModeIsActive() && duckyCounter == null) {
+            duckyCounter = camera.getDucks();
+            duckyCount.setValue(duckyCounter == null ? 0 : "some");
         }
 
         runner.log("Detected " + String.valueOf(duckyCounter) + " duckies.");
