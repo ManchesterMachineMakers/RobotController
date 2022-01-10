@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.util.Names;
 
 /**
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.teamcode.util.Names;
  * It may not be practical to detect rings, but instead to have this managed by the driver.
  * 312 rpm motor. 4" wheels.
  */
-public class ActiveIntake {
+public class ActiveIntake implements Testable {
 
     boolean stop = false;
     double intakePower = 0.5;

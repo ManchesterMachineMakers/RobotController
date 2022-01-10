@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selector;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 
 public class MotorsTest implements Base {
@@ -40,8 +40,15 @@ public class MotorsTest implements Base {
 
 
     @Override
-    public boolean run(Selector[] sel, Runner runner) throws Exception {
-        driveBase = Selector.getOrDie(sel, DriveBase.class).get();
+    public Class<? extends Testable>[] requires() {
+        return new Class[] {
+                DriveBase.class
+        };
+    }
+
+    @Override
+    public boolean run(Testable[] sel, Runner runner) throws Exception {
+        driveBase = Testable.getOrDie(sel, DriveBase.class);
         init(runner.opMode, driveBase);
 
         driveBase.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

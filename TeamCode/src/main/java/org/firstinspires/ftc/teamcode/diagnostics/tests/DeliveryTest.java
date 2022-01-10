@@ -1,14 +1,21 @@
 package org.firstinspires.ftc.teamcode.diagnostics.tests;
 
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selector;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 
 @Test("Delivery Test")
 public class DeliveryTest implements Base {
 
-    public boolean run(Selector[] sel, Runner runner) throws Exception {
-        Delivery delivery = Selector.getOrDie(sel, Delivery.class).get();
+    @Override
+    public Class<? extends Testable>[] requires() {
+        return new Class[] {
+                Delivery.class
+        };
+    }
+
+    public boolean run(Testable[] sel, Runner runner) throws Exception {
+        Delivery delivery = Testable.getOrDie(sel, Delivery.class);
         runner.log("Down");
         delivery.down();
         Thread.sleep(1000);

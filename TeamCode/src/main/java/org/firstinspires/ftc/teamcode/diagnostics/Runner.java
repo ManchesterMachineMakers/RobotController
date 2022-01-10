@@ -5,11 +5,9 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.diagnostics.tests.Base;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.DriveBaseTest;
-import org.firstinspires.ftc.teamcode.diagnostics.tests.GamepadTest;
-import org.firstinspires.ftc.teamcode.diagnostics.tests.IntakeTest;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.Test;
-import org.firstinspires.ftc.teamcode.diagnostics.tests.DeliveryTest;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selector;
+import org.firstinspires.ftc.teamcode.diagnostics.util.DiagnosticsOpMode;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 
 import java.lang.annotation.Annotation;
 
@@ -21,20 +19,22 @@ public class Runner {
             /* new IntakeTest() }; */
             /*new RingSensorTest(),*/
             /*new GamepadTest() }; */
-    public final LinearOpMode opMode;
-    private Selector[] sel;
+    public final DiagnosticsOpMode opMode;
+    private Testable[] sel;
     private String currentTest = null;
-    public Runner(Selector[] sel, LinearOpMode opMode) {
+    public Runner(Testable[] sel, DiagnosticsOpMode opMode) {
         this.sel = sel;
         this.opMode = opMode;
     }
     public void runAll() throws InterruptedException {
         log("Beginning run of all tests");
         for(Base test : tests) {
-            if(!run(test)) {
-                opMode.telemetry.addLine("Test failed. See log for details.");
-                log("Failed to run tests; see above for details");
-            }
+
+                if (!run(test)) {
+                    opMode.telemetry.addLine("Test failed. See log for details.");
+                    log("Failed to run tests; see above for details");
+                }
+
         }
         log("Finished running tests");
     }
@@ -47,6 +47,20 @@ public class Runner {
                 name = ((Test)annotation).value();
             }
         }
+        Class[] requires = test.requires();
+        boolean requirementsMet = true;
+        for(Class requirement : requires) {
+            boolean met = false;
+            for (Testable provided : this.opMode.provides()) {
+                if (provided.getClass() == requirement) {
+                    met = true;
+                    break;
+                }
+            }
+            requirementsMet = requirementsMet && met;
+            if (!requirementsMet) break;
+        }
+        if(requirementsMet) {
         log("Running test: " + name);
         this.currentTest = name;
         try {
@@ -60,6 +74,10 @@ public class Runner {
         }
         log("Completed successfully: " + name);
         return true;
+        } else {
+            log("Not running test " + name + ", requirements not met");
+            return false;
+        }
     }
     public void log(String msg) {
         if(this.currentTest != null) {
