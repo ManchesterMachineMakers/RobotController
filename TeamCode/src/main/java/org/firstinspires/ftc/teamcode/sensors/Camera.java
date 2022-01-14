@@ -27,7 +27,7 @@ public class Camera {
     private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = VuforiaLocalizer.CameraDirection.BACK;
     private static final boolean PHONE_IS_PORTRAIT = true;
 
-    private static final String VUFORIA_KEY =
+    private static final String VUFORIA_KEY = //"@string/vuforia_license_key";
             "Afbp4I3/////AAABmcEn57recUnKv/3EHsAO+jkAFD02oVRghZ8yX5DjgOIvkxO1ipG/fb3GeprYO+Bp6AVbmvW7ts21c71ldDDS8caXYkWTGpFaJ0CyMMfqJQnUabNsH7/sQjh99KlSOi+dOo75AuLUjuLO3nIksEFYpQ3Q8lAGl0ihH3npeTmO9X9KOTV2NJTNKEXZ3mXxBa8xEs9ZYhQy/ppkpExORmc6R+FJYnyykaTaFaXwdKg/R9LZnPQcLwuDD0EnoYlj74qOwVsekUfKxttKMb+FtFlgYm8pmXI5jqQdyidpSHUQn08G1EvqZBN/iuHWCDVhXP2zFRWcQdTEGltwsg47w/IJuLzFvsz04HEqyBz2Xh9eAbAn";
 
 
@@ -82,8 +82,11 @@ public class Camera {
     public RecognitionMatrix detectDucksUsingTensorFlow() {
         // implement detectDucks using TensorFlowLite
         List<Recognition> recognitions = tfod.getRecognitions();
-        if (recognitions == null) { return null; }
+        if (recognitions == null) {
+            RobotLog.i("Recognition list is null.");
+            return null; }
 
+        RobotLog.i("Recognitions size: " + recognitions.size());
         tfod.printRecognitions(recognitions, telemetry);
         List<Recognition> recognitionList = tfod.recognitionsByLabel(recognitions, "duck");
         // recognitionList.addAll(tfod.recognitionsByLabel(recognitions, "Single"));

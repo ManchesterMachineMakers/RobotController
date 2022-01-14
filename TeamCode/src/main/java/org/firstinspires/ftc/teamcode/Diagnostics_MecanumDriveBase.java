@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.ProgrammingBoardDriveBase;
 import org.firstinspires.ftc.teamcode.sensors.Camera;
+import org.firstinspires.ftc.teamcode.sensors.Vision;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
@@ -46,7 +47,7 @@ public class Diagnostics_MecanumDriveBase extends LinearOpMode {
             }
 
             @Override
-            public Selector<Camera> cameraSelector() {
+            public Selector<Vision> cameraSelector() {
                 return null;
             }
         }, this);

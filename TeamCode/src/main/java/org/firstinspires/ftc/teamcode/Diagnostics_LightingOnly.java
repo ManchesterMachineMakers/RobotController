@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.Selector;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.sensors.Camera;
+import org.firstinspires.ftc.teamcode.sensors.Vision;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
@@ -43,7 +44,7 @@ public class Diagnostics_LightingOnly extends LinearOpMode {
             }
 
             @Override
-            public Selector<Camera> cameraSelector() {
+            public Selector<Vision> cameraSelector() {
                 return null;
             }
         }, this);

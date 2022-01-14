@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.ProgrammingBoardDriveBase;
 import org.firstinspires.ftc.teamcode.sensors.Camera;
+import org.firstinspires.ftc.teamcode.sensors.Vision;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
@@ -29,7 +30,7 @@ public class Diagnostics_ProgrammingBoard extends LinearOpMode {
         DriveBase driveBase = new ProgrammingBoardDriveBase(hardwareMap);
 //        Delivery delivery = new Delivery(hardwareMap);
 //        ActiveIntake intake = new ActiveIntake(hardwareMap, this);
-        Camera camera = new Camera(hardwareMap, this);
+        Vision camera = new Vision(hardwareMap, this);
 
         Runner runner = new Runner(new Selectors() {
             @Override
@@ -56,7 +57,7 @@ public class Diagnostics_ProgrammingBoard extends LinearOpMode {
             }
 
             @Override
-            public Selector<Camera> cameraSelector() {
+            public Selector<Vision> cameraSelector() {
 
                 return new CameraSelector(camera);
             }
