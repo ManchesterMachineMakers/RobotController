@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.diagnostics.util;
 public interface Testable {
     static <T extends Testable> T get(Testable[] selectors, Class<T> type) {
         for (Testable selector : selectors) {
-            if(selector.getClass() == type) return (T) selector;
+            try {
+                return type.cast(selector);
+            } catch (ClassCastException ignored) {}
         }
         return null;
     }

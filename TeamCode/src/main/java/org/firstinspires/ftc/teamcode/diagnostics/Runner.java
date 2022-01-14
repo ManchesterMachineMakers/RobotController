@@ -12,11 +12,11 @@ import java.util.Arrays;
 
 public class Runner {
     public final Base[] tests = {
-            new DriveBaseTest() };
-            /*new LightingTest(),*/
-            /* new DeliveryTest(),*/
-            /* new IntakeTest() }; */
-            /*new RingSensorTest(),*/
+            new DriveBaseTest(),
+            new LightingTest(),
+            new DeliveryTest(),
+            new IntakeTest(),
+            new RingSensorTest() };
             /*new GamepadTest() }; */
     public final DiagnosticsOpMode opMode;
     private Testable[] sel;
