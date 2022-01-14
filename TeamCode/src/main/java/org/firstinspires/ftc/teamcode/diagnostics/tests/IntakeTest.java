@@ -8,19 +8,14 @@ import org.firstinspires.ftc.teamcode.diagnostics.Runner;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 
+@Test("Intake Test")
+@Requires(ActiveIntake.class)
 public class IntakeTest implements Base {
 
     ActiveIntake intake;
     Telemetry.Item speedReport;
     Telemetry.Line statusReport;
     ElapsedTime timer = new ElapsedTime();
-
-    @Override
-    public Class<? extends Testable>[] requires() {
-        return new Class[] {
-                ActiveIntake.class
-        };
-    }
 
     @Override
     public boolean run(Testable[] sel, Runner runner) throws Exception {

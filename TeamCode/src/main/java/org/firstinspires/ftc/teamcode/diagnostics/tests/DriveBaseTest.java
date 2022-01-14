@@ -7,13 +7,8 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 
 @Test("Drive Base")
+@Requires(DriveBase.class)
 public class DriveBaseTest implements Base {
-    @Override
-    public Class<? extends Testable>[] requires() {
-        return new Class[] {
-                DriveBase.class
-        };
-    }
 
     @Override
     public boolean run(Testable[] sel, Runner runner) throws Exception {

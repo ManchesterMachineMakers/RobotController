@@ -10,6 +10,8 @@ import org.firstinspires.ftc.teamcode.diagnostics.Runner;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 
+@Test("Lighting Test")
+@Requires(Blinkin.class)
 public class LightingTest implements Base {
 
     Blinkin ledUtil;
@@ -20,13 +22,6 @@ public class LightingTest implements Base {
         modeLine = runner.opMode.telemetry.addLine("Current Mode").addData("Running in", "");
         ledPattern = runner.opMode.telemetry.addLine("Lights").addData("LED Pattern", "");
         runner.log("*** Lighting Test Initialized. ***");
-    }
-
-    @Override
-    public Class<? extends Testable>[] requires() {
-        return new Class[] {
-                Blinkin.class
-        };
     }
 
     @Override

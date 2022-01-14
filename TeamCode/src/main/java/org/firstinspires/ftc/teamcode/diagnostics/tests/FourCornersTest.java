@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.diagnostics.tests;
 
+import android.os.Build;
+import androidx.annotation.RequiresApi;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
@@ -19,11 +21,7 @@ public class FourCornersTest implements Base {
         FourCorners.startThread(runner.opMode.hardwareMap, runner.opMode);
     }
 
-    @Override
-    public Class<? extends Testable>[] requires() {
-        return new Class[0];
-    }
-
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public boolean run(Testable[] sel, Runner runner) {
         // Place the robot in a known location on the field, verify coordinates.

@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.diagnostics.Runner;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 
+@Test("Motors Test")
+@Requires(DriveBase.class)
 public class MotorsTest implements Base {
 
     DriveBase driveBase;
@@ -36,14 +38,6 @@ public class MotorsTest implements Base {
         opMode.telemetry.update();
 
         RobotLog.i("Initialized.");
-    }
-
-
-    @Override
-    public Class<? extends Testable>[] requires() {
-        return new Class[] {
-                DriveBase.class
-        };
     }
 
     @Override

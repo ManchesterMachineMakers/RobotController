@@ -5,10 +5,6 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 
 @Test("Gamepad Test")
 public class GamepadTest implements Base {
-    @Override
-    public Class<? extends Testable>[] requires() {
-        return new Class[0];
-    }
 
     @Override
     public boolean run(Testable[] sel, Runner runner) {

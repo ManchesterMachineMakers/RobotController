@@ -5,14 +5,8 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 
 @Test("Delivery Test")
+@Requires(Delivery.class)
 public class DeliveryTest implements Base {
-
-    @Override
-    public Class<? extends Testable>[] requires() {
-        return new Class[] {
-                Delivery.class
-        };
-    }
 
     public boolean run(Testable[] sel, Runner runner) throws Exception {
         Delivery delivery = Testable.getOrDie(sel, Delivery.class);

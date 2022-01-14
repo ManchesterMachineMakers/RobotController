@@ -20,11 +20,6 @@ public class RingSensorTest implements Base {
     }
 
     @Override
-    public Class<? extends Testable>[] requires() {
-        return new Class[0];
-    }
-
-    @Override
     public boolean run(Testable[] sel, Runner runner) {
         // Place the robot in a known location on the field, verify coordinates.
         telemetry = runner.opMode.telemetry;
