@@ -30,30 +30,27 @@ public class RingSensorTest implements Base {
         Telemetry.Item green = colorLine.addData("Green", 0);
         Telemetry.Item blue = colorLine.addData("Blue", 0);
 
-        runner.log("Started at " + String.valueOf(runner.opMode.getRuntime()));
+        runner.log("Started at " + runner.opMode.getRuntime());
 
-        startThreadedDetector(runner, new LineSensor.LineListener() {
-            @Override
-            public void handle(NormalizedRGBA rgba) {
-                ringCounter++;
-                ringCount.setValue(ringCounter);
+        startThreadedDetector(runner, rgba -> {
+            ringCounter++;
+            ringCount.setValue(ringCounter);
 
-                red.setValue(rgba.red);
-                green.setValue(rgba.green);
-                blue.setValue(rgba.blue);
-                telemetry.update();
+            red.setValue(rgba.red);
+            green.setValue(rgba.green);
+            blue.setValue(rgba.blue);
+            telemetry.update();
 
-                runner.log("Detected orange ring at " + String.valueOf(runner.opMode.getRuntime()));
-                runner.log("Color Values: Red " + String.valueOf(rgba.red) + "; Green " + String.valueOf(rgba.green) + "; Blue " + String.valueOf(rgba.blue));
-            }
+            runner.log("Detected orange ring at " + runner.opMode.getRuntime());
+            runner.log("Color Values: Red " + rgba.red + "; Green " + rgba.green + "; Blue " + rgba.blue);
         });
 
         while (runner.opMode.opModeIsActive()) {
             runner.opMode.idle();
         }
 
-        runner.log("Detected " + String.valueOf(ringCounter) + " rings.");
-        runner.log("*** Ring sensor test complete at " + String.valueOf(runner.opMode.getRuntime()));
+        runner.log("Detected " + ringCounter + " rings.");
+        runner.log("*** Ring sensor test complete at " + runner.opMode.getRuntime());
         return false;
     }
 }

@@ -34,16 +34,13 @@ public class FourCornersTest implements Base {
         Telemetry.Item yStatus = distanceLine.addData("Detected Y", false);
         Telemetry.Item yItem = distanceLine.addData("Y Value", 0);
 
-        startThreadedDetector(runner, new FourCorners.DistanceListener() {
-            @Override
-            public void handle(FourCorners.Distances distances) {
-                measured.add(distances);
-                xStatus.setValue(distances.statusIRx);
-                xItem.setValue(distances.x);
-                yStatus.setValue(distances.statusIRy);
-                yItem.setValue(distances.y);
-                telemetry.update();
-            }
+        startThreadedDetector(runner, distances -> {
+            measured.add(distances);
+            xStatus.setValue(distances.statusIRx);
+            xItem.setValue(distances.x);
+            yStatus.setValue(distances.statusIRy);
+            yItem.setValue(distances.y);
+            telemetry.update();
         });
 
         runner.opMode.sleep(3000);
@@ -73,16 +70,16 @@ public class FourCornersTest implements Base {
 
         // report average, min, max, inconsistencies in the ability of the X and Y measurements to be obtained
         runner.log("Four Corners Results (X):"
-                + " Min X: " + String.valueOf(minX)
-                + " Max X: " + String.valueOf(maxX)
-                + " Average X: " + String.valueOf(avgX)
-                + " Detected X " + String.valueOf(foundX) + " times of " + String.valueOf(measured.size()) + " measurements."
+                + " Min X: " + minX
+                + " Max X: " + maxX
+                + " Average X: " + avgX
+                + " Detected X " + foundX + " times of " + measured.size() + " measurements."
         );
         runner.log("Four Corners Results (Y): "
-                + " Min Y: " + String.valueOf(minY)
-                + " Max Y: " + String.valueOf(maxY)
-                + " Average Y: " + String.valueOf(avgY)
-                + " Detected Y " + String.valueOf(foundY) + " times of " + String.valueOf(measured.size()) + " measurements."
+                + " Min Y: " + minY
+                + " Max Y: " + maxY
+                + " Average Y: " + avgY
+                + " Detected Y " + foundY + " times of " + measured.size() + " measurements."
         );
 
         return false;
