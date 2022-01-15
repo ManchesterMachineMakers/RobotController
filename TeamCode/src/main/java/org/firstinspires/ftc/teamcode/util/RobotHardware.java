@@ -103,10 +103,10 @@ public interface RobotHardware {
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
     default Testable[] getTestable(HardwareMap hwMap) {
-        return (Testable[]) Arrays.stream(subassemblies())
+        return Arrays.stream(subassemblies())
                 .map(accessor -> accessor.get(hwMap))
                 .filter(subassembly -> Testable.class.isAssignableFrom(subassembly.getClass()))
                 .map(Testable.class::cast)
-                .toArray();
+                .toArray(Testable[]::new);
     }
 }

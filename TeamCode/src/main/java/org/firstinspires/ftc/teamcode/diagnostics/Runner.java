@@ -15,8 +15,8 @@ public class Runner {
             new DriveBaseTest(),
             new LightingTest(),
             new DeliveryTest(),
-            new IntakeTest(),
-            new RingSensorTest() };
+            new IntakeTest()
+            /*new RingSensorTest()*/ };
             /*new GamepadTest() }; */
     public final DiagnosticsOpMode opMode;
     private final Testable[] sel;
