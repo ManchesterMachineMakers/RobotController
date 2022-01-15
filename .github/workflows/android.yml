@@ -32,7 +32,4 @@ jobs:
         prerelease: true
         title: "Development Build"
         files: |
-          TeamCode-debug-mecanum.apk
-          TeamCode-debug-programming-board.apk
-          TeamCode-release-programming-board.apk
-          
+          TeamCode-*.apk
