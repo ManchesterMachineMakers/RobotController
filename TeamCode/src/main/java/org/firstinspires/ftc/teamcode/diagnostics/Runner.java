@@ -19,7 +19,7 @@ public class Runner {
             new RingSensorTest() };
             /*new GamepadTest() }; */
     public final DiagnosticsOpMode opMode;
-    private Testable[] sel;
+    private final Testable[] sel;
     private String currentTest = null;
     public Runner(Testable[] sel, DiagnosticsOpMode opMode) {
         this.sel = sel;
@@ -28,55 +28,49 @@ public class Runner {
     public void runAll() throws InterruptedException {
         log("Beginning run of all tests");
         for(Base test : tests) {
-
-                if (!run(test)) {
-                    opMode.telemetry.addLine("Test failed. See log for details.");
-                    log("Failed to run tests; see above for details");
-                }
-
+            if (!run(test)) {
+                opMode.telemetry.addLine("Test failed. See log for details.");
+                log("Failed to run tests; see above for details");
+            }
         }
         log("Finished running tests");
     }
     public boolean run(Base test) throws InterruptedException {
         Class<?> cls = test.getClass();
         Annotation[] annotations = cls.getDeclaredAnnotations();
-        String name = cls.getName();
+        currentTest = cls.getCanonicalName();
         boolean requirementsMet = true;
         for(Annotation annotation : annotations) {
             if(annotation.annotationType() == Test.class) {
-                name = ((Test)annotation).value();
+                currentTest = ((Test)annotation).value();
             }
-            if(annotation.annotationType() == RequirementsDeclaration.class) {
-                Requires[] requires = ((RequirementsDeclaration)annotation).value();
-                for(Requires requirement : requires) {
-                    boolean met = false;
-                    for (Testable provided : this.opMode.provides()) {
-                        try {
-                            requirement.value().cast(provided);
-                            met = true;
-                        } catch (ClassCastException ignored) {}
-                    }
-                    requirementsMet = requirementsMet && met;
-                    if (!requirementsMet) break;
+            if(annotation.annotationType() == Requires.class) {
+                log("Checking requirement " + ((Requires)annotation).value().getName());
+                boolean met = false;
+                for (Testable provided : this.opMode.provides()) {
+                    try {
+                        ((Requires)annotation).value().cast(provided);
+                        met = true;
+                    } catch (ClassCastException ignored) {}
                 }
+                requirementsMet = requirementsMet && met;
             }
         }
         if(requirementsMet) {
-            log("Running test: " + name);
-            this.currentTest = name;
+            log("Running test: " + currentTest);
             try {
                 boolean result = test.run(sel, this);
                 if (!result) {
                     throw new Exception("Test failed");
                 }
             } catch(Exception e) {
-                log("Failed to run: " + name + ", reason: " + e.getMessage());
+                log("Failed to run: " + currentTest + ", reason: " + e.getMessage());
                 return false;
             }
-            log("Completed successfully: " + name);
+            log("Completed successfully: " + currentTest);
             return true;
         } else {
-            log("Not running test " + name + ", requirements not met");
+            log("Not running test " + currentTest + ", requirements not met");
             return false;
         }
     }

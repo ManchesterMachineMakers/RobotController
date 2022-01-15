@@ -18,8 +18,8 @@ public class Diagnostics_ProgrammingBoard extends DiagnosticsOpMode {
     public Testable[] provides() {
         return new Testable[] {
                 new ProgrammingBoardDriveBase(hardwareMap),
-                new Delivery(hardwareMap),
-                new ActiveIntake(hardwareMap, this)
+                //new Delivery(hardwareMap),
+                //new ActiveIntake(hardwareMap, this)
         };
     }
 }
