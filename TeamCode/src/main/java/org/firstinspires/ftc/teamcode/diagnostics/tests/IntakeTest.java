@@ -5,9 +5,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 
+@Test("Intake Test")
+@Requires(ActiveIntake.class)
 public class IntakeTest implements Base {
 
     ActiveIntake intake;
@@ -16,9 +18,9 @@ public class IntakeTest implements Base {
     ElapsedTime timer = new ElapsedTime();
 
     @Override
-    public boolean run(Selectors sel, Runner runner) {
-        if (sel.activeIntakeSelector() == null) { return false; }
-        intake = sel.activeIntakeSelector().get();
+    public boolean run(Testable[] sel, Runner runner) throws Exception {
+
+        intake = Testable.getOrDie(sel, ActiveIntake.class);
 
         runner.opMode.telemetry.setAutoClear(false);
         statusReport = runner.opMode.telemetry.addLine("Finished running Intake Test");

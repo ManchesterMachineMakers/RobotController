@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.diagnostics.tests;
 
+import android.os.Build;
+import androidx.annotation.RequiresApi;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.sensors.FourCorners;
 
 import java.util.ArrayList;
 
+@Test("Four Corners")
 public class FourCornersTest implements Base {
     ArrayList<FourCorners.Distances> measured = new ArrayList<>();
     Telemetry telemetry;
@@ -18,8 +21,9 @@ public class FourCornersTest implements Base {
         FourCorners.startThread(runner.opMode.hardwareMap, runner.opMode);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public boolean run(Selectors sel, Runner runner) {
+    public boolean run(Testable[] sel, Runner runner) {
         // Place the robot in a known location on the field, verify coordinates.
         telemetry = runner.opMode.telemetry;
         Telemetry.Line distanceLine = telemetry.addLine("Measured Distances");
@@ -30,16 +34,13 @@ public class FourCornersTest implements Base {
         Telemetry.Item yStatus = distanceLine.addData("Detected Y", false);
         Telemetry.Item yItem = distanceLine.addData("Y Value", 0);
 
-        startThreadedDetector(runner, new FourCorners.DistanceListener() {
-            @Override
-            public void handle(FourCorners.Distances distances) {
-                measured.add(distances);
-                xStatus.setValue(distances.statusIRx);
-                xItem.setValue(distances.x);
-                yStatus.setValue(distances.statusIRy);
-                yItem.setValue(distances.y);
-                telemetry.update();
-            }
+        startThreadedDetector(runner, distances -> {
+            measured.add(distances);
+            xStatus.setValue(distances.statusIRx);
+            xItem.setValue(distances.x);
+            yStatus.setValue(distances.statusIRy);
+            yItem.setValue(distances.y);
+            telemetry.update();
         });
 
         runner.opMode.sleep(3000);
@@ -69,16 +70,16 @@ public class FourCornersTest implements Base {
 
         // report average, min, max, inconsistencies in the ability of the X and Y measurements to be obtained
         runner.log("Four Corners Results (X):"
-                + " Min X: " + String.valueOf(minX)
-                + " Max X: " + String.valueOf(maxX)
-                + " Average X: " + String.valueOf(avgX)
-                + " Detected X " + String.valueOf(foundX) + " times of " + String.valueOf(measured.size()) + " measurements."
+                + " Min X: " + minX
+                + " Max X: " + maxX
+                + " Average X: " + avgX
+                + " Detected X " + foundX + " times of " + measured.size() + " measurements."
         );
         runner.log("Four Corners Results (Y): "
-                + " Min Y: " + String.valueOf(minY)
-                + " Max Y: " + String.valueOf(maxY)
-                + " Average Y: " + String.valueOf(avgY)
-                + " Detected Y " + String.valueOf(foundY) + " times of " + String.valueOf(measured.size()) + " measurements."
+                + " Min Y: " + minY
+                + " Max Y: " + maxY
+                + " Average Y: " + avgY
+                + " Detected Y " + foundY + " times of " + measured.size() + " measurements."
         );
 
         return false;

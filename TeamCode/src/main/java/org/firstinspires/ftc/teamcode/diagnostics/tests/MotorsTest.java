@@ -8,9 +8,11 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 
+@Test("Motors Test")
+@Requires(DriveBase.class)
 public class MotorsTest implements Base {
 
     DriveBase driveBase;
@@ -38,11 +40,9 @@ public class MotorsTest implements Base {
         RobotLog.i("Initialized.");
     }
 
-
     @Override
-    public boolean run(Selectors sel, Runner runner) {
-        if (sel.driveBaseSelector() == null) { return false; }
-        driveBase = sel.driveBaseSelector().get();
+    public boolean run(Testable[] sel, Runner runner) throws Exception {
+        driveBase = Testable.getOrDie(sel, DriveBase.class);
         init(runner.opMode, driveBase);
 
         driveBase.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -54,18 +54,18 @@ public class MotorsTest implements Base {
         RobotLog.i("Stopped and reset encoders");
 
         runner.opMode.telemetry.update();
-        /** test each motor **/
+        // test each motor //
 
         double testPower = 0.2;
 
-        boolean result = false;
+        boolean result;
         try {
 
             for (int i = 0; i < testMotors.length; i++) {
-                tStatus.setValue("*** " + String.valueOf(i) + ") " + testMotors[i].getDeviceName());
-                runner.opMode.telemetry.addLine("Testing Motor " + String.valueOf(i) + ") " +  testMotors[i].getDeviceName());
+                tStatus.setValue("*** " + i + ") " + testMotors[i].getDeviceName());
+                runner.opMode.telemetry.addLine("Testing Motor " + i + ") " +  testMotors[i].getDeviceName());
                 runner.opMode.telemetry.update();
-                RobotLog.i("Testing Motor " + String.valueOf(i) + ") " +  testMotors[i].getDeviceName());
+                RobotLog.i("Testing Motor " + i + ") " +  testMotors[i].getDeviceName());
 
                 for (DcMotor.RunMode rm:
                         DcMotor.RunMode.values()) {
@@ -106,7 +106,7 @@ public class MotorsTest implements Base {
                         tDirection.setValue(testMotors[i].getDirection());
                         tPower.setValue(testMotors[i].getPower());
                         runner.opMode.telemetry.update();
-                        RobotLog.i("Direction: " + testMotors[i].getDirection() + " Power: " + String.valueOf(testMotors[i].getPower()));
+                        RobotLog.i("Direction: " + testMotors[i].getDirection() + " Power: " + testMotors[i].getPower());
 
                         while(driveBase.isBusy() && //opModeIsActive() &&
                                 (runner.opMode.getRuntime() < timeout || testMotors[i].getMode() == DcMotor.RunMode.RUN_TO_POSITION)) {
