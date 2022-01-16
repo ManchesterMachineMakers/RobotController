@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 /**
  * Robot hardware configuration.
@@ -61,19 +62,10 @@ public interface RobotHardware {
      * @param <T> The subassembly class to check for
      * @return Whether the requested subassembly exists in the configuration.
      */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     default <T extends Subassembly> boolean has(Class<T> hardware) {
-        for (SubassemblyAccessor<?> accessor:
-             subassemblies()) {
-            try {
-                Method get = accessor.getClass().getMethod("get");
-                if(hardware.isAssignableFrom(get.getReturnType())) {
-                    return true;
-                }
-            } catch (NoSuchMethodException ignored) {
-                return false;
-            }
-        }
-        return false;
+        return Arrays.stream(subassemblies())
+                .anyMatch(RobotHardware.canUseSubassembly(hardware));
     }
 
     /**
@@ -83,19 +75,11 @@ public interface RobotHardware {
      * @param <T> the requested subassembly
      * @return the requested subassembly, if it exists; otherwise, null.
      */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     default <T extends Subassembly> T get(Class<T> hardware, OpMode opMode) {
-        for (SubassemblyAccessor<?> accessor:
-                subassemblies()) {
-            try {
-                Method get = accessor.getClass().getMethod("get");
-                if(hardware.isAssignableFrom(get.getReturnType())) {
-                    return (T) accessor.get(opMode);
-                }
-            } catch (NoSuchMethodException ignored) {
-                return null;
-            }
-        }
-        return null;
+        return (T) Arrays.stream(subassemblies())
+                     .filter(RobotHardware.canUseSubassembly(hardware))
+                    .findAny().orElse(om -> null).get(opMode);
     }
 
     /**
@@ -109,16 +93,20 @@ public interface RobotHardware {
     @RequiresApi(api = Build.VERSION_CODES.N)
     default Testable[] getTestable(OpMode opMode) {
         return Arrays.stream(subassemblies())
-                .filter(accessor -> {
-                    try {
-                        return Testable.class.isAssignableFrom(accessor.getClass().getMethod("get").getReturnType());
-                    } catch (NoSuchMethodException e) {
-                        e.printStackTrace();
-                        return false;
-                    }
-                })
+                .filter(RobotHardware.canUseSubassembly(Testable.class))
                 .map(accessor -> accessor.get(opMode))
                 .map(Testable.class::cast)
                 .toArray(Testable[]::new);
+    }
+
+    static <T> Predicate<SubassemblyAccessor<?>> canUseSubassembly(Class<T> required) {
+        return (SubassemblyAccessor<?> accessor) -> {
+            try {
+                return required.isAssignableFrom(accessor.getClass().getMethod("get").getReturnType());
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+                return false;
+            }
+        };
     }
 }
