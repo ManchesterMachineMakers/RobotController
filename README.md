@@ -1,5 +1,5 @@
 ## Note on documentation
-Documentation specific to our team and for how to do stuff with this code is in [the wiki](https://gitlab.com/ftc16221/FreightFrenzy/-/wikis/home).
+Documentation specific to our team and for how to do stuff with this code is in [the docs folder](docs).
 
 ## NOTICE
 
