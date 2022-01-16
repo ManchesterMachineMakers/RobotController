@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.diagnostics;
 
+import android.os.Build;
+import androidx.annotation.RequiresApi;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -9,6 +11,7 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class Runner {
     public final Base[] tests = {
@@ -25,6 +28,7 @@ public class Runner {
         this.sel = sel;
         this.opMode = opMode;
     }
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void runAll() throws InterruptedException {
         log("Beginning run of all tests");
         for(Base test : tests) {
@@ -35,27 +39,27 @@ public class Runner {
         }
         log("Finished running tests");
     }
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public boolean run(Base test) throws InterruptedException {
         Class<?> cls = test.getClass();
         Annotation[] annotations = cls.getDeclaredAnnotations();
         currentTest = cls.getCanonicalName();
-        boolean requirementsMet = true;
-        for(Annotation annotation : annotations) {
-            if(annotation.annotationType() == Test.class) {
-                currentTest = ((Test)annotation).value();
-            }
-            if(annotation.annotationType() == Requires.class) {
-                log("Checking requirement " + ((Requires)annotation).value().getName());
-                boolean met = false;
-                for (Testable provided : this.opMode.provides()) {
-                    try {
-                        ((Requires)annotation).value().cast(provided);
-                        met = true;
-                    } catch (ClassCastException ignored) {}
-                }
-                requirementsMet = requirementsMet && met;
-            }
-        }
+        boolean requirementsMet = Arrays.stream(annotations)
+                .allMatch(annotation -> {
+                    Class<? extends Annotation> annotationType = annotation.annotationType();
+                    if (annotationType == Test.class) {
+                        currentTest = ((Test) annotation).value();
+                        return true;
+                    } else if (annotationType.equals(Requires.class)) {
+                        log("Checking requirement " + ((Requires) annotation).value().getName());
+                        return Arrays.stream(this.opMode.provides())
+                                .anyMatch(provided ->
+                                        ((Requires) annotation).value()
+                                                .isAssignableFrom(provided.getClass())
+                                );
+                    }
+                    return true;
+                });
         if(requirementsMet) {
             log("Running test: " + currentTest);
             try {

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subassemblies;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import android.graphics.Color;
@@ -19,10 +20,10 @@ public class Blinkin implements Testable {
 
     /**
      * initialize the LED strip from the hardware map
-     * @param hardwareMap
+     * @param opMode
      */
-    public Blinkin(HardwareMap hardwareMap) {
-        blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, Names.servo_BlinkinLED);
+    public Blinkin(OpMode opMode) {
+        blinkinLedDriver = opMode.hardwareMap.get(RevBlinkinLedDriver.class, Names.servo_BlinkinLED);
     }
 
     /**

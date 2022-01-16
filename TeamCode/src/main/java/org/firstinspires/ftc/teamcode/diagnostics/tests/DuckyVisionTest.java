@@ -1,20 +1,13 @@
 package org.firstinspires.ftc.teamcode.diagnostics.tests;
 
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
-import org.firstinspires.ftc.teamcode.sensors.Camera;
-import org.firstinspires.ftc.teamcode.sensors.LineSensor;
-import org.firstinspires.ftc.teamcode.sensors.RingSensor;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.sensors.Vision;
-import org.firstinspires.ftc.teamcode.util.Names;
 import org.firstinspires.ftc.teamcode.util.RecognitionMatrix;
 
-import java.util.List;
-
+@Test("Ducky Vision Test")
+@Requires(Vision.class)
 public class DuckyVisionTest implements Base {
     Telemetry telemetry;
     Vision camera;
@@ -31,12 +24,12 @@ public class DuckyVisionTest implements Base {
     }
 
     @Override
-    public boolean run(Selectors sel, Runner runner) {
-        init(runner, sel.cameraSelector().get());
+    public boolean run(Testable[] sel, Runner runner) throws Exception {
+        init(runner, Testable.getOrDie(sel, Vision.class));
         Telemetry.Line distanceLine = telemetry.addLine("Looking for duckies: ");
         Telemetry.Item duckyCount = distanceLine.addData("Ducky Count", 0);
 
-        runner.log("Started at " + String.valueOf(runner.opMode.getRuntime()));
+        runner.log("Started at " + runner.opMode.getRuntime());
         if (runner.opMode.opModeIsActive()) {
             while (runner.opMode.opModeIsActive()) {
                 camera.spotObjects(telemetry);
@@ -47,8 +40,8 @@ public class DuckyVisionTest implements Base {
 //            duckyCount.setValue(duckyCounter == null ? 0 : "some");
 //        }
 
-        runner.log("Detected " + String.valueOf(duckyCounter) + " duckies.");
-        runner.log("*** ducky-vision test complete at " + String.valueOf(runner.opMode.getRuntime()));
+        runner.log("Detected " + duckyCounter + " duckies.");
+        runner.log("*** ducky-vision test complete at " + runner.opMode.getRuntime());
         return false;
     }
 

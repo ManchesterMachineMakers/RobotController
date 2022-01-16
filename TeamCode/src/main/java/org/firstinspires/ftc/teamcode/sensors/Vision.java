@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.sensors;
 
+import android.annotation.SuppressLint;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -9,14 +10,16 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.diagnostics.tests.Test;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 
 import java.util.List;
 
-public class Vision {
+public class Vision implements Testable {
     private HardwareMap hardwareMap;
 
-    public Vision(HardwareMap hardwareMap, OpMode opMode) {
-        this.hardwareMap = hardwareMap;
+    public Vision(OpMode opMode) {
+        this.hardwareMap = opMode.hardwareMap;
 
     }
 
@@ -55,13 +58,13 @@ public class Vision {
             "Afbp4I3/////AAABmcEn57recUnKv/3EHsAO+jkAFD02oVRghZ8yX5DjgOIvkxO1ipG/fb3GeprYO+Bp6AVbmvW7ts21c71ldDDS8caXYkWTGpFaJ0CyMMfqJQnUabNsH7/sQjh99KlSOi+dOo75AuLUjuLO3nIksEFYpQ3Q8lAGl0ihH3npeTmO9X9KOTV2NJTNKEXZ3mXxBa8xEs9ZYhQy/ppkpExORmc6R+FJYnyykaTaFaXwdKg/R9LZnPQcLwuDD0EnoYlj74qOwVsekUfKxttKMb+FtFlgYm8pmXI5jqQdyidpSHUQn08G1EvqZBN/iuHWCDVhXP2zFRWcQdTEGltwsg47w/IJuLzFvsz04HEqyBz2Xh9eAbAn";
 
     /**
-     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
+     * This is the variable we will use to store our instance of the Vuforia
      * localization engine.
      */
     private VuforiaLocalizer vuforia;
 
     /**
-     * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
+     * This is the variable we will use to store our instance of the TensorFlow Object
      * Detection engine.
      */
     private TFObjectDetector tfod;
@@ -119,6 +122,7 @@ public class Vision {
     /**
      * Update recognitions
      */
+    @SuppressLint("DefaultLocale")
     public void spotObjects(Telemetry telemetry) {
         if (tfod != null) {
             // getUpdatedRecognitions() will return null if no new information is available since

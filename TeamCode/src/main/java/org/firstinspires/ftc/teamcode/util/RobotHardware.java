@@ -2,14 +2,17 @@ package org.firstinspires.ftc.teamcode.util;
 
 import android.os.Build;
 import androidx.annotation.RequiresApi;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.ProgrammingBoardDriveBase;
+import org.firstinspires.ftc.teamcode.sensors.Vision;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
 
 /**
@@ -20,7 +23,8 @@ public interface RobotHardware {
      * Programming board config
      */
     RobotHardware PROGRAMMING_BOARD = () -> new SubassemblyAccessor<?>[] {
-            ProgrammingBoardDriveBase::new
+            ProgrammingBoardDriveBase::new,
+            Vision::new
     };
     /**
      * Full robot config
@@ -28,7 +32,8 @@ public interface RobotHardware {
     RobotHardware FULL_ROBOT = () -> new SubassemblyAccessor<?>[] {
             MecanumDriveBase::new,
             Delivery::new,
-            Blinkin::new
+            Blinkin::new,
+            Vision::new
     };
     /**
      * Current config
@@ -41,7 +46,7 @@ public interface RobotHardware {
      * @param <T> The type of the subassembly
      */
     interface SubassemblyAccessor<T extends Subassembly> {
-        T get(HardwareMap hwMap);
+        T get(OpMode opMode);
     }
 
     /**
@@ -74,17 +79,17 @@ public interface RobotHardware {
     /**
      * Get an instance of a subassembly, if it exists in the configuration
      * @param hardware the requested subassembly
-     * @param hwMap the hardware map to pass to the subassembly
+     * @param opMode the current opmode
      * @param <T> the requested subassembly
      * @return the requested subassembly, if it exists; otherwise, null.
      */
-    default <T extends Subassembly> T get(Class<T> hardware, HardwareMap hwMap) {
+    default <T extends Subassembly> T get(Class<T> hardware, OpMode opMode) {
         for (SubassemblyAccessor<?> accessor:
                 subassemblies()) {
             try {
                 Method get = accessor.getClass().getMethod("get");
                 if(hardware.isAssignableFrom(get.getReturnType())) {
-                    return (T) accessor.get(hwMap);
+                    return (T) accessor.get(opMode);
                 }
             } catch (NoSuchMethodException ignored) {
                 return null;
@@ -95,17 +100,24 @@ public interface RobotHardware {
 
     /**
      * Get instances of all subassemblies that are {@link Testable}.
-     * @param hwMap the hardware map to pass to each subassembly
+     * @param opMode the current opmode
      * @return instances of all subassemblies that are {@link Testable}.
      * @see org.firstinspires.ftc.teamcode.Diagnostics
      * @see Testable
      * @see org.firstinspires.ftc.teamcode.diagnostics.util.DiagnosticsOpMode
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    default Testable[] getTestable(HardwareMap hwMap) {
+    default Testable[] getTestable(OpMode opMode) {
         return Arrays.stream(subassemblies())
-                .map(accessor -> accessor.get(hwMap))
-                .filter(subassembly -> Testable.class.isAssignableFrom(subassembly.getClass()))
+                .filter(accessor -> {
+                    try {
+                        return Testable.class.isAssignableFrom(accessor.getClass().getMethod("get").getReturnType());
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                })
+                .map(accessor -> accessor.get(opMode))
                 .map(Testable.class::cast)
                 .toArray(Testable[]::new);
     }

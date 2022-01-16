@@ -55,7 +55,7 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
      * Set up all the robot subassemblies.
      */
     public void initHardware() {
-        driveBase = RobotHardware.CURRENT.get(DriveBase.class, hardwareMap);
+        driveBase = RobotHardware.CURRENT.get(DriveBase.class, this);
         //intake = new ActiveIntake(hardwareMap, this);
         //shooter = new Shooter(hardwareMap);
         //reckoning = new PIDReckoning(hardwareMap, this);

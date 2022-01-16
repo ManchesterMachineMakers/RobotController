@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subassemblies;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -14,9 +15,9 @@ import org.firstinspires.ftc.teamcode.util.Names;
  */
 public class Delivery implements Testable {
 
-    public Delivery(HardwareMap hardwareMap) {
-        deliveryServo = hardwareMap.servo.get(Names.servo_DeliverySlide);
-        grabberServo = hardwareMap.servo.get(Names.servo_GrabberClaw);
+    public Delivery(OpMode opMode) {
+        deliveryServo = opMode.hardwareMap.servo.get(Names.servo_DeliverySlide);
+        grabberServo = opMode.hardwareMap.servo.get(Names.servo_GrabberClaw);
     }
 
     public Servo deliveryServo;

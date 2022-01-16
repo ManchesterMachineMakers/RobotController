@@ -16,7 +16,7 @@ public class Diagnostics_LightingOnly extends DiagnosticsOpMode {
     @Override
     public Testable[] provides() {
         return new Testable[] {
-            new Blinkin(hardwareMap)
+            new Blinkin(this)
         };
     }
 

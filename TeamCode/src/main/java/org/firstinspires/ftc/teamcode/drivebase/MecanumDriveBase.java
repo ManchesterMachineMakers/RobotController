@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drivebase;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -23,8 +24,8 @@ public class MecanumDriveBase extends DriveBase {
     // @Device("right_front")
     public DcMotor motorRightFront;
 
-    public MecanumDriveBase(HardwareMap hwMap) {
-        super(hwMap);
+    public MecanumDriveBase(OpMode opMode) {
+        super(opMode.hardwareMap);
     }
 
     @Override

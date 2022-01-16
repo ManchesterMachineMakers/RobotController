@@ -17,7 +17,7 @@ public class Diagnostics extends DiagnosticsOpMode {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public Testable[] provides() {
-        return RobotHardware.CURRENT.getTestable(hardwareMap);
+        return RobotHardware.CURRENT.getTestable(this);
     }
 
 }

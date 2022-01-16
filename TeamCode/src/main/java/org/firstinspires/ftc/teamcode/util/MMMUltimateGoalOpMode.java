@@ -58,7 +58,7 @@ public abstract class MMMUltimateGoalOpMode extends LinearOpMode {
      */
     public void initReporting() {
         telemetry.setAutoClear(false);
-        led = new Blinkin(hardwareMap);
+        led = RobotHardware.CURRENT.get(Blinkin.class, this);
         robotReport = new RobotReport(telemetry, led);
     }
 
@@ -66,11 +66,11 @@ public abstract class MMMUltimateGoalOpMode extends LinearOpMode {
      * Set up all the robot subassemblies.
      */
     public void initHardware() {
-        driveBase = RobotHardware.CURRENT.get(DriveBase.class, hardwareMap);
+        driveBase = RobotHardware.CURRENT.get(DriveBase.class, this);
         intake = new ActiveIntake(hardwareMap, this);
         shooter = new Shooter(hardwareMap);
         reckoning = new PIDReckoning(hardwareMap, this);
-        wobbleGoalGrabber = new Delivery(hardwareMap);
+        wobbleGoalGrabber = new Delivery(this);
 
         // vision
         camera = new Camera(hardwareMap, this);
