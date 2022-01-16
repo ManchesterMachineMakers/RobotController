@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Runner {
     public final Base[] tests = {
@@ -44,15 +45,15 @@ public class Runner {
         Class<?> cls = test.getClass();
         Annotation[] annotations = cls.getDeclaredAnnotations();
         currentTest = cls.getCanonicalName();
-        boolean requirementsMet = Arrays.stream(annotations)
+        boolean requirementsMet = Stream.of(annotations)
                 .allMatch(annotation -> {
                     Class<? extends Annotation> annotationType = annotation.annotationType();
                     if (annotationType == Test.class) {
                         currentTest = ((Test) annotation).value();
                         return true;
-                    } else if (annotationType.equals(Requires.class)) {
+                    } else if (annotationType == Requires.class) {
                         log("Checking requirement " + ((Requires) annotation).value().getName());
-                        return Arrays.stream(this.opMode.provides())
+                        return Stream.of(this.opMode.provides())
                                 .anyMatch(provided ->
                                         ((Requires) annotation).value()
                                                 .isAssignableFrom(provided.getClass())
