@@ -1,15 +1,15 @@
 package org.firstinspires.ftc.teamcode.diagnostics.tests;
 
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 
 @Test("Delivery Test")
+@Requires(Delivery.class)
 public class DeliveryTest implements Base {
 
-    public boolean run(Selectors sel, Runner runner) throws InterruptedException {
-        if (sel.deliverySelector() == null) { return false; }
-        Delivery delivery = sel.deliverySelector().get();
+    public boolean run(Testable[] sel, Runner runner) throws Exception {
+        Delivery delivery = Testable.getOrDie(sel, Delivery.class);
         runner.log("Down");
         delivery.down();
         Thread.sleep(1000);

@@ -3,8 +3,6 @@ name: Android CI
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
   workflow_dispatch:
 
 jobs:
@@ -34,7 +32,4 @@ jobs:
         prerelease: true
         title: "Development Build"
         files: |
-          TeamCode-debug-mecanum.apk
-          TeamCode-debug-programming-board.apk
-          TeamCode-release-programming-board.apk
-          
+          TeamCode-*.apk

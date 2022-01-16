@@ -3,15 +3,16 @@ package org.firstinspires.ftc.teamcode.diagnostics.tests;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Selectors;
+import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 
 @Test("Drive Base")
+@Requires(DriveBase.class)
 public class DriveBaseTest implements Base {
+
     @Override
-    public boolean run(Selectors sel, Runner runner) throws InterruptedException {
-        if (sel.driveBaseSelector() == null) { return false; }
-        DriveBase driveBase = sel.driveBaseSelector().get();
+    public boolean run(Testable[] sel, Runner runner) throws Exception {
+        DriveBase driveBase = Testable.getOrDie(sel, DriveBase.class);
         double power = 0.2;
 
         runner.log("Testing each motor");

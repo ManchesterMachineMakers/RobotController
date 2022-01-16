@@ -55,7 +55,7 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
      * Set up all the robot subassemblies.
      */
     public void initHardware() {
-        driveBase = new MecanumDriveBase(hardwareMap);
+        driveBase = RobotHardware.CURRENT.get(DriveBase.class, hardwareMap);
         //intake = new ActiveIntake(hardwareMap, this);
         //shooter = new Shooter(hardwareMap);
         //reckoning = new PIDReckoning(hardwareMap, this);
@@ -72,21 +72,15 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
     public void initMeasuring() {
         // measure distances
         FourCorners.clearListeners();
-        FourCorners.addListener(new FourCorners.DistanceListener() {
-            @Override
-            public void handle(FourCorners.Distances distances) {
+        FourCorners.addListener(distances -> {
 //                reckoning.updateFourCorners(distances);
-            }
         });
         FourCorners.startThread(hardwareMap, this);
 
         // watch for lines
         LineSensor.clearLineListeners();
-        LineSensor.addLineListener(new LineSensor.LineListener() {
-            @Override
-            public void handle(NormalizedRGBA rgba) {
+        LineSensor.addLineListener(rgba -> {
 //                reckoning.updateColor(rgba);
-            }
         });
         LineSensor.startThread(hardwareMap, this);
 

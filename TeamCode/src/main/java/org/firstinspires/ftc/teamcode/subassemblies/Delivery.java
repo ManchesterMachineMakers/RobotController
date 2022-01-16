@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subassemblies;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.util.Names;
 
 /**
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.teamcode.util.Names;
  * Grabber to keep or release the freight.
  *
  */
-public class Delivery {
+public class Delivery implements Testable {
 
     public Delivery(HardwareMap hardwareMap) {
         deliveryServo = hardwareMap.servo.get(Names.servo_DeliverySlide);
