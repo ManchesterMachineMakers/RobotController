@@ -8,11 +8,12 @@ import android.graphics.Color;
 
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 /**
  * Set different patterns and colors based on the robot status.  Each must be called from within the opMode or status utility.
  */
-public class Blinkin implements Testable {
+public class Blinkin implements Subassembly {
 
     public RevBlinkinLedDriver blinkinLedDriver;
     public RevBlinkinLedDriver.BlinkinPattern pattern;

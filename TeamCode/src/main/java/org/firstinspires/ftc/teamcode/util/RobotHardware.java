@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode.util;
 
 import android.os.Build;
+import android.util.Log;
+
 import androidx.annotation.RequiresApi;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.RobotLog;
+
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.ProgrammingBoardDriveBase;
@@ -102,7 +106,11 @@ public interface RobotHardware {
     static <T> Predicate<SubassemblyAccessor<?>> canUseSubassembly(Class<T> required) {
         return (SubassemblyAccessor<?> accessor) -> {
             try {
-                return required.isAssignableFrom(accessor.getClass().getMethod("get", OpMode.class).getReturnType());
+                Class<?> ret = accessor.getClass().getMethod("get", OpMode.class).getReturnType();
+                RobotLog.i("Checking if " + ret.getCanonicalName() + " is usable for " + required.getName());
+                boolean result = required.isAssignableFrom(ret);
+                RobotLog.i("Result: " + result);
+                return result;
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
                 return false;

@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.util.Conversions;
+import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -21,7 +22,7 @@ import java.util.Hashtable;
  * When using the driveBase in your OpMode, declare a variable of the appropriate DriveBase subclass type
  * in your OpMode class and assign a new instance of that subclass, passing in the hardware map from the OpMode.
  */
-public abstract class DriveBase implements Testable {
+public abstract class DriveBase implements Subassembly {
     protected HardwareMap hardwareMap;
 
     /**
