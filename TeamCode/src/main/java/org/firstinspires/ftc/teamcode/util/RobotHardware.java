@@ -102,7 +102,7 @@ public interface RobotHardware {
     static <T> Predicate<SubassemblyAccessor<?>> canUseSubassembly(Class<T> required) {
         return (SubassemblyAccessor<?> accessor) -> {
             try {
-                return required.isAssignableFrom(accessor.getClass().getMethod("get").getReturnType());
+                return required.isAssignableFrom(accessor.getClass().getMethod("get", OpMode.class).getReturnType());
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
                 return false;
