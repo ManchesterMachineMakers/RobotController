@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -54,6 +58,7 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
     /**
      * Set up all the robot subassemblies.
      */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void initHardware() {
         try {
             driveBase = RobotHardware.CURRENT.get(DriveBase.class, this);

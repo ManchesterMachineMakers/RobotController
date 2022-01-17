@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 /**
  * Delivery mechanism for Freight Frenzy
@@ -13,7 +14,7 @@ import org.firstinspires.ftc.teamcode.util.Names;
  * Grabber to keep or release the freight.
  *
  */
-public class Delivery implements Testable {
+public class Delivery implements Subassembly {
 
     public Delivery(OpMode opMode) {
         deliveryServo = opMode.hardwareMap.servo.get(Names.servo_DeliverySlide);

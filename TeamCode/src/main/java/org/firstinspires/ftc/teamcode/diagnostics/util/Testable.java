@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.diagnostics.util;
 
 import org.firstinspires.ftc.teamcode.util.Subassembly;
 
-public interface Testable extends Subassembly {
+public interface Testable {
     static <T extends Testable> T get(Testable[] selectors, Class<T> type) {
         for (Testable selector : selectors) {
             try {

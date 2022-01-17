@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.*;
 import org.firstinspires.ftc.teamcode.diagnostics.util.DiagnosticsOpMode;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
+import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -19,14 +20,15 @@ public class Runner {
             new DriveBaseTest(),
             new LightingTest(),
             new DeliveryTest(),
-            new IntakeTest()
+            new IntakeTest(),
+            new DuckyVisionTest()
             /*new RingSensorTest()*/ };
             /*new GamepadTest() }; */
     public final DiagnosticsOpMode opMode;
     private final Testable[] sel;
     private String currentTest = null;
-    public Runner(Testable[] sel, DiagnosticsOpMode opMode) {
-        this.sel = sel;
+    public Runner(DiagnosticsOpMode opMode) {
+        this.sel = opMode.provides();
         this.opMode = opMode;
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -53,11 +55,13 @@ public class Runner {
                         return true;
                     } else if (annotationType == Requires.class) {
                         log("Checking requirement " + ((Requires) annotation).value().getName());
-                        return Stream.of(this.opMode.provides())
-                                .anyMatch(provided ->
-                                        ((Requires) annotation).value()
-                                                .isAssignableFrom(provided.getClass())
-                                );
+                        boolean met = false;
+                        for (Testable assembly:
+                             sel) {
+                            log("                     " + assembly.getClass().getName());
+                            met = met || ((Requires)annotation).value().isAssignableFrom(assembly.getClass());
+                        }
+                        return met;
                     }
                     return true;
                 });

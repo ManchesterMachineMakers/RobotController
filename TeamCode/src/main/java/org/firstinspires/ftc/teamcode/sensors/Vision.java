@@ -12,10 +12,11 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.Test;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
+import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 import java.util.List;
 
-public class Vision implements Testable {
+public class Vision implements Subassembly {
     private HardwareMap hardwareMap;
 
     public Vision(OpMode opMode) {
