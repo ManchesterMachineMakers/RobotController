@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subassemblies;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -25,15 +26,16 @@ public class ActiveIntake implements Testable {
     DcMotor motor;
     TouchSensor ringSensor;
 
-    LinearOpMode opMode;
+    OpMode opMode;
     double timeLastRingTaken;
     public static int maxRingsAllowedOnBot = 1;
 
     /**
      * Pass in the hardware map in the constructor in order to get the motor.
-     * @param hardwareMap pass in the hardware map from the OpMode.
+     * @param opMode pass in the OpMode.
      */
-    public ActiveIntake(HardwareMap hardwareMap, LinearOpMode opMode) {
+    public ActiveIntake(OpMode opMode) {
+        HardwareMap hardwareMap = opMode.hardwareMap;
         this.opMode = opMode;
 
         motor = hardwareMap.get(DcMotor.class, Names.motor_Intake);

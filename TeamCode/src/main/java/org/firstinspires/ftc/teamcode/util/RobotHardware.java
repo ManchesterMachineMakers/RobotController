@@ -4,10 +4,13 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.RobotLog;
+
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.ProgrammingBoardDriveBase;
 import org.firstinspires.ftc.teamcode.sensors.Vision;
+import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 
@@ -25,6 +28,7 @@ public interface RobotHardware {
      */
     RobotHardware PROGRAMMING_BOARD = () -> new SubassemblyAccessor<?>[] {
             ProgrammingBoardDriveBase::new,
+            ActiveIntake::new,
             Vision::new
     };
     /**
@@ -32,6 +36,7 @@ public interface RobotHardware {
      */
     RobotHardware FULL_ROBOT = () -> new SubassemblyAccessor<?>[] {
             MecanumDriveBase::new,
+            ActiveIntake::new,
             Delivery::new,
             Blinkin::new,
             Vision::new
@@ -76,10 +81,15 @@ public interface RobotHardware {
      * @return the requested subassembly, if it exists; otherwise, null.
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    default <T extends Subassembly> T get(Class<T> hardware, OpMode opMode) {
-        return (T) Arrays.stream(subassemblies())
-                     .filter(RobotHardware.canUseSubassembly(hardware))
-                    .findAny().orElse(om -> null).get(opMode);
+    default <T extends Subassembly> T get(Class<T> hardware, OpMode opMode) throws NoSuchMethodException {
+        for(SubassemblyAccessor<?> subassemblyAccessor : subassemblies()) {
+            RobotLog.i("Checking if " + subassemblyAccessor.getClass().getMethod("get", OpMode.class).getReturnType().getSimpleName() + " works for " + hardware.getSimpleName());
+            if(RobotHardware.canUseSubassembly(hardware).test(subassemblyAccessor)) {
+                RobotLog.i("Yes");
+                return (T) subassemblyAccessor.get(opMode);
+            }
+        }
+        return null;
     }
 
     /**
