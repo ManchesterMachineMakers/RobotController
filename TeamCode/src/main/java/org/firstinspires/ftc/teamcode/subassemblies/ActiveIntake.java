@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 /**
  * Intake should be mounted with the motor at the top, facing the __ of the robot.
@@ -19,7 +20,7 @@ import org.firstinspires.ftc.teamcode.util.Names;
  * It may not be practical to detect rings, but instead to have this managed by the driver.
  * 312 rpm motor. 4" wheels.
  */
-public class ActiveIntake implements Testable {
+public class ActiveIntake implements Subassembly {
 
     boolean stop = false;
     double intakePower = 0.5;
