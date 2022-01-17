@@ -14,6 +14,7 @@ import java.util.ArrayList;
  * The color sensor should be mounted on the bot around the middle, front-to-back.
  * It must be a maximum of a couple of inches off the ground.
  */
+@Deprecated // Ultimate Goal
 public class RingSensor extends LineSensor implements Runnable {
     private static ArrayList<LineListener> ringListeners = new ArrayList<>();
     public static void addRingListener(LineListener listener) {

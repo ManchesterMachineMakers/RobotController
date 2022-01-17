@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.util.RecognitionMatrix;
 
 import java.util.List;
 
+@Deprecated // Ultimate Goal
 public class Camera {
 
     public WebcamName webCam1;

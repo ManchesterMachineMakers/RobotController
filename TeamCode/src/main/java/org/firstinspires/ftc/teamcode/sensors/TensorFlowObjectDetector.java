@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated // Ultimate Goal
 public class TensorFlowObjectDetector {
 
     // TensorFlow Lite Object Detection

@@ -15,6 +15,7 @@ import java.util.Hashtable;
 /**
  * Motors - 2x 1620
  */
+@Deprecated // Ultimate Goal
 public class Shooter  {
 
     public static final double rangeTolerance = 100; //TODO: Set this value! Millimeters distance from target tolerance +-.

@@ -19,6 +19,7 @@ import java.lang.Runnable;
  * The color sensor should be mounted on the bot around the middle, front-to-back.
  * It must be a maximum of a couple of inches off the ground.
  */
+@Deprecated // Ultimate Goal
 public class LineSensor implements Runnable {
     protected LineSensor() {
     }
