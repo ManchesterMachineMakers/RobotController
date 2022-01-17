@@ -8,6 +8,7 @@ import android.graphics.Color;
 
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 /**
@@ -24,7 +25,7 @@ public class Blinkin implements Subassembly {
      * @param opMode
      */
     public Blinkin(OpMode opMode) {
-        blinkinLedDriver = opMode.hardwareMap.get(RevBlinkinLedDriver.class, Names.servo_BlinkinLED);
+        blinkinLedDriver = opMode.hardwareMap.get(RevBlinkinLedDriver.class, RobotConfig.CURRENT.name("servo_BlinkinLED"));
     }
 
     /**

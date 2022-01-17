@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.util.MMMFreightFrenzyOpMode;
-import org.firstinspires.ftc.teamcode.util.RobotHardware;
 
 @TeleOp(name = "Test Op Mode")
 public class TestOpMode extends MMMFreightFrenzyOpMode {
@@ -15,6 +14,8 @@ public class TestOpMode extends MMMFreightFrenzyOpMode {
         initOpMode();
         waitForStart();
 
-        driveBase.go(DriveBase.TravelDirection.forward, DriveBase.DriveSpeed.FAST);
+        driveBase.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveBase.go(DriveBase.TravelDirection.forward, 0.7, 500);
+        while(driveBase.isBusy() && opModeIsActive());
     }
 }

@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 /**
@@ -39,7 +40,7 @@ public class ActiveIntake implements Subassembly {
         HardwareMap hardwareMap = opMode.hardwareMap;
         this.opMode = opMode;
 
-        motor = hardwareMap.get(DcMotor.class, Names.motor_Intake);
+        motor = hardwareMap.get(DcMotor.class, RobotConfig.CURRENT.name("motor_Intake"));
         motor.setDirection(DcMotorSimple.Direction.FORWARD);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // we're just turning the motor on or off
         motor.setPower(0);

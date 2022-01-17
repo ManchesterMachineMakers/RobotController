@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
 
 import java.util.ArrayList;
 
@@ -69,7 +70,7 @@ public class RingSensor extends LineSensor implements Runnable {
 
     public RingSensor(HardwareMap hwMap, LinearOpMode opMode) {
         // super(hwMap, opMode);
-        colorSensor = hwMap.get(NormalizedColorSensor.class, Names.sensor_Rings);
+        colorSensor = hwMap.get(NormalizedColorSensor.class, RobotConfig.CURRENT.name("sensor_Rings"));
         this.opMode = opMode;
     }
 

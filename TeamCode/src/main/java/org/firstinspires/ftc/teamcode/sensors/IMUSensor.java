@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
 
 public class IMUSensor {
     private BNO055IMU imu;
@@ -50,7 +51,7 @@ public class IMUSensor {
      * @param imuParameters
      */
     public BNO055IMU initIMU(BNO055IMU.Parameters imuParameters) {
-        imu = hardwareMap.get(BNO055IMU.class, Names.imu);
+        imu = hardwareMap.get(BNO055IMU.class, RobotConfig.CURRENT.name("imu"));
         imu.initialize(imuParameters);
         RobotLog.i("IMU initialized.");
         return imu;

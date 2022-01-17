@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 /**
@@ -17,8 +18,8 @@ import org.firstinspires.ftc.teamcode.util.Subassembly;
 public class Delivery implements Subassembly {
 
     public Delivery(OpMode opMode) {
-        deliveryServo = opMode.hardwareMap.servo.get(Names.servo_DeliverySlide);
-        grabberServo = opMode.hardwareMap.servo.get(Names.servo_GrabberClaw);
+        deliveryServo = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliverySlide"));
+        grabberServo = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_GrabberClaw"));
     }
 
     public Servo deliveryServo;

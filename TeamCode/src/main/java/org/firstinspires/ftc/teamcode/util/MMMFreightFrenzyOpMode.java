@@ -5,11 +5,9 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
-import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.navigation.Destination;
 import org.firstinspires.ftc.teamcode.sensors.FourCorners;
 import org.firstinspires.ftc.teamcode.sensors.LineSensor;
@@ -61,8 +59,10 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void initHardware() {
         try {
-            driveBase = RobotHardware.CURRENT.get(DriveBase.class, this);
-        } catch(NoSuchMethodException ignored) {}
+            driveBase = RobotConfig.CURRENT.getHardware(DriveBase.class, this);
+        } catch(NoSuchMethodException ignored) {
+            ignored.printStackTrace();
+        }
         //intake = new ActiveIntake(hardwareMap, this);
         //shooter = new Shooter(hardwareMap);
         //reckoning = new PIDReckoning(hardwareMap, this);(

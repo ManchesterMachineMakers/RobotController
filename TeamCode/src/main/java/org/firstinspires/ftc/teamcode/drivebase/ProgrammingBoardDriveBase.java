@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
 
 public class ProgrammingBoardDriveBase extends DriveBase {
 
@@ -18,7 +19,7 @@ public class ProgrammingBoardDriveBase extends DriveBase {
 
     @Override
     protected void initMotorConfigurations() {
-        motorLeftFront  = hardwareMap.get(DcMotor.class, Names.motor_LeftFront);
+        motorLeftFront  = hardwareMap.get(DcMotor.class, RobotConfig.CURRENT.name("motor_LeftFront"));
         wheelMotors = new DcMotor[]{ motorLeftFront };
 
         motorConfigurations.put(TravelDirection.forward, new DcMotorSimple.Direction[]{ DcMotorSimple.Direction.FORWARD });

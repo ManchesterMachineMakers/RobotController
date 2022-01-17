@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.diagnostics.util.DiagnosticsOpMode;
-import org.firstinspires.ftc.teamcode.util.RobotHardware;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
 
 @TeleOp
 public class Diagnostics extends DiagnosticsOpMode {
@@ -14,7 +14,7 @@ public class Diagnostics extends DiagnosticsOpMode {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public Testable[] provides() {
-        return RobotHardware.CURRENT.getTestable(this);
+        return RobotConfig.CURRENT.getTestable(this);
     }
 
 }
