@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.ProgrammingBoardDriveBase;
@@ -15,43 +16,51 @@ import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
  * Robot hardware configuration.
  */
-public interface RobotConfig {
+public class RobotConfig {
+    public static final RobotConfig BASE = new RobotConfig() {{
+        value("vuforiaKey", "Afbp4I3/////AAABmcEn57recUnKv/3EHsAO+jkAFD02oVRghZ8yX5DjgOIvkxO1ipG/fb3GeprYO+Bp6AVbmvW7ts21c71ldDDS8caXYkWTGpFaJ0CyMMfqJQnUabNsH7/sQjh99KlSOi+dOo75AuLUjuLO3nIksEFYpQ3Q8lAGl0ihH3npeTmO9X9KOTV2NJTNKEXZ3mXxBa8xEs9ZYhQy/ppkpExORmc6R+FJYnyykaTaFaXwdKg/R9LZnPQcLwuDD0EnoYlj74qOwVsekUfKxttKMb+FtFlgYm8pmXI5jqQdyidpSHUQn08G1EvqZBN/iuHWCDVhXP2zFRWcQdTEGltwsg47w/IJuLzFvsz04HEqyBz2Xh9eAbAn");
+    }};
+
     /**
      * Programming board config
      */
-    RobotConfig PROGRAMMING_BOARD = () -> new ConfigPair<?, ?>[] {
-            value("configName", "Programming Board"),
-            subassembly(ProgrammingBoardDriveBase.class),
-            subassembly(ActiveIntake.class),
-            subassembly(Vision.class),
-            names(Names_ProgrammingBoard.class)
-    };
+    public static final RobotConfig PROGRAMMING_BOARD = new RobotConfig() {{
+        merge(BASE);
+        value("configName", "Programming Board");
+        subassembly(ProgrammingBoardDriveBase.class);
+        subassembly(ActiveIntake.class);
+        subassembly(Vision.class);
+        names(Names_ProgrammingBoard.class);
+    }};
     /**
      * Full robot config
      */
-    RobotConfig FULL_ROBOT = () -> new ConfigPair<?, ?>[] {
-            value("configName", "Full Robot"),
-            subassembly(MecanumDriveBase.class),
-            subassembly(ActiveIntake.class),
-            subassembly(Delivery.class),
-            subassembly(Blinkin.class),
-            subassembly(Vision.class),
-            names(Names_FreightFrenzyRobot.class)
-    };
+    public static final RobotConfig FULL_ROBOT = new RobotConfig() {{
+        merge(BASE);
+        value("configName", "Full Robot");
+        subassembly(MecanumDriveBase.class);
+        subassembly(ActiveIntake.class);
+        subassembly(Delivery.class);
+        subassembly(Blinkin.class);
+        subassembly(Vision.class);
+        names(Names_FreightFrenzyRobot.class);
+    }};
 
 
     /**
      * Current config
      * DO NOT EDIT - Set by build matrix script
      */
-    RobotConfig CURRENT = PROGRAMMING_BOARD;
+    public static final RobotConfig CURRENT = PROGRAMMING_BOARD;
 
 
 
@@ -64,8 +73,8 @@ public interface RobotConfig {
         V value() throws Exception;
     }
 
-    static <T extends Subassembly> ConfigPair<Class<T>, Constructor<T>> subassembly(Class<T> type) {
-        return new ConfigPair<Class<T>, Constructor<T>>() {
+    public <T extends Subassembly> void subassembly(Class<T> type) {
+        config.add(new ConfigPair<Class<T>, Constructor<T>>() {
             @Override
             public Class<T> key() {
                 return type;
@@ -75,11 +84,11 @@ public interface RobotConfig {
             public Constructor<T> value() throws NoSuchMethodException {
                 return type.getConstructor(OpMode.class);
             }
-        };
+        });
     }
 
-    static <T> ConfigPair<String, T> value(String key, T value) {
-        return new ConfigPair<String, T>() {
+    public <T> void value(String key, T value) {
+         config.add(new ConfigPair<String, T>() {
             @Override
             public String key() {
                 return key;
@@ -89,18 +98,18 @@ public interface RobotConfig {
             public T value() throws Exception {
                 return value;
             }
-        };
+        });
     }
 
-    static <T> ConfigPair<String, T> names(T names) {
-        return value("names", names);
+    public <T> void names(T names) {
+        value("names", names);
     }
 
-    /**
-     * A list of configuration
-     * @return The subassemblies available for that configuration
-     */
-    ConfigPair<?, ?>[] config();
+    public void merge(RobotConfig other) {
+        config.addAll(other.config);
+    }
+
+    private final List<ConfigPair<?, ?>> config = new ArrayList<>();
 
     /**
      * Whether a configuration has a certain piece of hardware or not.
@@ -109,9 +118,9 @@ public interface RobotConfig {
      * @return Whether the requested subassembly exists in the configuration.
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    default <T extends Subassembly> boolean hasHardware(Class<T> hardware) {
-        return Arrays.stream(config())
-                .anyMatch(RobotConfig.canUseSubassembly(hardware));
+    public <T extends Subassembly> boolean hasHardware(Class<T> hardware) {
+        return config.stream()
+                .anyMatch(canUseSubassembly(hardware));
     }
 
     /**
@@ -122,10 +131,10 @@ public interface RobotConfig {
      * @return the requested subassembly, if it exists; otherwise, null.
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    default <T extends Subassembly> T getHardware(Class<T> hardware, OpMode opMode) throws NoSuchMethodException {
-        for(ConfigPair<?, ?> subassemblyAccessor : config()) {
+    public <T extends Subassembly> T getHardware(Class<T> hardware, OpMode opMode) throws NoSuchMethodException {
+        for(ConfigPair<?, ?> subassemblyAccessor : config) {
             RobotLog.i("Checking if " + subassemblyAccessor.getClass().getMethod("key").getReturnType().getSimpleName() + " works for " + hardware.getSimpleName());
-            if(RobotConfig.canUseSubassembly(hardware).test(subassemblyAccessor)) {
+            if(canUseSubassembly(hardware).test(subassemblyAccessor)) {
                 RobotLog.i("Yes");
                 try {
                     return (T) ((Constructor<? extends Subassembly>) subassemblyAccessor.value()).newInstance(opMode);
@@ -137,8 +146,8 @@ public interface RobotConfig {
         return null;
     }
 
-    default <T> T getValue(String key) {
-        for(ConfigPair<?, ?> configPair : config()) {
+    public <T> T getValue(String key) {
+        for(ConfigPair<?, ?> configPair : config) {
             try {
                 if(configPair.key() == key) {
                     return (T) configPair.value();
@@ -159,9 +168,9 @@ public interface RobotConfig {
      * @see org.firstinspires.ftc.teamcode.diagnostics.util.DiagnosticsOpMode
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    default Testable[] getTestable(OpMode opMode) {
-        return Arrays.stream(config())
-                .filter(RobotConfig.canUseSubassembly(Testable.class))
+    public Testable[] getTestable(OpMode opMode) {
+        return config.stream()
+                .filter(canUseSubassembly(Testable.class))
                 .map(accessor -> {
                     try {
                         return ((Constructor<? extends Subassembly>) accessor.value()).newInstance(opMode);
@@ -174,7 +183,7 @@ public interface RobotConfig {
                 .toArray(Testable[]::new);
     }
 
-    static <T> Predicate<ConfigPair<?, ?>> canUseSubassembly(Class<T> required) {
+    private <T> Predicate<ConfigPair<?, ?>> canUseSubassembly(Class<T> required) {
         return (ConfigPair<?, ?> accessor) -> {
             if(accessor.key().getClass() == Class.class) {
                 Class<?> ret = ((Class<?>)accessor.key());
@@ -188,12 +197,22 @@ public interface RobotConfig {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    default String name(String id) {
+    public String name(String id) {
         try {
-            return ((String)((Class<?>)Stream.of(this.config())
+            return ((String)((Class<?>)config.stream()
                     .filter(cfg -> cfg.key() == "names")
                     .findFirst()
-                    .orElseGet(() -> names(Names.class))
+                    .orElseGet(() -> new ConfigPair<String, Class<?>>() {
+                        @Override
+                        public String key() {
+                            return "names";
+                        }
+
+                        @Override
+                        public Class<?> value() throws Exception {
+                            return Names.class;
+                        }
+                    })
                     .value())
                     .getDeclaredField(id)
                     .get(null));
