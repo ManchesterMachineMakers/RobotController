@@ -20,7 +20,11 @@ public abstract class DiagnosticsOpMode extends LinearOpMode {
             RobotLog.i("16221 Diagnostics Opmode: Running all tests.");
             telemetry.addLine("Running tests. Please watch the log.");
             telemetry.update();
-            runner.runAll();
+            runTests(runner);
         }
+    }
+
+    protected void runTests(Runner runner) throws InterruptedException {
+        runner.runAll();
     }
 }

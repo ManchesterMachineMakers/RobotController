@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.diagnostics.Runner;
+import org.firstinspires.ftc.teamcode.diagnostics.tests.IntakeTest;
 import org.firstinspires.ftc.teamcode.diagnostics.util.DiagnosticsOpMode;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
@@ -22,5 +24,10 @@ public class Diagnostics_IntakeOnly extends DiagnosticsOpMode {
         return new Testable[] {
                 new ActiveIntake(this)
         };
+    }
+
+    @Override
+    protected void runTests(Runner runner) throws InterruptedException {
+        runner.run(new IntakeTest());
     }
 }
