@@ -15,7 +15,7 @@ public class TeleArrayNew extends LinearOpMode {
 
 //*************************************************************************************************************************
   public void runOpMode() {
-    driveBase = new InchwormMecanumDriveBase(hardwareMap);
+    driveBase = new InchwormMecanumDriveBase(this);
     driveBase.setTravelDirection(DriveBase.TravelDirection.forward);
     double r;
     double robotAngle;

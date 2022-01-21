@@ -10,7 +10,7 @@ public abstract class DiagnosticsOpMode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         //Blinkin ledUtil = new Blinkin(hardwareMap);
-        Runner runner = new Runner(this.provides(), this);
+        Runner runner = new Runner(this);
 
         RobotLog.i("16221 Diagnostics Opmode: Initialization complete.");
         telemetry.addLine("Initialized.");
@@ -20,7 +20,11 @@ public abstract class DiagnosticsOpMode extends LinearOpMode {
             RobotLog.i("16221 Diagnostics Opmode: Running all tests.");
             telemetry.addLine("Running tests. Please watch the log.");
             telemetry.update();
-            runner.runAll();
+            runTests(runner);
         }
+    }
+
+    protected void runTests(Runner runner) throws InterruptedException {
+        runner.runAll();
     }
 }

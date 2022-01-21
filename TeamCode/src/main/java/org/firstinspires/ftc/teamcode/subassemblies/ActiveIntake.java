@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subassemblies;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -11,6 +12,8 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
+import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 /**
  * Intake should be mounted with the motor at the top, facing the __ of the robot.
@@ -18,25 +21,26 @@ import org.firstinspires.ftc.teamcode.util.Names;
  * It may not be practical to detect rings, but instead to have this managed by the driver.
  * 312 rpm motor. 4" wheels.
  */
-public class ActiveIntake implements Testable {
+public class ActiveIntake implements Subassembly {
 
     boolean stop = false;
     double intakePower = 0.5;
     DcMotor motor;
     TouchSensor ringSensor;
 
-    LinearOpMode opMode;
+    OpMode opMode;
     double timeLastRingTaken;
     public static int maxRingsAllowedOnBot = 1;
 
     /**
      * Pass in the hardware map in the constructor in order to get the motor.
-     * @param hardwareMap pass in the hardware map from the OpMode.
+     * @param opMode pass in the OpMode.
      */
-    public ActiveIntake(HardwareMap hardwareMap, LinearOpMode opMode) {
+    public ActiveIntake(OpMode opMode) {
+        HardwareMap hardwareMap = opMode.hardwareMap;
         this.opMode = opMode;
 
-        motor = hardwareMap.get(DcMotor.class, Names.motor_Intake);
+        motor = hardwareMap.get(DcMotor.class, RobotConfig.CURRENT.name("motor_Intake"));
         motor.setDirection(DcMotorSimple.Direction.FORWARD);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // we're just turning the motor on or off
         motor.setPower(0);

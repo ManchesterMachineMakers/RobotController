@@ -43,6 +43,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,7 +138,7 @@ public class TestVuforiaWebcam extends LinearOpMode {
         /*
          * Retrieve the camera we are to use.
          */
-        webcamName = hardwareMap.get(WebcamName.class, Names.camera_Default);
+        webcamName = hardwareMap.get(WebcamName.class, RobotConfig.CURRENT.name("camera_Default"));
 
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.

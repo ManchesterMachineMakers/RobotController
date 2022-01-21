@@ -1,17 +1,20 @@
 package org.firstinspires.ftc.teamcode.subassemblies;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import android.graphics.Color;
 
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
+import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 /**
  * Set different patterns and colors based on the robot status.  Each must be called from within the opMode or status utility.
  */
-public class Blinkin implements Testable {
+public class Blinkin implements Subassembly {
 
     public RevBlinkinLedDriver blinkinLedDriver;
     public RevBlinkinLedDriver.BlinkinPattern pattern;
@@ -19,10 +22,10 @@ public class Blinkin implements Testable {
 
     /**
      * initialize the LED strip from the hardware map
-     * @param hardwareMap
+     * @param opMode
      */
-    public Blinkin(HardwareMap hardwareMap) {
-        blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, Names.servo_BlinkinLED);
+    public Blinkin(OpMode opMode) {
+        blinkinLedDriver = opMode.hardwareMap.get(RevBlinkinLedDriver.class, RobotConfig.CURRENT.name("servo_BlinkinLED"));
     }
 
     /**

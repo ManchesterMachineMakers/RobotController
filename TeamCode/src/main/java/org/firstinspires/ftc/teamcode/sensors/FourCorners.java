@@ -31,6 +31,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
 
 import java.util.ArrayList;
 
@@ -147,10 +148,10 @@ public class FourCorners implements Runnable {
         //map hardware and declare variables for IR distance sensors
         this.opMode = opMode;
 
-        rightIR = hardwareMap.get(DistanceSensor.class, Names.range_Right);
-        leftIR = hardwareMap.get(DistanceSensor.class, Names.range_Left);
-        frontIR = hardwareMap.get(DistanceSensor.class, Names.range_Front);
-        rearIR = hardwareMap.get(DistanceSensor.class, Names.range_Rear);
+        rightIR = hardwareMap.get(DistanceSensor.class, RobotConfig.CURRENT.name("range_Right"));
+        leftIR = hardwareMap.get(DistanceSensor.class, RobotConfig.CURRENT.name("range_Left"));
+        frontIR = hardwareMap.get(DistanceSensor.class, RobotConfig.CURRENT.name("range_Front"));
+        rearIR = hardwareMap.get(DistanceSensor.class, RobotConfig.CURRENT.name("range_Rear"));
 
         actual = new double[2];
 

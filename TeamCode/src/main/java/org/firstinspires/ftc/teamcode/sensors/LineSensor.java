@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import java.lang.Runnable;
  * The color sensor should be mounted on the bot around the middle, front-to-back.
  * It must be a maximum of a couple of inches off the ground.
  */
+@Deprecated // Ultimate Goal
 public class LineSensor implements Runnable {
     protected LineSensor() {
     }
@@ -115,7 +117,7 @@ public class LineSensor implements Runnable {
 
 
     public LineSensor(HardwareMap hwMap, LinearOpMode opMode) {
-        colorSensor = hwMap.get(NormalizedColorSensor.class, Names.sensor_Color);
+        colorSensor = hwMap.get(NormalizedColorSensor.class, RobotConfig.CURRENT.name("sensor_Color"));
         this.opMode = opMode;
     }
 

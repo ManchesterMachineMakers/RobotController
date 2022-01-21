@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.drivebase;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
 
 /**
  * Use this superclass to control a drive base with four mecanum wheels, one at each corner.
@@ -23,16 +25,16 @@ public class MecanumDriveBase extends DriveBase {
     // @Device("right_front")
     public DcMotor motorRightFront;
 
-    public MecanumDriveBase(HardwareMap hwMap) {
-        super(hwMap);
+    public MecanumDriveBase(OpMode opMode) {
+        super(opMode.hardwareMap);
     }
 
     @Override
     protected void initMotorConfigurations() {
-        motorLeftFront  = hardwareMap.dcMotor.get(Names.motor_LeftFront);
-        motorRightFront  = hardwareMap.dcMotor.get(Names.motor_RightFront);
-        motorLeftRear  = hardwareMap.dcMotor.get(Names.motor_LeftRear);
-        motorRightRear  = hardwareMap.dcMotor.get(Names.motor_RightRear);
+        motorLeftFront  = hardwareMap.dcMotor.get(RobotConfig.CURRENT.name("motor_LeftFront"));
+        motorRightFront  = hardwareMap.dcMotor.get(RobotConfig.CURRENT.name("motor_RightFront"));
+        motorLeftRear  = hardwareMap.dcMotor.get(RobotConfig.CURRENT.name("motor_LeftRear"));
+        motorRightRear  = hardwareMap.dcMotor.get(RobotConfig.CURRENT.name("motor_RightRear"));
         
         wheelMotors = new DcMotor[]{ 
             motorLeftFront, motorRightFront, 

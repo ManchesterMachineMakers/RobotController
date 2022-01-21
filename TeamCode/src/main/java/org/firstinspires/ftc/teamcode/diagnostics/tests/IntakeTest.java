@@ -25,20 +25,29 @@ public class IntakeTest implements Base {
         runner.opMode.telemetry.setAutoClear(false);
         statusReport = runner.opMode.telemetry.addLine("Finished running Intake Test");
         speedReport = runner.opMode.telemetry.addLine("Active Intake").addData("Speed", intake.getSpeed());
+        runner.opMode.telemetry.update();
 
         try {
             intake.go(DcMotorSimple.Direction.FORWARD);
             waitForIt();
+            runner.opMode.telemetry.update();
 
             intake.stop();
             waitForIt();
+            runner.opMode.telemetry.update();
 
             intake.go(DcMotorSimple.Direction.REVERSE);
             waitForIt();
+            runner.opMode.telemetry.update();
 
             intake.stop();
+            speedReport.setValue(intake.getSpeed());
+            runner.opMode.telemetry.update();
+
         } catch (InterruptedException ex) {
             statusReport.addData("Exception", ex.getStackTrace());
+            runner.opMode.telemetry.update();
+
         }
         return true;
     }

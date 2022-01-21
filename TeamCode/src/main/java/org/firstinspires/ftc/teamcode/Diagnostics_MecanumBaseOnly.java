@@ -16,7 +16,7 @@ public class Diagnostics_MecanumBaseOnly extends DiagnosticsOpMode {
     @Override
     public Testable[] provides() {
         return new Testable[] {
-                new MecanumDriveBase(hardwareMap)
+                new MecanumDriveBase(this)
         };
     }
 

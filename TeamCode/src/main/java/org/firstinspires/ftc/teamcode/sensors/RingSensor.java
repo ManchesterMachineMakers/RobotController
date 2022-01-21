@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
 
 import java.util.ArrayList;
 
@@ -14,6 +15,7 @@ import java.util.ArrayList;
  * The color sensor should be mounted on the bot around the middle, front-to-back.
  * It must be a maximum of a couple of inches off the ground.
  */
+@Deprecated // Ultimate Goal
 public class RingSensor extends LineSensor implements Runnable {
     private static ArrayList<LineListener> ringListeners = new ArrayList<>();
     public static void addRingListener(LineListener listener) {
@@ -68,7 +70,7 @@ public class RingSensor extends LineSensor implements Runnable {
 
     public RingSensor(HardwareMap hwMap, LinearOpMode opMode) {
         // super(hwMap, opMode);
-        colorSensor = hwMap.get(NormalizedColorSensor.class, Names.sensor_Rings);
+        colorSensor = hwMap.get(NormalizedColorSensor.class, RobotConfig.CURRENT.name("sensor_Rings"));
         this.opMode = opMode;
     }
 

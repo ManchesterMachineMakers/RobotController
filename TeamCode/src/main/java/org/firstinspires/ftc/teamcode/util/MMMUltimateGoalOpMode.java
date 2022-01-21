@@ -3,11 +3,9 @@ package org.firstinspires.ftc.teamcode.util;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
-import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.navigation.Destination;
 import org.firstinspires.ftc.teamcode.sensors.FourCorners;
 import org.firstinspires.ftc.teamcode.sensors.LineSensor;
@@ -46,7 +44,7 @@ public abstract class MMMUltimateGoalOpMode extends LinearOpMode {
     public Camera camera;
     public TensorFlowObjectDetector tfod;
 
-    public RingDetectorTimeout.Detection rings; // Ring stack
+    //public RingDetectorTimeout.Detection rings; // Ring stack
 
     // driver feedback
     public Blinkin led;
@@ -58,7 +56,11 @@ public abstract class MMMUltimateGoalOpMode extends LinearOpMode {
      */
     public void initReporting() {
         telemetry.setAutoClear(false);
-        led = new Blinkin(hardwareMap);
+        try {
+            led = RobotConfig.CURRENT.getHardware(Blinkin.class, this);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
         robotReport = new RobotReport(telemetry, led);
     }
 
@@ -66,11 +68,19 @@ public abstract class MMMUltimateGoalOpMode extends LinearOpMode {
      * Set up all the robot subassemblies.
      */
     public void initHardware() {
-        driveBase = RobotHardware.CURRENT.get(DriveBase.class, hardwareMap);
-        intake = new ActiveIntake(hardwareMap, this);
+        try {
+            driveBase = RobotConfig.CURRENT.getHardware(DriveBase.class, this);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        try {
+            intake = RobotConfig.CURRENT.getHardware(ActiveIntake.class, this);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
         shooter = new Shooter(hardwareMap);
         reckoning = new PIDReckoning(hardwareMap, this);
-        wobbleGoalGrabber = new Delivery(hardwareMap);
+        wobbleGoalGrabber = new Delivery(this);
 
         // vision
         camera = new Camera(hardwareMap, this);

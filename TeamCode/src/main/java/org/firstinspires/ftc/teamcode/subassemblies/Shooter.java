@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.util.Names;
+import org.firstinspires.ftc.teamcode.util.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.RobotReport;
 
 import java.util.Hashtable;
@@ -15,6 +16,7 @@ import java.util.Hashtable;
 /**
  * Motors - 2x 1620
  */
+@Deprecated // Ultimate Goal
 public class Shooter  {
 
     public static final double rangeTolerance = 100; //TODO: Set this value! Millimeters distance from target tolerance +-.
@@ -46,10 +48,10 @@ public class Shooter  {
      */
     public Shooter(HardwareMap hardwareMap) {
 
-        shooterMotor1  = hardwareMap.get(DcMotor.class, Names.motor_Shooter1);
-        shooterMotor2 = hardwareMap.get(DcMotor.class, Names.motor_Shooter2);
-        magazine = hardwareMap.get(Servo.class, Names.servo_Magazine);
-        trigger = hardwareMap.get(Servo.class, Names.servo_Trigger);
+        shooterMotor1  = hardwareMap.get(DcMotor.class, RobotConfig.CURRENT.name("motor_Shooter1"));
+        shooterMotor2 = hardwareMap.get(DcMotor.class, RobotConfig.CURRENT.name("motor_Shooter2"));
+        magazine = hardwareMap.get(Servo.class, RobotConfig.CURRENT.name("servo_Magazine"));
+        trigger = hardwareMap.get(Servo.class, RobotConfig.CURRENT.name("servo_Trigger"));
 
         shooterMotor1.setDirection(DcMotor.Direction.REVERSE);
         shooterMotor2.setDirection(DcMotor.Direction.REVERSE);

@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
-import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.navigation.Destination;
 import org.firstinspires.ftc.teamcode.sensors.FourCorners;
 import org.firstinspires.ftc.teamcode.sensors.LineSensor;
@@ -54,15 +56,20 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
     /**
      * Set up all the robot subassemblies.
      */
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void initHardware() {
-        driveBase = RobotHardware.CURRENT.get(DriveBase.class, hardwareMap);
+        try {
+            driveBase = RobotConfig.CURRENT.getHardware(DriveBase.class, this);
+        } catch(NoSuchMethodException ignored) {
+            ignored.printStackTrace();
+        }
         //intake = new ActiveIntake(hardwareMap, this);
         //shooter = new Shooter(hardwareMap);
-        //reckoning = new PIDReckoning(hardwareMap, this);
+        //reckoning = new PIDReckoning(hardwareMap, this);(
         //wobbleGoalGrabber = new WobbleGoalGrabber(hardwareMap);
 
         // vision
-//        camera = new Camera(hardwareMap, this);
+//        camera = new Camera(hardwareMap, this);)
     }
 
     /**

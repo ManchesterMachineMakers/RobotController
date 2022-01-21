@@ -11,10 +11,11 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated // Ultimate Goal
 public class TensorFlowObjectDetector {
 
     // TensorFlow Lite Object Detection
-    private static final String TFOD_MODEL_RUBBER_DUCKY = "model_20211109_175047.tflite";
+    private static final String TFOD_MODEL_RUBBER_DUCKY = "FreightFrenzy_BCDM.tflite"; //"model_20211109_175047.tflite";
     private static final String TFOD_MODEL_CUSTOM_ELEMENT = "";
     private static final String LABEL_RUBBER_DUCKY = "duck";
     private static final String LABEL_CUSTOM_ELEMENT = "muffin";
@@ -60,7 +61,7 @@ public class TensorFlowObjectDetector {
 
     public List<Recognition> getRecognitions() {
         if(tfod != null) {
-            RobotLog.i("Getting recognitions.");
+            RobotLog.i("Getting recognitions. ");
             return tfod.getRecognitions();
             // return tfod.getUpdatedRecognitions();
             // this will return null if no new recognitions are found.
