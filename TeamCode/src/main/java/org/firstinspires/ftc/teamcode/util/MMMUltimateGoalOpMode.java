@@ -109,10 +109,10 @@ public abstract class MMMUltimateGoalOpMode extends LinearOpMode {
             // if the color is orange,
             // count another ring
             RobotReport.ringsOnBot += 1;
-            if (RobotReport.ringsOnBot >= ActiveIntake.maxRingsAllowedOnBot) {
-                led.autonomousActionAlert();
-                intake.stop();
-            }
+//            if (RobotReport.ringsOnBot >= ActiveIntake.maxRingsAllowedOnBot) {
+//                led.autonomousActionAlert();
+//                intake.stop();
+//            }
             robotReport.updateBotStatus();
         });
         //TODO: Start the RingSensor when we have one.

@@ -29,4 +29,8 @@ public class Names_FreightFrenzyRobot {
     public static final String range_Right = "right";
 
     public static final String camera_Default = "Webcam 1";
+
+    public static final String delivery_Gamepad = "gamepad2";
+    public static final String intake_Gamepad = "gamepad2";
+    public static final String drivebase_Gamepad = "gamepad1";
 }

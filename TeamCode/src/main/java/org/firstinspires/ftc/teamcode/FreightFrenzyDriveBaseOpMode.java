@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 import org.firstinspires.ftc.teamcode.util.MMMFreightFrenzyOpMode;
 
-@TeleOp(name = "Drive Base Demo")
+@TeleOp(name = "Freight Frenzy Full")
 public class FreightFrenzyDriveBaseOpMode extends MMMFreightFrenzyOpMode {
     double r;
     double robotAngle;
@@ -44,8 +46,17 @@ public class FreightFrenzyDriveBaseOpMode extends MMMFreightFrenzyOpMode {
      * Handle the driving around from the gamepad.
      */
     public void loopOpMode() {
+
         driving();
+
+        // default controls for the delivery are defined in the Subassembly
+        delivery.controller();
+
+        // default controls for the intake are defined in the Subassembly
+        intake.controller();
+
     }
+
     public void driving() {
         r = Math.hypot(gamepad1.left_stick_x, -gamepad1.left_stick_y);
         robotAngle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x) - Math.PI / 4;
@@ -63,4 +74,8 @@ public class FreightFrenzyDriveBaseOpMode extends MMMFreightFrenzyOpMode {
 
         driveBase.go(new double[] { v1, v2, v3, v4 });
     }
+
+
+
+
 }

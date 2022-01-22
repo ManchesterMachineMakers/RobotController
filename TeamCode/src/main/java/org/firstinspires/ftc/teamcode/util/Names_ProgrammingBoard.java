@@ -50,4 +50,8 @@ public class Names_ProgrammingBoard {
     public static final String range_Right = "front";
 
     public static final String camera_Default = "Webcam 1";
+
+    public static final String delivery_Gamepad = "gamepad1";
+    public static final String intake_Gamepad = "gamepad1";
+    public static final String drivebase_Gamepad = "gamepad1";
 }
