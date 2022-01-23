@@ -44,9 +44,9 @@ public class ActiveIntake implements Subassembly {
         motor.setDirection(DcMotorSimple.Direction.FORWARD);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // we're just turning the motor on or off
         motor.setPower(0);
-        ((DcMotorEx)motor).setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        if (RobotConfig.CURRENT.name("delivery_Gamepad") == "gamepad1") {
+        if (RobotConfig.CURRENT.name("delivery_Gamepad").equals("gamepad2")) {
             gamepad = opMode.gamepad2; // default value
         } else {
             gamepad = opMode.gamepad1;
@@ -101,8 +101,7 @@ public class ActiveIntake implements Subassembly {
             float deltaPos1 = endPos1 - startPos1;
             // it's the same kind of  motor as the shooter uses.
             float rotations1 = deltaPos1/(float)Shooter.motorEncoderEventsPerRotation; // how many rotations
-            float rpm1 = (rotations1/ms) * 60000; // rotations per minute.
-            return rpm1;
+            return (rotations1/ms) * 60000;
 
         } catch (InterruptedException ex) {
             RobotLog.logStackTrace(ex);
