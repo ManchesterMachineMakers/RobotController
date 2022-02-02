@@ -97,3 +97,4 @@ asdk_location.dat
 .settings/org.eclipse.buildship.core.prefs
 
 *.prev_config
+matchlogs

@@ -10,7 +10,7 @@ public class InchwormMecanumDriveBase extends MecanumDriveBase {
 
     public InchwormMecanumDriveBase(OpMode opMode) {
         super(opMode);
-        linearServo = opMode.hardwareMap.servo.get(Names.servo_InchwormLifter);
+        //linearServo = opMode.hardwareMap.servo.get(Names.servo_InchwormLifter);
     }
 
     @Override

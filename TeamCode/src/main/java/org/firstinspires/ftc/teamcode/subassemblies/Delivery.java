@@ -29,8 +29,8 @@ public class Delivery implements Subassembly {
     private static final double SLIDE_POWER = 0.5;
 
     public Delivery(OpMode opMode) {
-        chuteServo = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliverySlide"));
-        doorServo = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_GrabberClaw"));
+        chuteServoLeft = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliveryChuteLeft"));
+        doorServo = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliveryDoor"));
         motor = opMode.hardwareMap.dcMotor.get(RobotConfig.CURRENT.name("motor_DeliveryMotor"));
         if (RobotConfig.CURRENT.name("delivery_Gamepad") == "gamepad1") {
             gamepad = opMode.gamepad2; // default value
@@ -42,7 +42,7 @@ public class Delivery implements Subassembly {
     /**
      * These can each be set directly, but you can also use the shortcuts.
      */
-    public Servo chuteServo;
+    public Servo chuteServoLeft;
     public Servo doorServo;
     public DcMotor motor;
     public Gamepad gamepad;
@@ -54,10 +54,10 @@ public class Delivery implements Subassembly {
     }
 
     public void setChuteOpenPosition() {
-        chuteServo.setPosition(CHUTE_OPEN_POSITION);
+        chuteServoLeft.setPosition(CHUTE_OPEN_POSITION);
     }
     public void setChuteCompactPosition() {
-        chuteServo.setPosition(CHUTE_COMPACT_POSITION);
+        chuteServoLeft.setPosition(CHUTE_COMPACT_POSITION);
     }
     public void setDoorClosedPosition() {
         doorServo.setPosition(DOOR_CLOSED_POSITION);
@@ -73,7 +73,7 @@ public class Delivery implements Subassembly {
     }
     // we will likely need to add a tolerance to this method.
     public boolean isFoldedUp() {
-        if (chuteServo.getPosition() == CHUTE_COMPACT_POSITION) { return true; }
+        if (chuteServoLeft.getPosition() == CHUTE_COMPACT_POSITION) { return true; }
         return false;
     }
 

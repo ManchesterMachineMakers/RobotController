@@ -28,6 +28,7 @@ public class ActiveIntake implements Subassembly {
     boolean stop = false;
     public final double FAST_POWER = 0.7;
     public final double SLOW_POWER_MULTIPLIER = 0.2;
+    public static final double motorEncoderEventsPerRotation = 753.2;
     DcMotor motor;
 
     OpMode opMode;
@@ -100,7 +101,7 @@ public class ActiveIntake implements Subassembly {
 
             float deltaPos1 = endPos1 - startPos1;
             // it's the same kind of  motor as the shooter uses.
-            float rotations1 = deltaPos1/(float)Shooter.motorEncoderEventsPerRotation; // how many rotations
+            float rotations1 = deltaPos1/(float)motorEncoderEventsPerRotation; // how many rotations
             return (rotations1/ms) * 60000;
 
         } catch (InterruptedException ex) {
