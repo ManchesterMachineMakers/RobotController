@@ -42,16 +42,21 @@ public class ActiveIntake implements Subassembly {
         this.opMode = opMode;
 
         motor = hardwareMap.get(DcMotor.class, RobotConfig.CURRENT.name("motor_Intake"));
-        motor.setDirection(DcMotorSimple.Direction.FORWARD);
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // we're just turning the motor on or off
-        motor.setPower(0);
-        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        initIntakeMotor();
 
         if (RobotConfig.CURRENT.name("delivery_Gamepad").equals("gamepad2")) {
             gamepad = opMode.gamepad2; // default value
         } else {
             gamepad = opMode.gamepad1;
         }
+    }
+
+    public void initIntakeMotor() {
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        motor.setDirection(DcMotorSimple.Direction.FORWARD);
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // we're just turning the motor on or off
+        motor.setPower(0);
     }
 
     /**

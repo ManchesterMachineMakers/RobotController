@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.diagnostics.util.DiagnosticsOpMode;
 import org.firstinspires.ftc.teamcode.util.RobotConfig;
 
-@TeleOp
+@TeleOp(name = "Full Diagnostic", group = "Diagnostics")
 public class Diagnostics extends DiagnosticsOpMode {
 
     @RequiresApi(api = Build.VERSION_CODES.N)

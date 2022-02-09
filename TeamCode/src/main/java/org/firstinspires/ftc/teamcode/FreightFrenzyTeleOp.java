@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.util.MMMFreightFrenzyOpMode;
 
-@TeleOp(name = "Freight Frenzy Full")
+@TeleOp(name = "Freight Frenzy Full", group = "Freight Frenzy")
 public class FreightFrenzyTeleOp extends MMMFreightFrenzyOpMode {
     double r;
     double robotAngle;
