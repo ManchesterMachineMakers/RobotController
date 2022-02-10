@@ -57,7 +57,7 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
     }
 
     private void keepTheBeat(int beats) throws InterruptedException {
-        while (opModeIsActive() && driveBase.isBusy() && beats < 0) {
+        while (opModeIsActive() && driveBase.isBusy() && beats >= 0) {
             wait(1000); // wait one second
             beats--;
         }
