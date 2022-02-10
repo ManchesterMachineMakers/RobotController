@@ -20,12 +20,16 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // You put your Whole Self in
+        telemetry.speak("You put your whole self in");
         hokeyPokey(DriveBase.TravelDirection.forward, 4);
         // You put your Whole Self out
+        telemetry.speak("You put your whole self out");
         hokeyPokey(DriveBase.TravelDirection.reverse, 4);
         // You put your Whole Self in
+        telemetry.speak("You put your whole self in");
         hokeyPokey(DriveBase.TravelDirection.forward, 4);
         // And you shake it all about
+        telemetry.speak("and you shake it all about");
         intake.go(DcMotorSimple.Direction.FORWARD);
         hokeyPokey(DriveBase.TravelDirection.strafeLeftForward, 1);
         hokeyPokey(DriveBase.TravelDirection.strafeRightBackward, 1);
@@ -35,11 +39,13 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
         hokeyPokey(DriveBase.TravelDirection.strafeLeftBackward, 1);
         intake.stop();
         // You do the Hokey Pokey and you turn yourself around
+        telemetry.speak("You do the Hokey Pokey and you turn yourself around");
         delivery.runSlideToPosition(1);
         hokeyPokey(DriveBase.TravelDirection.pivotLeft, 4);
         delivery.runSlideToPosition(2);
         hokeyPokey(DriveBase.TravelDirection.pivotRight, 4);
         // That's what it's all about!
+        telemetry.speak("That's what it's all about!");
         intake.go(DcMotorSimple.Direction.FORWARD);
         delivery.runSlideToPosition(3);
         hokeyPokey(DriveBase.TravelDirection.reverse, 4);
@@ -57,7 +63,7 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
     }
 
     private void keepTheBeat(int beats) throws InterruptedException {
-        while (opModeIsActive() && driveBase.isBusy() && beats >= 0) {
+        while (opModeIsActive() && driveBase.isBusy() && beats > 0) {
             wait(1000); // wait one second
             beats--;
         }
