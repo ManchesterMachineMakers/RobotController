@@ -15,7 +15,7 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
      * Please do not swallow the InterruptedException, as it is used in cases
      * where the op mode needs to be terminated early.
      *
-     * @throws InterruptedException
+     * @throws InterruptedException if opMode is terminated
      */
     @Override
     public void runOpMode() throws InterruptedException {
