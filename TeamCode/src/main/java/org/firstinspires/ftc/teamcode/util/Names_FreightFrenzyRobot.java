@@ -5,7 +5,7 @@ public class Names_FreightFrenzyRobot {
 
     public static final String servo_DeliveryDoor = "deliveryDoor";
     public static final String servo_DeliveryChuteLeft = "deliveryChuteLeft";
-    public static final String getServo_DeliveryChuteRight = "deliveryChuteRight";
+    public static final String servo_DeliveryChuteRight = "deliveryChuteRight";
     public static final String servo_BlinkinLED =  "readyLED";
 
     public static final String motor_LeftFront = "left_front";

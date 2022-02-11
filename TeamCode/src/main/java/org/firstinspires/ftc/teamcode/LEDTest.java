@@ -4,7 +4,7 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name = "LEDTest (Blocks to Java)")
+@TeleOp(name = "LEDTest (Blocks to Java)", group = "Diagnostics")
 public class LEDTest extends LinearOpMode {
 
   private RevBlinkinLedDriver readyLED;

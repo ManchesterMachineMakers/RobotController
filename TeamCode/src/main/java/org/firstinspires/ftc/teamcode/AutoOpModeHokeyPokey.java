@@ -19,17 +19,25 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
      */
     @Override
     public void runOpMode() throws InterruptedException {
+        initOpMode();
+
+        // Start it talking
+        report("Are you ready?");
+
+        waitForStart();
+        runtime.reset();
+        
         // You put your Whole Self in
-        telemetry.speak("You put your whole self in");
+        report("You put your Whole Self in,");
         hokeyPokey(DriveBase.TravelDirection.forward, 4);
         // You put your Whole Self out
-        telemetry.speak("You put your whole self out");
+        report("You put your Whole Self out,");
         hokeyPokey(DriveBase.TravelDirection.reverse, 4);
         // You put your Whole Self in
-        telemetry.speak("You put your whole self in");
+        report("You put your Whole Self in,");
         hokeyPokey(DriveBase.TravelDirection.forward, 4);
         // And you shake it all about
-        telemetry.speak("and you shake it all about");
+        report("and you shake it all about!");
         intake.go(DcMotorSimple.Direction.FORWARD);
         hokeyPokey(DriveBase.TravelDirection.strafeLeftForward, 1);
         hokeyPokey(DriveBase.TravelDirection.strafeRightBackward, 1);
@@ -39,18 +47,33 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
         hokeyPokey(DriveBase.TravelDirection.strafeLeftBackward, 1);
         intake.stop();
         // You do the Hokey Pokey and you turn yourself around
-        telemetry.speak("You do the Hokey Pokey and you turn yourself around");
-        delivery.runSlideToPosition(1);
+        report("You do the Hokey Pokey,");
+        if (delivery != null) {
+            delivery.runSlideToPosition(1);
+        }
         hokeyPokey(DriveBase.TravelDirection.pivotLeft, 4);
-        delivery.runSlideToPosition(2);
+        report(" and you turn yourself around,");
+        if (delivery != null) {
+            delivery.runSlideToPosition(2);
+        }
         hokeyPokey(DriveBase.TravelDirection.pivotRight, 4);
         // That's what it's all about!
-        telemetry.speak("That's what it's all about!");
+        report("That's what it's all about!");
         intake.go(DcMotorSimple.Direction.FORWARD);
-        delivery.runSlideToPosition(3);
+        if (delivery != null) {
+            delivery.runSlideToPosition(3);
+        }
         hokeyPokey(DriveBase.TravelDirection.reverse, 4);
-        delivery.runSlideToPosition(0);
+        if (delivery != null) {
+            delivery.runSlideToPosition(0);
+        }
         intake.stop();
+    }
+
+    private void report(String message) {
+        telemetry.speak(message);
+        telemetry.addLine(message);
+        telemetry.update();
     }
 
     private void hokeyPokey(DriveBase.TravelDirection whichWayDoWeGo, int beats) throws InterruptedException {
@@ -64,7 +87,8 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
 
     private void keepTheBeat(int beats) throws InterruptedException {
         while (opModeIsActive() && driveBase.isBusy() && beats > 0) {
-            wait(1000); // wait one second
+
+            Thread.sleep(900); // wait one second
             beats--;
         }
     }
