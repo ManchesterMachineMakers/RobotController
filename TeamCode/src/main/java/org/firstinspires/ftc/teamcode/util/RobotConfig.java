@@ -59,12 +59,18 @@ public class RobotConfig {
         names(Names_FreightFrenzyRobot.class);
     }};
 
+    public static final RobotConfig PROGRAMMING_BOARD_EXPANDED = new RobotConfig() {{
+        merge(FULL_ROBOT);
+        value("configName", "Programming Board (Expanded)");
+        names(Names_FreightFrenzyProgrammingBoard.class);
+    }};
+
 
     /**
      * Current config
      * DO NOT EDIT - Set by build matrix script
      */
-    public static final RobotConfig CURRENT = PROGRAMMING_BOARD;
+    public static final RobotConfig CURRENT = FULL_ROBOT;
 
 
 
@@ -92,6 +98,7 @@ public class RobotConfig {
     }
 
     public <T> void value(String key, T value) {
+         config.removeIf(pair -> pair.key() == key);
          config.add(new ConfigPair<String, T>() {
             @Override
             public String key() {

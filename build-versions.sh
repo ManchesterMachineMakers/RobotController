@@ -5,3 +5,4 @@ matrix/config TeamCode/src/main/java/org/firstinspires/ftc/teamcode/util/RobotCo
 
 matrix/build FULL_ROBOT
 matrix/build PROGRAMMING_BOARD
+matrix/build PROGRAMMING_BOARD_EXPANDED

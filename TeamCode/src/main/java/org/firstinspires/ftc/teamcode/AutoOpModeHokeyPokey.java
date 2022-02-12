@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.util.MMMFreightFrenzyOpMode;
@@ -20,6 +22,7 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         initOpMode();
+        driveBase.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Start it talking
         report("Are you ready?");
@@ -86,9 +89,10 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
     }
 
     private void keepTheBeat(int beats) throws InterruptedException {
-        while (opModeIsActive() && driveBase.isBusy() && beats > 0) {
-
-            Thread.sleep(900); // wait one second
+        while (opModeIsActive() /*&& driveBase.isBusy()*/ && beats > 0) {
+            RobotLog.i("Waiting in an English garden");
+            Thread.sleep(1000); // wait one beat
+            RobotLog.i("If the sun doesn't come from sitting in the English rain");
             beats--;
         }
     }
