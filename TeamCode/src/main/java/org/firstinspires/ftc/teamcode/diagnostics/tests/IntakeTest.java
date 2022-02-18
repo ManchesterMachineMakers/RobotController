@@ -7,12 +7,15 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
+import org.firstinspires.ftc.teamcode.subassemblies.Gamepad;
 
 @Test("Intake Test")
 @Requires(ActiveIntake.class)
+@Requires(Gamepad.class)
 public class IntakeTest implements Base {
 
     ActiveIntake intake;
+    Gamepad gamepad;
     Telemetry.Item speedReport;
     Telemetry.Line statusReport;
     ElapsedTime timer = new ElapsedTime();
@@ -23,10 +26,11 @@ public class IntakeTest implements Base {
         intake = Testable.getOrDie(sel, ActiveIntake.class);
 
         runner.opMode.telemetry.setAutoClear(false);
-        statusReport = runner.opMode.telemetry.addLine("Finished running Intake Test");
+        statusReport = runner.opMode.telemetry.addLine("Intake Test");
         speedReport = runner.opMode.telemetry.addLine("Active Intake").addData("Speed", intake.getSpeed());
         runner.opMode.telemetry.update();
 
+        intake.initIntakeMotor();
         try {
             intake.go(DcMotorSimple.Direction.FORWARD);
             waitForIt();
@@ -49,6 +53,25 @@ public class IntakeTest implements Base {
             runner.opMode.telemetry.update();
 
         }
+
+        try {
+        // if we don't have a gamepad, we won't run the gamepad part.
+            gamepad = Testable.getOrDie(sel, Gamepad.class);
+            com.qualcomm.robotcore.hardware.Gamepad gmp1 = gamepad.get(1);
+
+            statusReport.addData("Waiting", "for user input.");
+
+            while(runner.opMode.opModeIsActive() && !gmp1.ps) {
+                intake.controller();
+            }
+
+        } catch (Exception ex) {
+            statusReport.addData("Done", "No gamepad to be found. Exiting.");
+            runner.opMode.telemetry.update();
+        }
+
+        statusReport.addData("Finished", "Running Intake Test.");
+        runner.opMode.telemetry.update();
         return true;
     }
 

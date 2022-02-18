@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.util.MMMFreightFrenzyOpMode;
 
-@TeleOp(name = "Test Op Mode")
-public class TestOpMode extends MMMFreightFrenzyOpMode {
+@TeleOp(name = "Test Op Mode", group = "Freight Frenzy")
+public class FFTestOpMode extends MMMFreightFrenzyOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {

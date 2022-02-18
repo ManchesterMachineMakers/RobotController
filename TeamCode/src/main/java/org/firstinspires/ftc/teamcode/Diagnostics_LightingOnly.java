@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.DiagnosticsOpMode;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 
-@TeleOp
+@TeleOp(name = "Lighting Diagnostic", group = "Diagnostics")
 public class Diagnostics_LightingOnly extends DiagnosticsOpMode {
 
     @Override

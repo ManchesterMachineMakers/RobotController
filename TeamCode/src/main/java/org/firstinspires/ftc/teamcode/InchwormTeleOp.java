@@ -63,7 +63,7 @@ public class InchwormTeleOp extends MMMUltimateGoalOpMode {
 
         autoPrepShooter();
 
-        manualWGGControl();
+//        manualWGGControl();
 
         //reckonAndReport();
 
@@ -135,20 +135,20 @@ public class InchwormTeleOp extends MMMUltimateGoalOpMode {
     /**
      * Set up controls for wobble goal grabber
      */
-    private void manualWGGControl() {
-        if(gamepad1.dpad_down) {
-            wobbleGoalGrabber.down();
-        }
-        if(gamepad1.dpad_up) {
-            wobbleGoalGrabber.up();
-        }
-        if(gamepad1.dpad_left) {
-            wobbleGoalGrabber.grab();
-        }
-        if(gamepad1.dpad_right) {
-            wobbleGoalGrabber.release();
-        }
-    }
+//    private void manualWGGControl() {
+//        if(gamepad1.dpad_down) {
+//            wobbleGoalGrabber.down();
+//        }
+//        if(gamepad1.dpad_up) {
+//            wobbleGoalGrabber.up();
+//        }
+//        if(gamepad1.dpad_left) {
+//            wobbleGoalGrabber.grab();
+//        }
+//        if(gamepad1.dpad_right) {
+//            wobbleGoalGrabber.release();
+//        }
+//    }
 
     /**
      * From TeleArrayAS - auto aim and shoot. Does not include pitch.

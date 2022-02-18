@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.util.MMMFreightFrenzyOpMode;
 
-@TeleOp(name = "Mecanum Drive Base Demo", group = "Freight Frenzy")
-public class FreightFrenzyDriveBaseOpMode extends MMMFreightFrenzyOpMode {
+@TeleOp(name = "Freight Frenzy Full", group = "Freight Frenzy")
+public class FreightFrenzyTeleOp extends MMMFreightFrenzyOpMode {
     double r;
     double robotAngle;
     double rightX;
@@ -17,7 +17,7 @@ public class FreightFrenzyDriveBaseOpMode extends MMMFreightFrenzyOpMode {
     double periodLength = 120; //seconds
     double endgameLength = 30; //seconds
     boolean inEndgame = false;
-    //    int pitchDegrees = 0;
+//    int pitchDegrees = 0;
     public void runOpMode() throws InterruptedException {
         initOpMode();
 
@@ -44,8 +44,17 @@ public class FreightFrenzyDriveBaseOpMode extends MMMFreightFrenzyOpMode {
      * Handle the driving around from the gamepad.
      */
     public void loopOpMode() {
+
         driving();
+
+        // default controls for the delivery are defined in the Subassembly
+        delivery.controller();
+
+        // default controls for the intake are defined in the Subassembly
+        intake.controller();
+
     }
+
     public void driving() {
         r = Math.hypot(gamepad1.left_stick_x, -gamepad1.left_stick_y);
         robotAngle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x) - Math.PI / 4;
@@ -63,4 +72,8 @@ public class FreightFrenzyDriveBaseOpMode extends MMMFreightFrenzyOpMode {
 
         driveBase.go(new double[] { v1, v2, v3, v4 });
     }
+
+
+
+
 }

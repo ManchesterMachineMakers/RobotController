@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.sensors.Vision;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
+import org.firstinspires.ftc.teamcode.subassemblies.Gamepad;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
 public class RobotConfig {
     public static final RobotConfig BASE = new RobotConfig() {{
         value("vuforiaKey", "Afbp4I3/////AAABmcEn57recUnKv/3EHsAO+jkAFD02oVRghZ8yX5DjgOIvkxO1ipG/fb3GeprYO+Bp6AVbmvW7ts21c71ldDDS8caXYkWTGpFaJ0CyMMfqJQnUabNsH7/sQjh99KlSOi+dOo75AuLUjuLO3nIksEFYpQ3Q8lAGl0ihH3npeTmO9X9KOTV2NJTNKEXZ3mXxBa8xEs9ZYhQy/ppkpExORmc6R+FJYnyykaTaFaXwdKg/R9LZnPQcLwuDD0EnoYlj74qOwVsekUfKxttKMb+FtFlgYm8pmXI5jqQdyidpSHUQn08G1EvqZBN/iuHWCDVhXP2zFRWcQdTEGltwsg47w/IJuLzFvsz04HEqyBz2Xh9eAbAn");
+        subassembly(Gamepad.class);
     }};
 
     /**

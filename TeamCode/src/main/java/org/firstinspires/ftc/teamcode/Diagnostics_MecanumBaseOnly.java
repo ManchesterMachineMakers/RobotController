@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 
-@TeleOp
+@TeleOp(name = "Mecanum Drive Base Diagnostic", group = "Diagnostics")
 public class Diagnostics_MecanumBaseOnly extends DiagnosticsOpMode {
 
     @Override

@@ -14,6 +14,8 @@ import org.firstinspires.ftc.teamcode.sensors.LineSensor;
 import org.firstinspires.ftc.teamcode.navigation.Location;
 import org.firstinspires.ftc.teamcode.navigation.MyPath;
 import org.firstinspires.ftc.teamcode.navigation.Orientation;
+import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
+import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 
 import java.util.ArrayList;
 
@@ -27,17 +29,10 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
 
     // All the different parts
     public DriveBase driveBase;
-    //public ActiveIntake intake;
-    //public Shooter shooter;
-    //public RingSensor ringSensor;
-    //public WobbleGoalGrabber wobbleGoalGrabber;
+    public ActiveIntake intake;
+    public Delivery delivery;
 
     // navigation tools
-//    public PIDReckoning reckoning;
-//    public Camera camera;
-//    public TensorFlowObjectDetector tfod;
-
-    //public RingDetectorTimeout.Detection rings; // Ring stack
 
     // driver feedback
 //    public Blinkin led;
@@ -60,6 +55,8 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
     public void initHardware() {
         try {
             driveBase = RobotConfig.CURRENT.getHardware(DriveBase.class, this);
+            intake = RobotConfig.CURRENT.getHardware(ActiveIntake.class, this);
+            delivery = RobotConfig.CURRENT.getHardware(Delivery.class, this);
         } catch(NoSuchMethodException ignored) {
             ignored.printStackTrace();
         }
