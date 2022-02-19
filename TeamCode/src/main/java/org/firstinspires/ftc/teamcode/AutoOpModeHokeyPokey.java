@@ -24,6 +24,9 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
         initOpMode();
         driveBase.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        boolean deliveryEnabled = false; //delivery != null;
+        boolean intakeEnabled = intake != null;
+
         // Start it talking
         report("Are you ready?");
 
@@ -41,36 +44,38 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
         hokeyPokey(DriveBase.TravelDirection.forward, 4);
         // And you shake it all about
         report("and you shake it all about!");
-        intake.go(DcMotorSimple.Direction.FORWARD);
+        if (intakeEnabled) { intake.go(DcMotorSimple.Direction.FORWARD); }
         hokeyPokey(DriveBase.TravelDirection.strafeLeftForward, 1);
         hokeyPokey(DriveBase.TravelDirection.strafeRightBackward, 1);
-        intake.stop();
-        intake.go(DcMotorSimple.Direction.REVERSE);
+        if (intakeEnabled) {
+            intake.stop();
+            intake.go(DcMotorSimple.Direction.REVERSE);
+        }
         hokeyPokey(DriveBase.TravelDirection.strafeRightForward, 1);
         hokeyPokey(DriveBase.TravelDirection.strafeLeftBackward, 1);
-        intake.stop();
+        if (intakeEnabled) { intake.stop(); }
         // You do the Hokey Pokey and you turn yourself around
         report("You do the Hokey Pokey,");
-        if (delivery != null) {
+        if (deliveryEnabled) {
             delivery.runSlideToPosition(1);
         }
         hokeyPokey(DriveBase.TravelDirection.pivotLeft, 4);
         report(" and you turn yourself around,");
-        if (delivery != null) {
+        if (deliveryEnabled) {
             delivery.runSlideToPosition(2);
         }
         hokeyPokey(DriveBase.TravelDirection.pivotRight, 4);
         // That's what it's all about!
         report("That's what it's all about!");
-        intake.go(DcMotorSimple.Direction.FORWARD);
-        if (delivery != null) {
+        if (intakeEnabled) { intake.go(DcMotorSimple.Direction.FORWARD); }
+        if (deliveryEnabled) {
             delivery.runSlideToPosition(3);
         }
         hokeyPokey(DriveBase.TravelDirection.reverse, 4);
-        if (delivery != null) {
+        if (deliveryEnabled) {
             delivery.runSlideToPosition(0);
         }
-        intake.stop();
+        if (intakeEnabled) { intake.stop(); }
     }
 
     private void report(String message) {
