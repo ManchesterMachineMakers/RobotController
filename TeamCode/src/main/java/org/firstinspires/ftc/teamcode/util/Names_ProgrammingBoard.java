@@ -29,7 +29,7 @@ public class Names_ProgrammingBoard {
 
     public static final String servo_DeliveryDoor = "servo1";
     public static final String servo_DeliveryChuteLeft = "servo1";
-    public static final String getServo_DeliveryChuteRight = "servo1";
+    public static final String servo_DeliveryChuteRight = "servo1";
     public static final String servo_BlinkinLED =  "servo1";
 
     public static final String motor_LeftFront = "left_front";

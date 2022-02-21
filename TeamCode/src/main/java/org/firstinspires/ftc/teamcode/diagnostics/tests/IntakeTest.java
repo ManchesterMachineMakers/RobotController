@@ -60,9 +60,26 @@ public class IntakeTest implements Base {
             com.qualcomm.robotcore.hardware.Gamepad gmp1 = gamepad.get(1);
 
             statusReport.addData("Waiting", "for user input.");
+            Telemetry.Item motorPower = runner.opMode.telemetry.addData("Motor Power", intake.motor.getPower());
+
+            Telemetry.Item lTrig = runner.opMode.telemetry.addData("Left Trigger", gmp1.left_trigger);
+            Telemetry.Item rTrig = runner.opMode.telemetry.addData("Right Trigger", gmp1.right_trigger);
+
+            Telemetry.Item lBump = runner.opMode.telemetry.addData("Left Bumper", gmp1.left_bumper);
+            Telemetry.Item rBump = runner.opMode.telemetry.addData("Right Bumper", gmp1.right_bumper);
+            runner.opMode.telemetry.update();
 
             while(runner.opMode.opModeIsActive() && !gmp1.ps) {
                 intake.controller();
+
+                motorPower.setValue(intake.motor.getPower());
+                speedReport.setValue(intake.getSpeed());
+
+                lTrig.setValue(gmp1.left_trigger);
+                rTrig.setValue(gmp1.right_trigger);
+                lBump.setValue(gmp1.left_bumper);
+                rBump.setValue(gmp1.right_bumper);
+                runner.opMode.telemetry.update();
             }
 
         } catch (Exception ex) {

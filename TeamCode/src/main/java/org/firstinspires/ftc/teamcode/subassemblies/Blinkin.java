@@ -48,14 +48,14 @@ public class Blinkin implements Subassembly {
      * Autonomous control during TeleOp period - Steady
      */
     public void autonomousAction() {
-        pattern = RevBlinkinLedDriver.BlinkinPattern.STROBE_WHITE;
+        pattern = RevBlinkinLedDriver.BlinkinPattern.HEARTBEAT_WHITE;
         blinkinLedDriver.setPattern(pattern);
     }
     /**
      * Autonomous control during TeleOp period - Alert
      */
     public void autonomousActionAlert() {
-        blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.STROBE_WHITE);
+        blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.SHOT_WHITE);
         alertThenReset();
     }
     /**

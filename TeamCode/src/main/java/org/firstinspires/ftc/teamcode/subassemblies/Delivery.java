@@ -30,22 +30,31 @@ public class Delivery implements Subassembly {
 
     public Delivery(OpMode opMode) {
         chuteServoLeft = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliveryChuteLeft"));
+        chuteServoRight = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliveryChuteRight"));
         doorServo = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliveryDoor"));
         motor = opMode.hardwareMap.dcMotor.get(RobotConfig.CURRENT.name("motor_DeliveryMotor"));
-        if (RobotConfig.CURRENT.name("delivery_Gamepad") == "gamepad1") {
+
+        if (RobotConfig.CURRENT.name("delivery_Gamepad").equals("gamepad2")) {
             gamepad = opMode.gamepad2; // default value
         } else {
             gamepad = opMode.gamepad1;
         }
+        zero();
     }
 
     /**
      * These can each be set directly, but you can also use the shortcuts.
      */
     public Servo chuteServoLeft;
+    public Servo chuteServoRight;
     public Servo doorServo;
     public DcMotor motor;
     public Gamepad gamepad;
+
+    public void zero() {
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
 
     public void runSlideToPosition(int position) {
         motor.setTargetPosition(position);
@@ -55,9 +64,11 @@ public class Delivery implements Subassembly {
 
     public void setChuteOpenPosition() {
         chuteServoLeft.setPosition(CHUTE_OPEN_POSITION);
+        chuteServoRight.setPosition(CHUTE_OPEN_POSITION);
     }
     public void setChuteCompactPosition() {
         chuteServoLeft.setPosition(CHUTE_COMPACT_POSITION);
+        chuteServoRight.setPosition(CHUTE_COMPACT_POSITION);
     }
     public void setDoorClosedPosition() {
         doorServo.setPosition(DOOR_CLOSED_POSITION);
@@ -105,7 +116,6 @@ public class Delivery implements Subassembly {
                 incrementSlideUp();
             }
         }
-
         // open and close door with left and right dpad buttons
         if (gamepad.dpad_left) {
             setDoorClosedPosition();

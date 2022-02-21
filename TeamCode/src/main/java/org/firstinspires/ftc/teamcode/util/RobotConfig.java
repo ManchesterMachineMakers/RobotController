@@ -30,6 +30,7 @@ public class RobotConfig {
     public static final RobotConfig BASE = new RobotConfig() {{
         value("vuforiaKey", "Afbp4I3/////AAABmcEn57recUnKv/3EHsAO+jkAFD02oVRghZ8yX5DjgOIvkxO1ipG/fb3GeprYO+Bp6AVbmvW7ts21c71ldDDS8caXYkWTGpFaJ0CyMMfqJQnUabNsH7/sQjh99KlSOi+dOo75AuLUjuLO3nIksEFYpQ3Q8lAGl0ihH3npeTmO9X9KOTV2NJTNKEXZ3mXxBa8xEs9ZYhQy/ppkpExORmc6R+FJYnyykaTaFaXwdKg/R9LZnPQcLwuDD0EnoYlj74qOwVsekUfKxttKMb+FtFlgYm8pmXI5jqQdyidpSHUQn08G1EvqZBN/iuHWCDVhXP2zFRWcQdTEGltwsg47w/IJuLzFvsz04HEqyBz2Xh9eAbAn");
         subassembly(Gamepad.class);
+        subassembly(SoundEffects.class);
     }};
 
     /**
@@ -40,6 +41,7 @@ public class RobotConfig {
         value("configName", "Programming Board");
         subassembly(ProgrammingBoardDriveBase.class);
         subassembly(ActiveIntake.class);
+        subassembly(Delivery.class);
         subassembly(Vision.class);
         names(Names_ProgrammingBoard.class);
     }};
@@ -57,12 +59,18 @@ public class RobotConfig {
         names(Names_FreightFrenzyRobot.class);
     }};
 
+    public static final RobotConfig PROGRAMMING_BOARD_EXPANDED = new RobotConfig() {{
+        merge(FULL_ROBOT);
+        value("configName", "Programming Board (Expanded)");
+        names(Names_FreightFrenzyProgrammingBoard.class);
+    }};
+
 
     /**
      * Current config
      * DO NOT EDIT - Set by build matrix script
      */
-    public static final RobotConfig CURRENT = PROGRAMMING_BOARD;
+    public static final RobotConfig CURRENT = FULL_ROBOT;
 
 
 
@@ -90,6 +98,7 @@ public class RobotConfig {
     }
 
     public <T> void value(String key, T value) {
+         config.removeIf(pair -> pair.key() == key);
          config.add(new ConfigPair<String, T>() {
             @Override
             public String key() {
