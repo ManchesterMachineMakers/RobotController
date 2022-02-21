@@ -98,3 +98,4 @@ asdk_location.dat
 
 *.prev_config
 matchlogs
+*.hprof
