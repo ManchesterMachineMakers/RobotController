@@ -14,8 +14,11 @@ import org.firstinspires.ftc.teamcode.util.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 import java.io.File;
+import java.io.IOException;
 
 import androidx.annotation.RequiresApi;
+
+import station.util.Persist;
 
 /**
  * Delivery mechanism for Freight Frenzy
@@ -72,9 +75,13 @@ public class Delivery implements Subassembly {
             gamepad = opMode.gamepad1;
         }
 
-        String filename = RobotConfig.CURRENT.getValue("calibrationFile_Delivery");
+        String filename = RobotConfig.CURRENT.getValue("deliveryCalibrationFile");
         File file = AppUtil.getInstance().getSettingsFile(filename);
-        //state = ReadWriteFile.readFile(file);
+        try {
+            state = Persist.readFromFile(file.getAbsolutePath());
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+        }
         RobotLog.i("retrieved calibration from '%s'", filename);
 
         zero();

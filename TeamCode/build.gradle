@@ -10,7 +10,9 @@
 
 
 // Custom definitions may go here
-
+plugins {
+    id "io.github.0ffz.github-packages" version "1.2.1"
+}
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
@@ -24,4 +26,9 @@ android {
 dependencies {
     implementation project(':FtcRobotController')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
+    implementation "com.rutins.aleks:station:1.0.3"
+}
+repositories {
+    mavenCentral()
+    maven githubPackage.invoke("aleksrutins/station")
 }

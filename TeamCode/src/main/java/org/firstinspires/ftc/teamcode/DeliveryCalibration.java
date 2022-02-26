@@ -44,6 +44,9 @@ import java.io.File;
 
 import androidx.annotation.RequiresApi;
 
+import station.State;
+import station.util.Persist;
+
 /**
  * {@link DeliveryCalibration} calibrates the slide motor, chute servos, and door servo.
  */
@@ -110,9 +113,9 @@ public class DeliveryCalibration extends MMMFreightFrenzyOpMode
 
             if (this.delivery.gamepad.ps) {
                 // Save the calibration data to a file.
-                String filename = RobotConfig.CURRENT.getValue("calibrationFile_Delivery");
+                String filename = RobotConfig.CURRENT.getValue("deliveryCalibrationFile");
                 File file = AppUtil.getInstance().getSettingsFile(filename);
-                //ReadWriteFile.writeFile(file, Delivery.state.serialize());
+                new Persist<>(State.immutable(Delivery.state)).writeToFile(file.getAbsolutePath());
                 telemetry.log().add("saved to '%s'", filename);
 
                 // Wait for the button to be released

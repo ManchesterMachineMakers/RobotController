@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.util;
 public class Names_FreightFrenzyProgrammingBoard {
     public static final String imu = "imu";
 
-    public static final String calibrationFile_Delivery = "calibration_delivery.json";
     public static final String servo_DeliveryDoor = "servo1";
     public static final String servo_DeliveryChuteLeft = "servo1";
     public static final String servo_DeliveryChuteRight = "servo1";
