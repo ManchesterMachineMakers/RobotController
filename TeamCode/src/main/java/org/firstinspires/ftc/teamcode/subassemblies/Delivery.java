@@ -28,26 +28,6 @@ import station.util.Persist;
  */
 public class Delivery implements Subassembly {
 
-    /**
-     * Delivery State - to be written to a file
-     */
-    public class DeliveryState {
-        public int slideHighPosition;
-        public int slideMidPosition;
-        public int slideLowPosition;
-        public int slideHomePosition;
-
-        public double chuteServoLeftCompactPosition;
-        public double chuteServoLeftOpenPosition;
-        public double chuteServoRightCompactPosition;
-        public double chuteServoRightOpenPosition;
-
-        public double doorServoClosedPosition;
-        public double doorServoOpenPosition;
-
-        public DeliveryState(){}
-    }
-
     public static DeliveryState state;
 
     private static final double CHUTE_COMPACT_POSITION = 0;
@@ -61,6 +41,26 @@ public class Delivery implements Subassembly {
     private static final double DOOR_OPEN_POSITION = 0.5;
     private static final int SLIDE_INCREMENT = 100;
     private static final double SLIDE_POWER = 0.5;
+
+    /**
+     * Delivery State - to be written to a file
+     */
+    public class DeliveryState {
+        public int slideHighPosition = SLIDE_HIGH_POSITION;
+        public int slideMidPosition = SLIDE_MID_POSITION;
+        public int slideLowPosition = SLIDE_LOW_POSITION;
+        public int slideHomePosition = SLIDE_HOME_POSITION;
+
+        public double chuteServoLeftCompactPosition = CHUTE_COMPACT_POSITION;
+        public double chuteServoLeftOpenPosition = CHUTE_OPEN_POSITION;
+        public double chuteServoRightCompactPosition = CHUTE_COMPACT_POSITION;
+        public double chuteServoRightOpenPosition = CHUTE_OPEN_POSITION;
+
+        public double doorServoClosedPosition = DOOR_CLOSED_POSITION;
+        public double doorServoOpenPosition = DOOR_OPEN_POSITION;
+
+        public DeliveryState(){}
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public Delivery(OpMode opMode) {
@@ -81,6 +81,7 @@ public class Delivery implements Subassembly {
             state = Persist.readFromFile(file.getAbsolutePath());
         } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
+            state = new DeliveryState();
         }
         RobotLog.i("retrieved calibration from '%s'", filename);
 
