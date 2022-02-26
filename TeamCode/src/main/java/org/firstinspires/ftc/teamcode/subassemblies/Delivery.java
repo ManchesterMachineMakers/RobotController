@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subassemblies;
 
 import android.os.Build;
 
+import com.google.gson.Gson;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -84,6 +85,7 @@ public class Delivery implements Subassembly {
             state = new DeliveryState();
         }
         RobotLog.i("retrieved calibration from '%s'", filename);
+        RobotLog.i("Values: %s", new Gson().toJson(state));
 
         zero();
     }
