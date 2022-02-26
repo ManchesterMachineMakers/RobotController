@@ -246,7 +246,7 @@ public class DeliveryCalibration extends MMMFreightFrenzyOpMode
             else if (delivery.gamepad.left_stick_y != 0) {
                 delivery.chuteServoLeft.setPosition(delivery.chuteServoLeft.getPosition() + (delivery.gamepad.left_stick_y * 0.1));
             } else if (delivery.gamepad.right_stick_y != 0) {
-                delivery.chuteServoRight.setPosition(delivery.chuteServoRight.getPosition() + (delivery.gamepad.right_stick_y * 0.1));
+                delivery.chuteServoRight.setPosition(delivery.chuteServoRight.getPosition() - (delivery.gamepad.right_stick_y * 0.1));
             } else if (delivery.gamepad.dpad_up) {
                 Delivery.state.chuteServoLeftOpenPosition = chuteServoLeftPosition;
                 Delivery.state.chuteServoRightOpenPosition = chuteServoRightPosition;
