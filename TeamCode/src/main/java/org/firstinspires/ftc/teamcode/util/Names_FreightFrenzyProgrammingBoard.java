@@ -3,10 +3,10 @@ package org.firstinspires.ftc.teamcode.util;
 public class Names_FreightFrenzyProgrammingBoard {
     public static final String imu = "imu";
 
-    public static final String servo_DeliveryDoor = "servo1";
-    public static final String servo_DeliveryChuteLeft = "servo1";
-    public static final String servo_DeliveryChuteRight = "servo1";
-    public static final String servo_BlinkinLED =  "servo1";
+    public static final String servo_DeliveryDoor = "deliveryDoor";
+    public static final String servo_DeliveryChuteLeft = "deliveryChuteLeft";
+    public static final String servo_DeliveryChuteRight = "deliveryChuteRight";
+    public static final String servo_BlinkinLED =  "readyLED";
 
     public static final String motor_LeftFront = "left_front";
     public static final String motor_RightFront = "right_front";

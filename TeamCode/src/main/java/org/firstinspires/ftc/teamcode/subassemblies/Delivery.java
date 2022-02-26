@@ -130,7 +130,8 @@ public class Delivery implements Subassembly {
     }
     // we will likely need to add a tolerance to this method.
     public boolean isFoldedUp() {
-        return chuteServoLeft.getPosition() == state.chuteServoLeftCompactPosition;
+        double chuteCurrentPosition = chuteServoLeft.getPosition();
+        return chuteCurrentPosition >= state.chuteServoLeftCompactPosition - servoTolerance || chuteCurrentPosition >= state.chuteServoLeftCompactPosition + servoTolerance;
     }
 
     /**
@@ -155,11 +156,12 @@ public class Delivery implements Subassembly {
                 runSlideToPosition(state.slideMidPosition);
             } else if (gamepad.b) {
                 runSlideToPosition(state.slideHighPosition);
-            } else if (gamepad.dpad_down) {
-                incrementSlideDown();
-            } else if (gamepad.dpad_up) {
-                incrementSlideUp();
             }
+        }
+        if (gamepad.dpad_down) {
+            incrementSlideDown();
+        } else if (gamepad.dpad_up) {
+            incrementSlideUp();
         }
         // open and close door with left and right dpad buttons
         if (gamepad.dpad_left) {
