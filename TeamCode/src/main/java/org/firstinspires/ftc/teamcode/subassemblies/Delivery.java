@@ -53,8 +53,8 @@ public class Delivery implements Subassembly {
 
         public double chuteServoLeftCompactPosition = CHUTE_COMPACT_POSITION;
         public double chuteServoLeftOpenPosition = CHUTE_OPEN_POSITION;
-        public double chuteServoRightCompactPosition = CHUTE_COMPACT_POSITION;
-        public double chuteServoRightOpenPosition = CHUTE_OPEN_POSITION;
+        public double chuteServoRightCompactPosition = -CHUTE_COMPACT_POSITION;
+        public double chuteServoRightOpenPosition = -CHUTE_OPEN_POSITION;
 
         public double doorServoClosedPosition = DOOR_CLOSED_POSITION;
         public double doorServoOpenPosition = DOOR_OPEN_POSITION;
@@ -109,18 +109,18 @@ public class Delivery implements Subassembly {
     }
 
     public void setChuteOpenPosition() {
-        chuteServoLeft.setPosition(CHUTE_OPEN_POSITION);
-        chuteServoRight.setPosition(CHUTE_OPEN_POSITION);
+        chuteServoLeft.setPosition(state.chuteServoLeftOpenPosition);
+        chuteServoRight.setPosition(state.chuteServoRightOpenPosition);
     }
     public void setChuteCompactPosition() {
-        chuteServoLeft.setPosition(CHUTE_COMPACT_POSITION);
-        chuteServoRight.setPosition(CHUTE_COMPACT_POSITION);
+        chuteServoLeft.setPosition(state.chuteServoLeftCompactPosition);
+        chuteServoRight.setPosition(state.chuteServoRightCompactPosition);
     }
     public void setDoorClosedPosition() {
-        doorServo.setPosition(DOOR_CLOSED_POSITION);
+        doorServo.setPosition(state.doorServoClosedPosition);
     }
     public void setDoorOpenPosition() {
-        doorServo.setPosition(DOOR_OPEN_POSITION);
+        doorServo.setPosition(state.doorServoOpenPosition);
     }
     public void incrementSlideUp() {
         runSlideToPosition(motor.getCurrentPosition() + SLIDE_INCREMENT);
@@ -130,8 +130,7 @@ public class Delivery implements Subassembly {
     }
     // we will likely need to add a tolerance to this method.
     public boolean isFoldedUp() {
-        if (chuteServoLeft.getPosition() == CHUTE_COMPACT_POSITION) { return true; }
-        return false;
+        return chuteServoLeft.getPosition() == state.chuteServoLeftCompactPosition;
     }
 
     /**
@@ -149,13 +148,13 @@ public class Delivery implements Subassembly {
         // set the slide height
         if (!motor.isBusy()) {
             if (gamepad.a) {
-                runSlideToPosition(Delivery.SLIDE_HOME_POSITION);
+                runSlideToPosition(state.slideHomePosition);
             } else if (gamepad.x) {
-                runSlideToPosition(Delivery.SLIDE_LOW_POSITION);
+                runSlideToPosition(state.slideLowPosition);
             } else if (gamepad.y) {
-                runSlideToPosition(Delivery.SLIDE_MID_POSITION);
+                runSlideToPosition(state.slideMidPosition);
             } else if (gamepad.b) {
-                runSlideToPosition(Delivery.SLIDE_HIGH_POSITION);
+                runSlideToPosition(state.slideHighPosition);
             } else if (gamepad.dpad_down) {
                 incrementSlideDown();
             } else if (gamepad.dpad_up) {
