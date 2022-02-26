@@ -27,6 +27,7 @@ public class Names_ProgrammingBoard {
     public static final String sensor_Color = "color";
     public static final String sensor_Rings = "touchsensor";
 
+    public static final String calibrationFile_Delivery = "calibration_delivery.json";
     public static final String servo_DeliveryDoor = "servo1";
     public static final String servo_DeliveryChuteLeft = "servo1";
     public static final String servo_DeliveryChuteRight = "servo1";

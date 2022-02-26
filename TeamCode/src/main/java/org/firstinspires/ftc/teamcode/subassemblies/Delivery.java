@@ -1,12 +1,21 @@
 package org.firstinspires.ftc.teamcode.subassemblies;
 
+import android.os.Build;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ReadWriteFile;
+import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.util.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.Subassembly;
+
+import java.io.File;
+
+import androidx.annotation.RequiresApi;
 
 /**
  * Delivery mechanism for Freight Frenzy
@@ -15,6 +24,28 @@ import org.firstinspires.ftc.teamcode.util.Subassembly;
  *
  */
 public class Delivery implements Subassembly {
+
+    /**
+     * Delivery State - to be written to a file
+     */
+    public class DeliveryState {
+        public int slideHighPosition;
+        public int slideMidPosition;
+        public int slideLowPosition;
+        public int slideHomePosition;
+
+        public double chuteServoLeftCompactPosition;
+        public double chuteServoLeftOpenPosition;
+        public double chuteServoRightCompactPosition;
+        public double chuteServoRightOpenPosition;
+
+        public double doorServoClosedPosition;
+        public double doorServoOpenPosition;
+
+        public DeliveryState(){}
+    }
+
+    public static DeliveryState state;
 
     private static final double CHUTE_COMPACT_POSITION = 0;
     private static final double CHUTE_OPEN_POSITION = 0.5;
@@ -28,6 +59,7 @@ public class Delivery implements Subassembly {
     private static final int SLIDE_INCREMENT = 100;
     private static final double SLIDE_POWER = 0.5;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public Delivery(OpMode opMode) {
         chuteServoLeft = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliveryChuteLeft"));
         chuteServoRight = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliveryChuteRight"));
@@ -39,6 +71,12 @@ public class Delivery implements Subassembly {
         } else {
             gamepad = opMode.gamepad1;
         }
+
+        String filename = RobotConfig.CURRENT.getValue("calibrationFile_Delivery");
+        File file = AppUtil.getInstance().getSettingsFile(filename);
+        //state = ReadWriteFile.readFile(file);
+        RobotLog.i("retrieved calibration from '%s'", filename);
+
         zero();
     }
 
