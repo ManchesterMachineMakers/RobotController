@@ -227,13 +227,13 @@ public class DeliveryCalibration extends MMMFreightFrenzyOpMode
                         idle();
                     }
                 } else if (this.delivery.gamepad.right_stick_x != 0) {
-                    delivery.motor.setPower(this.delivery.gamepad.right_stick_x);
+                    delivery.motor.setPower(this.delivery.gamepad.right_stick_x * 0.5);
                 }
             }
             // open and close door with left and right dpad buttons, use them to set calibration
             // adjust position of servo with left and right triggers
             else if (delivery.gamepad.left_stick_x != 0) {
-                delivery.doorServo.setPosition(delivery.doorServo.getPosition() + (delivery.gamepad.left_stick_x * 0.1));
+                delivery.doorServo.setPosition(delivery.doorServo.getPosition() + (delivery.gamepad.left_stick_x * 0.01));
             } else if (delivery.gamepad.dpad_left) {
                 Delivery.state.doorServoClosedPosition = doorServoPosition;
             } else if (delivery.gamepad.dpad_right) {
