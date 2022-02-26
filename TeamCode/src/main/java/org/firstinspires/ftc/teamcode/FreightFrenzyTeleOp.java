@@ -48,7 +48,8 @@ public class FreightFrenzyTeleOp extends MMMFreightFrenzyOpMode {
         driving();
 
         // default controls for the delivery are defined in the Subassembly
-        delivery.controller();
+        delivery.composeTelemetry(telemetry);
+        delivery.controller(this);
 
         // default controls for the intake are defined in the Subassembly
         intake.controller();

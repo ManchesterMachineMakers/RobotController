@@ -3,13 +3,16 @@ package org.firstinspires.ftc.teamcode.subassemblies;
 import android.os.Build;
 
 import com.google.gson.Gson;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ReadWriteFile;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.util.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.Subassembly;
@@ -42,6 +45,14 @@ public class Delivery implements Subassembly {
     private static final double DOOR_OPEN_POSITION = 0.5;
     private static final int SLIDE_INCREMENT = 100;
     private static final double SLIDE_POWER = 0.5;
+    // values for telemetry
+    private int motorPosition;
+    private DcMotorSimple.Direction motorDirection = DcMotorSimple.Direction.REVERSE;
+    private double chuteServoLeftPosition;
+    private double chuteServoRightPosition;
+    private double doorServoPosition;
+    private Servo.Direction chuteServoLeftDirection = Servo.Direction.FORWARD;
+    private Servo.Direction chuteServoRightDirection = Servo.Direction.REVERSE;
 
     /**
      * Delivery State - to be written to a file
@@ -54,8 +65,10 @@ public class Delivery implements Subassembly {
 
         public double chuteServoLeftCompactPosition = CHUTE_COMPACT_POSITION;
         public double chuteServoLeftOpenPosition = CHUTE_OPEN_POSITION;
-        public double chuteServoRightCompactPosition = -CHUTE_COMPACT_POSITION;
-        public double chuteServoRightOpenPosition = -CHUTE_OPEN_POSITION;
+
+        public double chuteServoRightCompactPosition = CHUTE_COMPACT_POSITION;
+        public double chuteServoRightOpenPosition = CHUTE_OPEN_POSITION;
+
 
         public double doorServoClosedPosition = DOOR_CLOSED_POSITION;
         public double doorServoOpenPosition = DOOR_OPEN_POSITION;
@@ -101,7 +114,11 @@ public class Delivery implements Subassembly {
 
     public void zero() {
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setDirection(motorDirection);
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        chuteServoLeft.setDirection(chuteServoLeftDirection);
+        chuteServoRight.setDirection(chuteServoRightDirection);
     }
 
     public void runSlideToPosition(int position) {
@@ -132,6 +149,7 @@ public class Delivery implements Subassembly {
     }
     // we will likely need to add a tolerance to this method.
     public boolean isFoldedUp() {
+        double servoTolerance = 0.25;
         double chuteCurrentPosition = chuteServoLeft.getPosition();
         return chuteCurrentPosition >= state.chuteServoLeftCompactPosition - servoTolerance || chuteCurrentPosition >= state.chuteServoLeftCompactPosition + servoTolerance;
     }
@@ -147,7 +165,7 @@ public class Delivery implements Subassembly {
      *         D-pad right: open door
      *         back - toggle chute to compact or open position
      */
-    public void controller() {
+    public void controller(LinearOpMode opMode) {
         // set the slide height
         if (!motor.isBusy()) {
             if (gamepad.a) {
@@ -159,17 +177,22 @@ public class Delivery implements Subassembly {
             } else if (gamepad.b) {
                 runSlideToPosition(state.slideHighPosition);
             }
+            while (gamepad.a || gamepad.b || gamepad.x || gamepad.y) opMode.idle();
         }
         if (gamepad.dpad_down) {
             incrementSlideDown();
+            while (gamepad.dpad_down) opMode.idle();
         } else if (gamepad.dpad_up) {
             incrementSlideUp();
+            while (gamepad.dpad_up) opMode.idle();
         }
         // open and close door with left and right dpad buttons
         if (gamepad.dpad_left) {
             setDoorClosedPosition();
+            while (gamepad.dpad_left) opMode.idle();
         } else if (gamepad.dpad_right) {
             setDoorOpenPosition();
+            while (gamepad.dpad_right) opMode.idle();
         }
 
         // fold and unfold the chute with the back button as a toggle
@@ -179,6 +202,29 @@ public class Delivery implements Subassembly {
             } else {
                 setChuteCompactPosition();
             }
+            while (gamepad.back) opMode.idle();
         }
+    }
+
+    /**
+     * Add useful telemetry whenever we use this subassembly
+     */
+    public void composeTelemetry(Telemetry telemetry) {
+
+        // At the beginning of each telemetry update, grab a bunch of data
+        // that we will then display in separate lines.
+        telemetry.addAction(new Runnable() { @Override public void run()
+        {
+            motorPosition = motor.getCurrentPosition();
+            chuteServoLeftPosition = chuteServoLeft.getPosition();
+            chuteServoRightPosition = chuteServoRight.getPosition();
+            doorServoPosition = doorServo.getPosition();
+        }
+        });
+
+        telemetry.addLine("Current Slide Position").addData("Motor", motorPosition);
+        telemetry.addLine("Current Chute Servo Positions").addData("Left", chuteServoLeftPosition )
+                .addData("Right", chuteServoRightPosition );
+        telemetry.addLine("Current Door Servo Position").addData( "Door", doorServoPosition );
     }
 }
