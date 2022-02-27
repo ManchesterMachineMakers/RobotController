@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
+import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 import org.firstinspires.ftc.teamcode.util.MMMFreightFrenzyOpMode;
 
 @Autonomous(name = "The Hokey Pokey", group = "Freight Frenzy")
@@ -57,25 +58,27 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
         // You do the Hokey Pokey and you turn yourself around
         report("You do the Hokey Pokey,");
         if (deliveryEnabled) {
-            delivery.runSlideToPosition(1);
+            delivery.incrementSlideUp();
         }
         hokeyPokey(DriveBase.TravelDirection.pivotLeft, 4);
         report(" and you turn yourself around,");
         if (deliveryEnabled) {
-            delivery.runSlideToPosition(2);
+            delivery.incrementSlideUp();
         }
         hokeyPokey(DriveBase.TravelDirection.pivotRight, 4);
         // That's what it's all about!
         report("That's what it's all about!");
-        if (intakeEnabled) { intake.go(DcMotorSimple.Direction.FORWARD); }
         if (deliveryEnabled) {
-            delivery.runSlideToPosition(3);
+            delivery.incrementSlideUp();
         }
+        if (intakeEnabled) { intake.go(DcMotorSimple.Direction.FORWARD); }
+
         hokeyPokey(DriveBase.TravelDirection.reverse, 4);
         if (deliveryEnabled) {
-            delivery.runSlideToPosition(0);
+            delivery.runSlideToPosition(Delivery.SLIDE_HOME_POSITION);
         }
         if (intakeEnabled) { intake.stop(); }
+        report("Yeah!");
     }
 
     private void report(String message) {
@@ -96,7 +99,7 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
     private void keepTheBeat(int beats) throws InterruptedException {
         while (opModeIsActive() /*&& driveBase.isBusy()*/ && beats > 0) {
             RobotLog.i("Waiting in an English garden");
-            Thread.sleep(1000); // wait one beat
+            Thread.sleep(900); // wait one beat
             RobotLog.i("If the sun doesn't come from sitting in the English rain");
             beats--;
         }
