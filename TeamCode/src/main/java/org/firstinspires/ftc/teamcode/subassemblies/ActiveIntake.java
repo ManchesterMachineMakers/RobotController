@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.util.Subassembly;
 public class ActiveIntake implements Subassembly {
 
     private final Gamepad gamepad;
+    public double currentPower;
     boolean stop = false;
     public final double FAST_POWER = 1.0;
     public final double SLOW_POWER_MULTIPLIER = 0.2;
@@ -136,5 +137,7 @@ public class ActiveIntake implements Subassembly {
         if ((!gamepad.right_bumper) && (!gamepad.left_bumper) && (gamepad.right_trigger + gamepad.left_trigger == 0)) {
             stop();
         }
+
+        currentPower = motor.getPower();
     }
 }

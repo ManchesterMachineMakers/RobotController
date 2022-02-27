@@ -34,25 +34,26 @@ public class Delivery implements Subassembly {
 
     public static DeliveryState state;
 
+    public static final double MOTOR_ENCODERS_PER_ROTATION = 1425.1;
     private static final double CHUTE_COMPACT_POSITION = 0;
     private static final double CHUTE_OPEN_POSITION = 0.5;
     public static final int SLIDE_HOME_POSITION = 0;
-    public static final int SLIDE_LOW_POSITION = 200;
-    public static final int SLIDE_MID_POSITION = 500;
-    public static final int SLIDE_HIGH_POSITION = 800;
-    public static final int SLIDE_CAP_POSITION = 1000;
+    public static final int SLIDE_LOW_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 0.75);
+    public static final int SLIDE_MID_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 1.5);
+    public static final int SLIDE_HIGH_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 3);
+    public static final int SLIDE_CAP_POSITION = SLIDE_HIGH_POSITION;
     private static final double DOOR_CLOSED_POSITION = 0;
     private static final double DOOR_OPEN_POSITION = 0.5;
-    private static final int SLIDE_INCREMENT = 100;
+    private static final int SLIDE_INCREMENT = (int)(MOTOR_ENCODERS_PER_ROTATION/10);
     private static final double SLIDE_POWER = 0.5;
     // values for telemetry
-    private int motorPosition;
-    private DcMotorSimple.Direction motorDirection = DcMotorSimple.Direction.REVERSE;
-    private double chuteServoLeftPosition;
-    private double chuteServoRightPosition;
-    private double doorServoPosition;
-    private Servo.Direction chuteServoLeftDirection = Servo.Direction.FORWARD;
-    private Servo.Direction chuteServoRightDirection = Servo.Direction.REVERSE;
+    public int motorPosition;
+    public static final DcMotorSimple.Direction motorDirection = DcMotorSimple.Direction.REVERSE;
+    public double chuteServoLeftPosition;
+    public double chuteServoRightPosition;
+    public double doorServoPosition;
+    public static final Servo.Direction chuteServoLeftDirection = Servo.Direction.FORWARD;
+    public static final Servo.Direction chuteServoRightDirection = Servo.Direction.REVERSE;
 
     /**
      * Delivery State - to be written to a file
@@ -73,6 +74,7 @@ public class Delivery implements Subassembly {
         public double doorServoClosedPosition = DOOR_CLOSED_POSITION;
         public double doorServoOpenPosition = DOOR_OPEN_POSITION;
 
+        public boolean runPastLimits = false;
         public DeliveryState(){}
     }
 
@@ -122,6 +124,8 @@ public class Delivery implements Subassembly {
     }
 
     public void runSlideToPosition(int position) {
+        if (!state.runPastLimits && (position > state.slideHighPosition || position < state.slideHomePosition)) return;
+        if (motor.isBusy() && position == motor.getTargetPosition()) return;
         motor.setTargetPosition(position);
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motor.setPower(SLIDE_POWER);
@@ -147,12 +151,6 @@ public class Delivery implements Subassembly {
     public void incrementSlideDown() {
         runSlideToPosition(motor.getCurrentPosition() - SLIDE_INCREMENT);
     }
-    // we will likely need to add a tolerance to this method.
-    public boolean isFoldedUp() {
-        double servoTolerance = 0.25;
-        double chuteCurrentPosition = chuteServoLeft.getPosition();
-        return chuteCurrentPosition >= state.chuteServoLeftCompactPosition - servoTolerance || chuteCurrentPosition >= state.chuteServoLeftCompactPosition + servoTolerance;
-    }
 
     /**
      *         Default GamePad Controls
@@ -177,54 +175,33 @@ public class Delivery implements Subassembly {
             } else if (gamepad.b) {
                 runSlideToPosition(state.slideHighPosition);
             }
-            while (gamepad.a || gamepad.b || gamepad.x || gamepad.y) opMode.idle();
         }
         if (gamepad.dpad_down) {
             incrementSlideDown();
-            while (gamepad.dpad_down) opMode.idle();
         } else if (gamepad.dpad_up) {
             incrementSlideUp();
-            while (gamepad.dpad_up) opMode.idle();
         }
         // open and close door with left and right dpad buttons
         if (gamepad.dpad_left) {
             setDoorClosedPosition();
-            while (gamepad.dpad_left) opMode.idle();
         } else if (gamepad.dpad_right) {
             setDoorOpenPosition();
-            while (gamepad.dpad_right) opMode.idle();
         }
 
         // fold and unfold the chute with the back button as a toggle
         if (gamepad.back) {
-            if (isFoldedUp()) {
+            if (chuteServoLeft.getPosition() < CHUTE_OPEN_POSITION) {
                 setChuteOpenPosition();
             } else {
                 setChuteCompactPosition();
             }
             while (gamepad.back) opMode.idle();
         }
+
+        motorPosition = motor.getCurrentPosition();
+        chuteServoLeftPosition = chuteServoLeft.getPosition();
+        chuteServoRightPosition = chuteServoRight.getPosition();
+        doorServoPosition = doorServo.getPosition();
     }
 
-    /**
-     * Add useful telemetry whenever we use this subassembly
-     */
-    public void composeTelemetry(Telemetry telemetry) {
-
-        // At the beginning of each telemetry update, grab a bunch of data
-        // that we will then display in separate lines.
-        telemetry.addAction(new Runnable() { @Override public void run()
-        {
-            motorPosition = motor.getCurrentPosition();
-            chuteServoLeftPosition = chuteServoLeft.getPosition();
-            chuteServoRightPosition = chuteServoRight.getPosition();
-            doorServoPosition = doorServo.getPosition();
-        }
-        });
-
-        telemetry.addLine("Current Slide Position").addData("Motor", motorPosition);
-        telemetry.addLine("Current Chute Servo Positions").addData("Left", chuteServoLeftPosition )
-                .addData("Right", chuteServoRightPosition );
-        telemetry.addLine("Current Door Servo Position").addData( "Door", doorServoPosition );
-    }
 }

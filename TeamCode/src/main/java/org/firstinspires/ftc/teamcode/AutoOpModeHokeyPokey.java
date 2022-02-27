@@ -24,8 +24,8 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
         initOpMode();
         driveBase.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        boolean deliveryEnabled = false; //delivery != null;
-        boolean intakeEnabled = intake != null;
+        boolean deliveryEnabled = (delivery != null);
+        boolean intakeEnabled = (intake != null);
 
         // Start it talking
         report("Are you ready?");
