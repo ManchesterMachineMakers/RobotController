@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.sensors;
 
 import android.annotation.SuppressLint;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -10,19 +11,24 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.diagnostics.tests.Test;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.util.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 import java.util.List;
 
 public class Vision implements Subassembly {
-    private HardwareMap hardwareMap;
+    public static class TFODNotInitializedException extends Exception {
+        public TFODNotInitializedException() {
+            super("TensorFlow not initialized.");
+        }
+    }
 
-    public Vision(OpMode opMode) {
+    private final HardwareMap hardwareMap;
+    private final LinearOpMode opMode;
+
+    public Vision(LinearOpMode opMode) {
         this.hardwareMap = opMode.hardwareMap;
-
+        this.opMode = opMode;
     }
 
     /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains
@@ -144,5 +150,22 @@ public class Vision implements Subassembly {
                 telemetry.update();
             }
         }
+    }
+
+    public List<Recognition> getDefiniteRecognitions() throws TFODNotInitializedException {
+        if(tfod == null) throw new TFODNotInitializedException();
+        long start = System.currentTimeMillis();
+        long timeout = RobotConfig.CURRENT.getValue("detectionTimeoutMillis");
+        List<Recognition> recognitions = tfod.getRecognitions();
+
+        while(
+                (System.currentTimeMillis() - start) < timeout
+                && recognitions.size() == 0
+                && opMode.opModeIsActive()
+        ) {
+            recognitions = tfod.getRecognitions();
+            opMode.idle();
+        }
+        return recognitions;
     }
 }

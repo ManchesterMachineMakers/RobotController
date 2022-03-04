@@ -3,10 +3,10 @@ package org.firstinspires.ftc.teamcode.util;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.ProgrammingBoardDriveBase;
@@ -18,10 +18,8 @@ import org.firstinspires.ftc.teamcode.subassemblies.Gamepad;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /**
  * Robot hardware configuration.
@@ -30,6 +28,7 @@ public class RobotConfig {
     public static final RobotConfig BASE = new RobotConfig() {{
         value("vuforiaKey", "Afbp4I3/////AAABmcEn57recUnKv/3EHsAO+jkAFD02oVRghZ8yX5DjgOIvkxO1ipG/fb3GeprYO+Bp6AVbmvW7ts21c71ldDDS8caXYkWTGpFaJ0CyMMfqJQnUabNsH7/sQjh99KlSOi+dOo75AuLUjuLO3nIksEFYpQ3Q8lAGl0ihH3npeTmO9X9KOTV2NJTNKEXZ3mXxBa8xEs9ZYhQy/ppkpExORmc6R+FJYnyykaTaFaXwdKg/R9LZnPQcLwuDD0EnoYlj74qOwVsekUfKxttKMb+FtFlgYm8pmXI5jqQdyidpSHUQn08G1EvqZBN/iuHWCDVhXP2zFRWcQdTEGltwsg47w/IJuLzFvsz04HEqyBz2Xh9eAbAn");
         value("deliveryCalibrationFile", "calibration_delivery.ser");
+        value("detectionTimeoutMillis", 3000);
         subassembly(Gamepad.class);
         subassembly(SoundEffects.class);
     }};

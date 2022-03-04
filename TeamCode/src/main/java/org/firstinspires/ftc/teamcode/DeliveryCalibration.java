@@ -31,8 +31,9 @@ package org.firstinspires.ftc.teamcode;
 
 import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
@@ -41,8 +42,6 @@ import org.firstinspires.ftc.teamcode.util.MMMFreightFrenzyOpMode;
 import org.firstinspires.ftc.teamcode.util.RobotConfig;
 
 import java.io.File;
-
-import androidx.annotation.RequiresApi;
 
 import station.State;
 import station.util.Persist;
@@ -133,14 +132,12 @@ public class DeliveryCalibration extends MMMFreightFrenzyOpMode
 
         // At the beginning of each telemetry update, grab a bunch of data
         // that we will then display in separate lines.
-        telemetry.addAction(new Runnable() { @Override public void run()
-                {
-                    motorPosition = delivery.motor.getCurrentPosition();
-                    chuteServoLeftPosition = delivery.chuteServoLeft.getPosition();
-                    chuteServoRightPosition = delivery.chuteServoRight.getPosition();
-                    doorServoPosition = delivery.doorServo.getPosition();
-                }
-            });
+        telemetry.addAction(() -> {
+            motorPosition = delivery.motor.getCurrentPosition();
+            chuteServoLeftPosition = delivery.chuteServoLeft.getPosition();
+            chuteServoRightPosition = delivery.chuteServoRight.getPosition();
+            doorServoPosition = delivery.doorServo.getPosition();
+        });
 
         telemetryMotorPosition = telemetry.addLine("Current Slide Position");
         telemetryChuteServosPosition = telemetry.addLine("Current Chute Servo Positions");

@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.subassemblies;
 
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import android.graphics.Color;
 
-import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
-import org.firstinspires.ftc.teamcode.util.Names;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+import org.firstinspires.ftc.teamcode.FreightFrenzyAutonomous;
 import org.firstinspires.ftc.teamcode.util.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.Subassembly;
 
@@ -75,26 +73,27 @@ public class Blinkin implements Subassembly {
     }
 
     /**
-     * Indicate the number of rings detected.
-     * @param numberOfRings
+     * Currently detecting things
      */
-    public void detectedRings(int numberOfRings) {
-        RevBlinkinLedDriver.BlinkinPattern ringPattern;
-        switch(numberOfRings) {
-            case 0:
-                ringPattern = RevBlinkinLedDriver.BlinkinPattern.CP1_HEARTBEAT_SLOW;
+    public void detecting() {
+        blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_BREATH_SLOW);
+        alertThenReset();
+    }
+
+    public void detected(FreightFrenzyAutonomous.MuffinPosition position) {
+        switch (position) {
+            case Left:
+                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_HEARTBEAT_SLOW);
                 break;
-            case 1:
-                ringPattern = RevBlinkinLedDriver.BlinkinPattern.CP1_HEARTBEAT_MEDIUM;
+            case Middle:
+                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_HEARTBEAT_MEDIUM);
                 break;
-            case 4:
-                ringPattern = RevBlinkinLedDriver.BlinkinPattern.CP1_HEARTBEAT_FAST;
+            case Right:
+                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_HEARTBEAT_FAST);
                 break;
             default:
-                ringPattern = RevBlinkinLedDriver.BlinkinPattern.CP1_HEARTBEAT_SLOW;
+                blinkinLedDriver.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_BREATH_FAST);
         }
-        blinkinLedDriver.setPattern(ringPattern);
-        alertThenReset();
     }
 
     /**

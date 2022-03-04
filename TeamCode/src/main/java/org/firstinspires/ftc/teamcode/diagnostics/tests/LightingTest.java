@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.FreightFrenzyAutonomous;
 import org.firstinspires.ftc.teamcode.diagnostics.Runner;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
@@ -46,28 +47,23 @@ public class LightingTest implements Base {
 
             // *** RINGS DETECTED ***
             runner.log("*** Lighting Test: Ring Detection Alerts ***");
-            ledUtil.detectedRings(0);
+            ledUtil.detected(FreightFrenzyAutonomous.MuffinPosition.Left);
             ledPattern.setValue("Detect 0 Rings (Alert)");
             runner.log("*** Detect 0 Rings (Alert)");
 
             if (!letItRun(runner.opMode)) { return abortTest(); }
 
-            ledUtil.detectedRings(1);
+            ledUtil.detected(FreightFrenzyAutonomous.MuffinPosition.Middle);
             ledPattern.setValue("Detect 1 Ring (Alert)");
             runner.log("*** Detect 1 Ring (Alert)");
 
             if (!letItRun(runner.opMode)) { return abortTest(); }
 
-            ledUtil.detectedRings(4);
+            ledUtil.detected(FreightFrenzyAutonomous.MuffinPosition.Right);
             ledPattern.setValue("Detect 4 Rings (Alert)");
             runner.log("*** Detect 4 Rings (Alert)");
 
             if (!letItRun(runner.opMode)) { return abortTest(); }
-
-            // should show same as 0 rings detected
-            ledUtil.detectedRings(3);
-            ledPattern.setValue("Detect 5 Rings (Alert)");
-            runner.log("*** Detect 5 Rings: 5 is right out. (Alert)");
 
             if (!letItRun(runner.opMode)) { return abortTest(); }
 
