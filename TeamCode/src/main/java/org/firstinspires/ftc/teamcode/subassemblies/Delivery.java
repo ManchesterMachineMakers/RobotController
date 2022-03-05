@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subassemblies;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -16,17 +17,26 @@ import org.firstinspires.ftc.teamcode.util.Subassembly;
  */
 public class Delivery implements Subassembly {
 
+    public static final double MOTOR_ENCODERS_PER_ROTATION = 1425.1;
     private static final double CHUTE_COMPACT_POSITION = 0;
-    private static final double CHUTE_OPEN_POSITION = 0.5;
+    private static final double CHUTE_OPEN_POSITION = 0.4;
     public static final int SLIDE_HOME_POSITION = 0;
-    public static final int SLIDE_LOW_POSITION = 200;
-    public static final int SLIDE_MID_POSITION = 500;
-    public static final int SLIDE_HIGH_POSITION = 800;
-    public static final int SLIDE_CAP_POSITION = 1000;
+    public static final int SLIDE_LOW_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 0.75);
+    public static final int SLIDE_MID_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 1.5);
+    public static final int SLIDE_HIGH_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 3);
+    public static final int SLIDE_CAP_POSITION = SLIDE_HIGH_POSITION;
     private static final double DOOR_CLOSED_POSITION = 0;
     private static final double DOOR_OPEN_POSITION = 0.5;
-    private static final int SLIDE_INCREMENT = 100;
+    private static final int SLIDE_INCREMENT = (int)(MOTOR_ENCODERS_PER_ROTATION/10);
     private static final double SLIDE_POWER = 0.5;
+
+    public static final DcMotorSimple.Direction motorDirection = DcMotorSimple.Direction.REVERSE;
+    private static final double CHUTE_ADJUSTMENT_ANGLE = 90-78.7;
+    // switch + and - by using a button on the controller?
+    private static boolean REVERSE_CHUTE_ADJUSTMENT = false;
+
+    private boolean wasChuteOpenPressed = false;
+
 
     public Delivery(OpMode opMode) {
         chuteServoLeft = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliveryChuteLeft"));
@@ -64,11 +74,11 @@ public class Delivery implements Subassembly {
 
     public void setChuteOpenPosition() {
         chuteServoLeft.setPosition(CHUTE_OPEN_POSITION);
-        chuteServoRight.setPosition(CHUTE_OPEN_POSITION);
+        chuteServoRight.setPosition(1 - CHUTE_OPEN_POSITION);
     }
     public void setChuteCompactPosition() {
         chuteServoLeft.setPosition(CHUTE_COMPACT_POSITION);
-        chuteServoRight.setPosition(CHUTE_COMPACT_POSITION);
+        chuteServoRight.setPosition(1 - CHUTE_COMPACT_POSITION);
     }
     public void setDoorClosedPosition() {
         doorServo.setPosition(DOOR_CLOSED_POSITION);
@@ -77,15 +87,18 @@ public class Delivery implements Subassembly {
         doorServo.setPosition(DOOR_OPEN_POSITION);
     }
     public void incrementSlideUp() {
-        runSlideToPosition(motor.getCurrentPosition() + SLIDE_INCREMENT);
+        int proposed = motor.getCurrentPosition() + SLIDE_INCREMENT;
+        if (proposed > SLIDE_CAP_POSITION) { proposed = SLIDE_CAP_POSITION; }
+        runSlideToPosition(proposed);
     }
     public void incrementSlideDown() {
-        runSlideToPosition(motor.getCurrentPosition() - SLIDE_INCREMENT);
+        int proposed = motor.getCurrentPosition() - SLIDE_INCREMENT;
+        if (proposed < SLIDE_HOME_POSITION) { proposed = SLIDE_HOME_POSITION; }
+        runSlideToPosition(proposed);
     }
     // we will likely need to add a tolerance to this method.
     public boolean isFoldedUp() {
-        if (chuteServoLeft.getPosition() == CHUTE_COMPACT_POSITION) { return true; }
-        return false;
+        return chuteServoLeft.getPosition() < CHUTE_OPEN_POSITION -0.1;
     }
 
     /**
@@ -125,11 +138,16 @@ public class Delivery implements Subassembly {
 
         // fold and unfold the chute with the back button as a toggle
         if (gamepad.back) {
-            if (isFoldedUp()) {
-                setChuteOpenPosition();
-            } else {
-                setChuteCompactPosition();
+            wasChuteOpenPressed = true;
+        } else {
+            if(wasChuteOpenPressed) {
+                if (isFoldedUp()) {
+                    setChuteOpenPosition();
+                } else {
+                    setChuteCompactPosition();
+                }
             }
+            wasChuteOpenPressed = false;
         }
     }
 }
