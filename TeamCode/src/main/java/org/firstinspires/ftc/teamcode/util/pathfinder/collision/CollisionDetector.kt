@@ -29,27 +29,27 @@ class CollisionDetector(private val opMode: LinearOpMode) : Subassembly {
     fun stopThread() { stopRequested = true }
 
     private fun poll() {
-        if(distanceSensorManager?.frontIR?.getDistance(DistanceUnit.MM)?:100.toDouble() < 10 && !collidingFront) {
+        if(distanceSensorManager?.frontIR?.getDistance(DistanceUnit.CM)?:100.toDouble() < 10 && !collidingFront) {
             dispatch(Collision.Front)
             collidingFront = true
         }
-        if(distanceSensorManager?.leftIR?.getDistance(DistanceUnit.MM)?:100.toDouble() < 10 && !collidingLeft) {
+        if(distanceSensorManager?.leftIR?.getDistance(DistanceUnit.CM)?:100.toDouble() < 10 && !collidingLeft) {
             dispatch(Collision.Left)
             collidingLeft = true
         }
-        if(distanceSensorManager?.rightIR?.getDistance(DistanceUnit.MM)?:100.toDouble() < 10 && !collidingRight) {
+        if(distanceSensorManager?.rightIR?.getDistance(DistanceUnit.CM)?:100.toDouble() < 10 && !collidingRight) {
             dispatch(Collision.Right)
             collidingRight = true
         }
-        if(distanceSensorManager?.frontIR?.getDistance(DistanceUnit.MM)?:100.toDouble() > 10 && collidingFront) {
+        if(distanceSensorManager?.frontIR?.getDistance(DistanceUnit.CM)?:100.toDouble() > 10 && collidingFront) {
             dispatch(Collision.EndedFront)
             collidingFront = false
         }
-        if(distanceSensorManager?.leftIR?.getDistance(DistanceUnit.MM)?:100.toDouble() > 10 && collidingLeft) {
+        if(distanceSensorManager?.leftIR?.getDistance(DistanceUnit.CM)?:100.toDouble() > 10 && collidingLeft) {
             dispatch(Collision.EndedLeft)
             collidingLeft = true
         }
-        if(distanceSensorManager?.rightIR?.getDistance(DistanceUnit.MM)?:100.toDouble() > 10 && collidingRight) {
+        if(distanceSensorManager?.rightIR?.getDistance(DistanceUnit.CM)?:100.toDouble() > 10 && collidingRight) {
             dispatch(Collision.EndedRight)
             collidingRight = true
         }
