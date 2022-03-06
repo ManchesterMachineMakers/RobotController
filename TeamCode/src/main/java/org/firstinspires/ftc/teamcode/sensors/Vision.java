@@ -42,7 +42,7 @@ public class Vision implements Subassembly {
      *  FreightFrenzy_BC.tflite  0: Ball,  1: Cube
      *  FreightFrenzy_DM.tflite  0: Duck,  1: Marker
      */
-    private static final String TFOD_MODEL_ASSET = "muffinman.tflite";
+    private static final String TFOD_MODEL_ASSET = "ManchesterMachineMuffin.tflite";
     private static final String[] LABELS = {
             "muffin"
     };
