@@ -6,7 +6,9 @@ enum class FieldDestinations2021(name: String, destX: Float, destY: Float) {
     BlueHub("Alliance Shipping Hub (Blue)", 100F, 300F),
     RedHub("Alliance Shipping Hub (Red)", 300F, 300F),
     BlueWarehouse("Alliance Warehouse (Blue)", 100F, 200F),
-    RedWarehouse("Alliance Warehouse (Red)", 300F, 200F)
+    RedWarehouse("Alliance Warehouse (Red)", 300F, 200F),
+    BlueStart("Blue Starting Location", 0F, 50F),
+    RedStart("Red Starting Location", 300F, 50F)
     ;
 
     val destination: Destination = Destination(name, destX, destY)

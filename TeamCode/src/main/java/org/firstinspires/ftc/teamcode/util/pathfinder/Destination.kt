@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.util.pathfinder
 
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
+
 class Destination(val name: String, destX: Float, destY: Float) {
     //methods
     //declare variables
@@ -8,6 +10,8 @@ class Destination(val name: String, destX: Float, destY: Float) {
         get() = coordinates[0]
     val y: Float
         get() = coordinates[1]
+    val matrix: OpenGLMatrix
+        get() = OpenGLMatrix.translation(x, y, 0F)
 
     //constructor
     init {

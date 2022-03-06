@@ -31,6 +31,6 @@ class Localization(private val opMode: LinearOpMode) : Subassembly {
     }
 
     fun getRobotLocation(): OpenGLMatrix? {
-        return VuforiaLocalization.getRobotPosition(trackables, opMode)
+        return VuforiaLocalization.getRobotPosition(trackables, opMode) ?: imu.getRobotLocation()
     }
 }

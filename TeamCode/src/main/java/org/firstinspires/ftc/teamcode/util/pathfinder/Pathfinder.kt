@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.util.pathfinder
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase
 import org.firstinspires.ftc.teamcode.util.KtHardware
 import org.firstinspires.ftc.teamcode.util.Subassembly
@@ -21,8 +22,8 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         driveBase.stop()
     }
 
-    fun runTo(targetX: Float, targetY: Float, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
-        val location = localization.getRobotLocation() ?: throw NoPositionError()
+    fun runTo(targetX: Float, targetY: Float, currentLocationFallback: OpenGLMatrix? = null, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
+        val location = localization.getRobotLocation() ?: currentLocationFallback ?: throw NoPositionError()
         val path = Path(location[0, 0], location[1, 0], targetX, targetY, localization.imu.orientation.psi)
         // pivot
         pivotTo(path.heading)
@@ -39,7 +40,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         )
     }
 
-    fun runTo(target: Destination, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
-        runTo(target.x, target.y, speed)
+    fun runTo(target: Destination, currentLocationFallback: OpenGLMatrix? = null, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
+        runTo(target.x, target.y, currentLocationFallback, speed)
     }
 }

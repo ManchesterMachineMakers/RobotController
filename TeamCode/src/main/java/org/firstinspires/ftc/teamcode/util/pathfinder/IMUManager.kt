@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.util.pathfinder
 
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.teamcode.util.RobotConfig
 import org.firstinspires.ftc.teamcode.util.Subassembly
 
@@ -27,5 +28,10 @@ class IMUManager(private val opMode: LinearOpMode) : Subassembly {
         imuParameters.loggingEnabled = false
         // Initialize IMU.
         imu.initialize(imuParameters)
+    }
+
+    fun getRobotLocation(): OpenGLMatrix? {
+        //TODO: implement
+        return null
     }
 }

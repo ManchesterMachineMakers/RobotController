@@ -44,6 +44,11 @@ class FreightFrenzyAutonomous : MMMFreightFrenzyOpMode() {
         initOpMode()
         driveBase.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
 
+        val startLocation = when(Alliance.current) {
+            Alliance.Blue -> FieldDestinations2021.BlueStart
+            Alliance.Red -> FieldDestinations2021.RedStart
+        }
+
         val vision = getHardware<Vision>()
         vision.initTfod()
         vision.initVuforia()
@@ -77,7 +82,7 @@ class FreightFrenzyAutonomous : MMMFreightFrenzyOpMode() {
             Alliance.Blue -> FieldDestinations2021.BlueHub
             Alliance.Red -> FieldDestinations2021.RedHub
         }
-        pathfinder.runTo(targetHub.destination)
+        pathfinder.runTo(targetHub.destination, startLocation.destination.matrix)
 
         delivery.setChuteOpenPosition()
         delivery.setDoorOpenPosition()
@@ -87,6 +92,6 @@ class FreightFrenzyAutonomous : MMMFreightFrenzyOpMode() {
             Alliance.Blue -> FieldDestinations2021.BlueWarehouse
             Alliance.Red -> FieldDestinations2021.RedWarehouse
         }
-        pathfinder.runTo(targetWarehouse.destination)
+        pathfinder.runTo(targetWarehouse.destination, targetHub.destination.matrix)
     }
 }
