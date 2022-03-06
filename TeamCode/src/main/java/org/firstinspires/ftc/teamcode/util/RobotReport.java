@@ -69,7 +69,7 @@ public class RobotReport {
 
         Telemetry.Line travelLine = telemetry.addLine("Travel");
         itemOriginDestination = travelLine.addData("Origin", FieldDestinations.SLC);
-        itemTravelDestination = telemetry.addData("Destination", new Destination());
+        itemTravelDestination = telemetry.addData("org.firstinspires.ftc.teamcode.util.pathfinder.Destination", new Destination());
 
         Telemetry.Line positionLine = telemetry.addLine("Current Field Position");
         itemFieldPosition = positionLine.addData("Position", new Destination());

@@ -186,7 +186,7 @@ public abstract class MMMUltimateGoalOpMode extends LinearOpMode {
      */
     public boolean runToDestination(Destination destination) {
         //TODO: Add telemetry and logging.
-        telemetry.addLine("running to Destination " + destination.getName());
+        telemetry.addLine("running to org.firstinspires.ftc.teamcode.util.pathfinder.Destination " + destination.getName());
         try {
             Location currentLocation = reckoning.whereAmI();
             robotReport.itemFieldPosition.setValue(currentLocation);

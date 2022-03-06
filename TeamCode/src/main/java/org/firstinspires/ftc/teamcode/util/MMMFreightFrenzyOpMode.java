@@ -165,7 +165,7 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
      */
     public boolean runToDestination(Destination destination) {
         //TODO: Add telemetry and logging.
-//        telemetry.addLine("running to Destination " + destination.getName());
+//        telemetry.addLine("running to org.firstinspires.ftc.teamcode.util.pathfinder.Destination " + destination.getName());
 //        try {
 //            Location currentLocation = reckoning.whereAmI();
 //            robotReport.itemFieldPosition.setValue(currentLocation);
@@ -188,7 +188,7 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
 //                // then travel the path
 //                boolean driving = Movement.move(path.distance, driveBase.getDriveSpeedPower(DriveBase.DriveSpeed.FAST), path.direction, stage++, driveBase, this);
 //
-//                reckoning.setCurrentLocation(new Destination(path.targetName, (float)path.targetX, (float)path.targetY));
+//                reckoning.setCurrentLocation(new org.firstinspires.ftc.teamcode.util.pathfinder.Destination(path.targetName, (float)path.targetX, (float)path.targetY));
 //                //while (driving && opModeIsActive()) {
 //                //    idle(); // wait for us to finish driving.
 //                //    driving = Movement.isComplete(driveBase, encoderTolerance);

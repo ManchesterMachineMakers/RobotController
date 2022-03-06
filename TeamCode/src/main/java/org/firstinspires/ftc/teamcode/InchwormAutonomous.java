@@ -3,7 +3,7 @@
 //import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 //import com.qualcomm.robotcore.hardware.DcMotorSimple;
 //
-//import org.firstinspires.ftc.teamcode.navigation.Destination;
+//import org.firstinspires.ftc.teamcode.navigation.org.firstinspires.ftc.teamcode.util.pathfinder.Destination;
 //import org.firstinspires.ftc.teamcode.navigation.FieldDestinations;
 //import org.firstinspires.ftc.teamcode.navigation.Location;
 //import org.firstinspires.ftc.teamcode.navigation.Movement;
@@ -17,8 +17,8 @@
 //@Autonomous(name="Inchworm Autonomous")
 //public class InchwormAutonomous extends MMMUltimateGoalOpMode {
 //
-//    Destination targetZone = FieldDestinations.TZA; // default Target Zone A
-//    Destination startLine = FieldDestinations.SLC; // we assume the left start line, center.
+//    org.firstinspires.ftc.teamcode.util.pathfinder.Destination targetZone = FieldDestinations.TZA; // default Target Zone A
+//    org.firstinspires.ftc.teamcode.util.pathfinder.Destination startLine = FieldDestinations.SLC; // we assume the left start line, center.
 //    int stage = 0;
 //
 //    private void detectRingStack() {
@@ -192,7 +192,7 @@
 //     * @param howManyShots How many rings should we shoot?
 //     * @return success
 //     */
-//    private boolean aimAndShoot(Destination goal, int howManyShots) {
+//    private boolean aimAndShoot(org.firstinspires.ftc.teamcode.util.pathfinder.Destination goal, int howManyShots) {
 //        //TODO: does Isaac have a routine that calculates firing position on the field for a given shooter angle?
 //        try {
 //            if (RobotReport.ringsOnBot < 1 || (!opModeIsActive())) {
@@ -241,11 +241,11 @@
 //    private boolean goDeliverSomeGoals() {
 //        //TODO: Add telemetry and logging.
 //
-//        ArrayList<Destination> course = new ArrayList<>();
+//        ArrayList<org.firstinspires.ftc.teamcode.util.pathfinder.Destination> course = new ArrayList<>();
 //        boolean success;
 //        // We begin with a wobble goal loaded.
 //        // We detected our Target Zone.
-//        Destination targetZone = rings.targetZone;
+//        org.firstinspires.ftc.teamcode.util.pathfinder.Destination targetZone = rings.targetZone;
 //        if (targetZone == null) {
 //            // our backup is A, because that's for 0 rings.
 //            // we're least likely to get a good reading if it's 0.

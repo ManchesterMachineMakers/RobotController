@@ -45,4 +45,4 @@ public class Destination {
         coordinate[1] = y;
     }
 
-} //END:  class Destination
+} //END:  class org.firstinspires.ftc.teamcode.util.pathfinder.Destination
