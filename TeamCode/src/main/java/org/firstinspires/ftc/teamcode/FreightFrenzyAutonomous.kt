@@ -27,7 +27,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         }
     }
 
-    inline fun <reified T : Subassembly> getHardware(): T {
+    inline fun <reified T : Subassembly> getHardware(): T? {
         return RobotConfig.CURRENT.getHardware(T::class.java, this)
     }
 
@@ -49,48 +49,52 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         }
 
         val vision = getHardware<Vision>()
-        vision.initTfod()
-        vision.initVuforia()
+        vision?.initVuforia()
+        vision?.initTfod()
 
         val blinkin = getHardware<Blinkin>()
-        blinkin.autonomousDefault()
+        blinkin?.autonomousDefault()
 
         val delivery = getHardware<Delivery>()
         val pathfinder = getHardware<Pathfinder>()
 
         waitForStart()
         log("Getting recognitions")
-        blinkin.detecting()
-        val muffinRecognitions = vision.definiteRecognitions.filter { recognition -> recognition.label == "muffin" }
-        val deliverTo = if(muffinRecognitions.isNotEmpty()) {
+        blinkin?.detecting()
+        val muffinRecognitions = vision?.definiteRecognitions?.filter { recognition -> recognition.label == "muffin" }
+        val deliverTo = if(muffinRecognitions?.isNotEmpty() == true) {
             val recognition = muffinRecognitions[0]
             val position = MuffinPosition.of(recognition.left, recognition.imageWidth)
             log("Recognition found at (${recognition.left}, ${recognition.top}); placement: $position")
-            blinkin.detected(position)
+            blinkin?.detected(position)
             position
         } else {
             log("No recognitions; delivering to middle")
-            blinkin.autonomousDefault()
+            blinkin?.autonomousDefault()
             MuffinPosition.Middle
         }
 
         log("Delivering")
-        delivery.runSlideToPosition(slidePositionForMuffin(deliverTo))
+        delivery?.runSlideToPosition(slidePositionForMuffin(deliverTo))
 
         val targetHub = when(alliance) {
             Alliance.Blue -> FieldDestinations2021.BlueHub
             Alliance.Red -> FieldDestinations2021.RedHub
         }
-        pathfinder.runTo(targetHub.destination, startLocation.destination.matrix)
+        pathfinder?.runTo(targetHub.destination, startLocation.destination.matrix)
 
-        delivery.setChuteOpenPosition()
-        delivery.setDoorOpenPosition()
+        delivery?.setChuteOpenPosition()
+        delivery?.setDoorOpenPosition()
 
         log("Parking in warehouse")
         val targetWarehouse = when(alliance) {
             Alliance.Blue -> FieldDestinations2021.BlueWarehouse
             Alliance.Red -> FieldDestinations2021.RedWarehouse
         }
-        pathfinder.runTo(targetWarehouse.destination, targetHub.destination.matrix)
+        pathfinder?.runTo(targetWarehouse.destination, targetHub.destination.matrix)
+
+        log("Closing delivery")
+        delivery?.setDoorClosedPosition()
+        delivery?.setChuteCompactPosition()
     }
 }

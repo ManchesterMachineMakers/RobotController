@@ -16,21 +16,22 @@ class Localization(private val opMode: LinearOpMode) : Subassembly {
     val vision = KtHardware.get<Vision>(opMode)
 
     private val vfGame = VuforiaCurrentGame()
-    private val trackables: VuforiaTrackables
+    private val trackables: VuforiaTrackables?
 
     init {
-        vision.initTfod()
-        vision.initVuforia()
+        vision?.initVuforia()
+        vision?.initTfod()
         trackables = initTrackables()
     }
 
-    private fun initTrackables(): VuforiaTrackables {
-        val trackables = vision.vuforia.loadTrackablesFromAsset(RobotConfig.CURRENT.getValue("vuforiaTrackableNames"))
-        trackables.activate()
+    private fun initTrackables(): VuforiaTrackables? {
+        val trackables = vision?.vuforia?.loadTrackablesFromAsset(RobotConfig.CURRENT.getValue("vuforiaTrackableNames"))
+        trackables?.activate()
         return trackables
     }
 
     fun getRobotLocation(): OpenGLMatrix? {
-        return VuforiaLocalization.getRobotPosition(trackables, opMode) ?: imu.getRobotLocation()
+        if(trackables != null) return VuforiaLocalization.getRobotPosition(trackables, opMode) ?: imu?.getRobotLocation()
+        else return null
     }
 }

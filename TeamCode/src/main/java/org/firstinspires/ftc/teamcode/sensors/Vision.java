@@ -42,12 +42,9 @@ public class Vision implements Subassembly {
      *  FreightFrenzy_BC.tflite  0: Ball,  1: Cube
      *  FreightFrenzy_DM.tflite  0: Duck,  1: Marker
      */
-    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
+    private static final String TFOD_MODEL_ASSET = "muffinman.tflite";
     private static final String[] LABELS = {
-            "Ball",
-            "Cube",
-            "Duck",
-            "Marker"
+            "muffin"
     };
 
     /*
@@ -155,7 +152,7 @@ public class Vision implements Subassembly {
     public List<Recognition> getDefiniteRecognitions() throws TFODNotInitializedException {
         if(tfod == null) throw new TFODNotInitializedException();
         long start = System.currentTimeMillis();
-        long timeout = RobotConfig.CURRENT.getValue("detectionTimeoutMillis");
+        long timeout = RobotConfig.CURRENT.<Integer>getValue("detectionTimeoutMillis").longValue();
         List<Recognition> recognitions = tfod.getRecognitions();
 
         while(

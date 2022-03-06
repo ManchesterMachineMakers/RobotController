@@ -4,6 +4,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -79,7 +80,7 @@ public class RobotConfig {
      * Current config
      * DO NOT EDIT - Set by build matrix script
      */
-    public static final RobotConfig CURRENT = FULL_ROBOT;
+    public static final RobotConfig CURRENT = PROGRAMMING_BOARD;
 
 
 
@@ -101,7 +102,11 @@ public class RobotConfig {
 
             @Override
             public Constructor<T> value() throws NoSuchMethodException {
-                return type.getConstructor(OpMode.class);
+                try {
+                    return type.getConstructor(LinearOpMode.class);
+                } catch (NoSuchMethodException e) {
+                    return type.getConstructor(OpMode.class);
+                }
             }
         });
     }
@@ -151,7 +156,7 @@ public class RobotConfig {
      * @return the requested subassembly, if it exists; otherwise, null.
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public <T extends Subassembly> T getHardware(Class<T> hardware, OpMode opMode) throws NoSuchMethodException {
+    public <T extends Subassembly> T getHardware(Class<T> hardware, LinearOpMode opMode) throws NoSuchMethodException {
         for(ConfigPair<?, ?> subassemblyAccessor : config) {
             RobotLog.i("Checking if " + subassemblyAccessor.getClass().getMethod("key").getReturnType().getSimpleName() + " works for " + hardware.getSimpleName());
             if(canUseSubassembly(hardware).test(subassemblyAccessor)) {

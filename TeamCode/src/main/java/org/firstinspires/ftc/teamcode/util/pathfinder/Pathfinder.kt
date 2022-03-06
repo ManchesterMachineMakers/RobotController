@@ -14,23 +14,23 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
     class NoPositionError : Error("Could not get robot position")
 
     fun pivotTo(targetAngle: Double, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
-        val currentAngle = localization.imu.orientation.psi
+        val currentAngle = localization?.imu?.orientation?.psi ?: targetAngle
         val direction = if(targetAngle < currentAngle) DriveBase.TravelDirection.pivotRight else DriveBase.TravelDirection.pivotLeft
-        driveBase.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER)
-        driveBase.go(direction, speed)
-        while(localization.imu.orientation.psi != targetAngle && driveBase.isBusy && opMode.opModeIsActive()) opMode.idle()
-        driveBase.stop()
+        driveBase?.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER)
+        driveBase?.go(direction, speed)
+        while(localization?.imu?.orientation?.psi ?: targetAngle != targetAngle && driveBase?.isBusy == true && opMode.opModeIsActive()) opMode.idle()
+        driveBase?.stop()
     }
 
     fun runTo(targetX: Float, targetY: Float, currentLocationFallback: OpenGLMatrix? = null, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
-        val location = localization.getRobotLocation() ?: currentLocationFallback ?: throw NoPositionError()
-        val path = Path(location[0, 0], location[1, 0], targetX, targetY, localization.imu.orientation.psi)
+        val location = localization?.getRobotLocation() ?: currentLocationFallback ?: throw NoPositionError()
+        val path = Path(location[0, 0], location[1, 0], targetX, targetY, localization?.imu?.orientation?.psi ?: 0.0)
         // pivot
         pivotTo(path.heading)
         // run
-        driveBase.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
-        driveBase.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
-        driveBase.go(
+        driveBase?.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
+        driveBase?.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
+        driveBase?.go(
                 if(path.direction < 0)
                     DriveBase.TravelDirection.reverse
                 else
@@ -38,6 +38,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
                 driveBase.getDriveSpeedPower(speed),
                 Values.getTicks(path.distance)
         )
+        while (driveBase?.isBusy == true) opMode.idle()
     }
 
     fun runTo(target: Destination, currentLocationFallback: OpenGLMatrix? = null, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
