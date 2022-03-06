@@ -6,10 +6,13 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase
 import org.firstinspires.ftc.teamcode.util.KtHardware
 import org.firstinspires.ftc.teamcode.util.Subassembly
+import org.firstinspires.ftc.teamcode.util.pathfinder.collision.Collision
+import org.firstinspires.ftc.teamcode.util.pathfinder.collision.CollisionDetector
 
 class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
     val localization = KtHardware.get<Localization>(opMode)
     val driveBase = KtHardware.get<DriveBase>(opMode)
+    val collision = KtHardware.get<CollisionDetector>(opMode)
 
     class NoPositionError : Error("Could not get robot position")
 
@@ -25,6 +28,15 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
     fun runTo(targetX: Float, targetY: Float, currentLocationFallback: OpenGLMatrix? = null, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
         val location = localization?.getRobotLocation() ?: currentLocationFallback ?: throw NoPositionError()
         val path = Path(location[0, 0], location[1, 0], targetX, targetY, localization?.imu?.orientation?.psi ?: 0.0)
+        driveBase?.setStopMode(DcMotor.ZeroPowerBehavior.BRAKE)
+        // Collision handlers
+        collision?.observe("pathfinder_runTo" to {
+            when(it) {
+                Collision.Front -> driveBase?.stop()
+                Collision.EndedFront -> driveBase?.go(driveBase.getDriveSpeedPower(speed))
+                else -> {}
+            }
+        })
         // pivot
         pivotTo(path.heading)
         // run
@@ -39,6 +51,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
                 Values.getTicks(path.distance)
         )
         while (driveBase?.isBusy == true) opMode.idle()
+        collision?.removeObserver("pathfinder_runTo")
     }
 
     fun runTo(target: Destination, currentLocationFallback: OpenGLMatrix? = null, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {

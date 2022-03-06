@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.util.pathfinder.DistanceSensorManager;
 import org.firstinspires.ftc.teamcode.util.pathfinder.IMUManager;
 import org.firstinspires.ftc.teamcode.util.pathfinder.Localization;
 import org.firstinspires.ftc.teamcode.util.pathfinder.Pathfinder;
+import org.firstinspires.ftc.teamcode.util.pathfinder.collision.CollisionDetector;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class RobotConfig {
         subassembly(SoundEffects.class);
         subassembly(IMUManager.class);
         subassembly(Localization.class);
+        subassembly(CollisionDetector.class);
         subassembly(Pathfinder.class);
     }};
 
