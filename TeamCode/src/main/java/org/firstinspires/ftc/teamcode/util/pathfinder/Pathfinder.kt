@@ -52,6 +52,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         )
         while (driveBase?.isBusy == true) opMode.idle()
         collision?.removeObserver("pathfinder_runTo")
+        collision?.stopThread()
     }
 
     fun runTo(target: Destination, currentLocationFallback: OpenGLMatrix? = null, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
