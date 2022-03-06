@@ -14,8 +14,7 @@ import org.firstinspires.ftc.teamcode.util.pathfinder.FieldDestinations2021
 import org.firstinspires.ftc.teamcode.util.pathfinder.Pathfinder
 import kotlin.math.floor
 
-@Autonomous(name = "Freight Frenzy Autonomous")
-class FreightFrenzyAutonomous : MMMFreightFrenzyOpMode() {
+open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightFrenzyOpMode() {
     enum class MuffinPosition {
         Left, Middle, Right;
 
@@ -44,7 +43,7 @@ class FreightFrenzyAutonomous : MMMFreightFrenzyOpMode() {
         initOpMode()
         driveBase.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
 
-        val startLocation = when(Alliance.current) {
+        val startLocation = when(alliance) {
             Alliance.Blue -> FieldDestinations2021.BlueStart
             Alliance.Red -> FieldDestinations2021.RedStart
         }
@@ -78,7 +77,7 @@ class FreightFrenzyAutonomous : MMMFreightFrenzyOpMode() {
         log("Delivering")
         delivery.runSlideToPosition(slidePositionForMuffin(deliverTo))
 
-        val targetHub = when(Alliance.current) {
+        val targetHub = when(alliance) {
             Alliance.Blue -> FieldDestinations2021.BlueHub
             Alliance.Red -> FieldDestinations2021.RedHub
         }
@@ -88,7 +87,7 @@ class FreightFrenzyAutonomous : MMMFreightFrenzyOpMode() {
         delivery.setDoorOpenPosition()
 
         log("Parking in warehouse")
-        val targetWarehouse = when(Alliance.current) {
+        val targetWarehouse = when(alliance) {
             Alliance.Blue -> FieldDestinations2021.BlueWarehouse
             Alliance.Red -> FieldDestinations2021.RedWarehouse
         }
