@@ -15,7 +15,7 @@ public class DuckyVisionTest implements Base {
 
     public void init(Runner runner, Vision camera) {
         this.camera = camera;
-        this.camera.initVuforia();
+        this.camera.initVuforiaForTFOD();
         this.camera.initTfod();
         this.camera.activateTfod();
 

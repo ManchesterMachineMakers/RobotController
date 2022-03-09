@@ -49,7 +49,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         }
 
         val vision = getHardware<Vision>()
-        vision?.initVuforia()
+        vision?.initVuforiaForTFOD()
         vision?.initTfod()
         vision?.activateTfod()
 
@@ -63,6 +63,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         log("Getting recognitions")
         blinkin?.detecting()
         val muffinRecognitions = vision?.definiteRecognitions?.filter { recognition -> recognition.label == "muffin" }
+        vision?.deactivateTFOD()
         val deliverTo = if(muffinRecognitions?.isNotEmpty() == true) {
             val recognition = muffinRecognitions[0]
             val position = MuffinPosition.of(recognition.left, recognition.imageWidth)
@@ -75,7 +76,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
             MuffinPosition.Middle
         }
 
-        log("Delivering")
+        log("Delivering to (${deliverTo})")
         delivery?.runSlideToPosition(slidePositionForMuffin(deliverTo))
 
         val targetHub = when(alliance) {

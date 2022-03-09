@@ -7,7 +7,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaBase;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaCurrentGame;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -25,6 +29,10 @@ public class Vision implements Subassembly {
 
     private final HardwareMap hardwareMap;
     private final LinearOpMode opMode;
+    /*
+     * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+     */
+    private VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
     public Vision(LinearOpMode opMode) {
         this.hardwareMap = opMode.hardwareMap;
@@ -46,6 +54,12 @@ public class Vision implements Subassembly {
     private static final String[] LABELS = {
             "muffin"
     };
+    private static final String[] VUMARKS = {
+            "Blue Storage",
+            "Blue Alliance Wall",
+            "Red Storage",
+            "Red Alliance Wall"
+    };
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -66,6 +80,7 @@ public class Vision implements Subassembly {
      * localization engine.
      */
     public VuforiaLocalizer vuforia;
+    public VuforiaCurrentGame currentGame;
 
     /**
      * This is the variable we will use to store our instance of the TensorFlow Object
@@ -73,22 +88,79 @@ public class Vision implements Subassembly {
      */
     public TFObjectDetector tfod;
 
-    /**
-     * Initialize the Vuforia localization engine.
-     */
-    public void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
+    private VuforiaLocalizer.Parameters getVuforiaParameters() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        parameters.useExtendedTracking = false;
+        parameters.fillCameraMonitorViewParent = true;
 
+        return parameters;
+
+    }
+    /**
+     * Initialize the Vuforia localization engine.
+     */
+    public void initVuforiaForVuMarks() {
+        String webcamCalibrationFilename = "";
+        boolean enableCameraMonitoring = true;
+        float dx = 0;
+        float dy = 0;
+        float dz = 0;
+        float firstAngle = 0;
+        float secondAngle = 0;
+        float thirdAngle = 0;
+        boolean useCompetitionFieldTargetLocations = true;
+
+        // Set up the current VuMarks
+        currentGame = new VuforiaCurrentGame();
+        VuforiaLocalizer.Parameters parameters = getVuforiaParameters();
+        currentGame.initialize(
+                parameters.vuforiaLicenseKey,
+                parameters.cameraName,
+                webcamCalibrationFilename,
+                parameters.useExtendedTracking,
+                enableCameraMonitoring,
+                VuforiaLocalizer.Parameters.CameraMonitorFeedback.AXES,
+                dx,
+                dy,
+                dz,
+                AxesOrder.XYZ,
+                firstAngle,
+                secondAngle,
+                thirdAngle,
+                useCompetitionFieldTargetLocations
+        );
+        currentGame.activate();
+    }
+
+    public void initVuforiaForTFOD() {
+
+        VuforiaLocalizer.Parameters parameters = getVuforiaParameters();
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
-        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+    }
+
+    public VuforiaBase.TrackingResults lookForVuMarks() {
+        for (String vuMarkTarget :
+                VUMARKS) {
+            VuforiaBase.TrackingResults vuforiaResults = currentGame.track(vuMarkTarget);
+            if (vuforiaResults.isVisible) {
+                return vuforiaResults;
+            }
+        }
+        return null;
+    }
+
+    public void deactivateTFOD() {
+        vuforia.close();
+    }
+
+    public void deactivateVuMarks() {
+        currentGame.deactivate();
+        currentGame.close();
     }
 
     /**

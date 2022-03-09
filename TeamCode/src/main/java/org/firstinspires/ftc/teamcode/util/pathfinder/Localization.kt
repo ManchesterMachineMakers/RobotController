@@ -19,8 +19,7 @@ class Localization(private val opMode: LinearOpMode) : Subassembly {
     private val trackables: VuforiaTrackables?
 
     init {
-        vision?.initVuforia()
-        vision?.initTfod()
+        vision?.initVuforiaForVuMarks()
         trackables = initTrackables()
     }
 
