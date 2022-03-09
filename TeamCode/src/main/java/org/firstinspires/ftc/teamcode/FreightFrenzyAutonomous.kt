@@ -51,6 +51,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         val vision = getHardware<Vision>()
         vision?.initVuforia()
         vision?.initTfod()
+        vision?.activateTfod()
 
         val blinkin = getHardware<Blinkin>()
         blinkin?.autonomousDefault()
