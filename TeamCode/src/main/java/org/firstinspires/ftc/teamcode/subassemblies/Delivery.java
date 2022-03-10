@@ -31,12 +31,11 @@ import station.util.Persist;
  *
  */
 public class Delivery implements Subassembly {
-
     public static DeliveryState state;
-
+  
     public static final double MOTOR_ENCODERS_PER_ROTATION = 1425.1;
     private static final double CHUTE_COMPACT_POSITION = 0;
-    private static final double CHUTE_OPEN_POSITION = 0.5;
+    private static final double CHUTE_OPEN_POSITION = 0.4;
     public static final int SLIDE_HOME_POSITION = 0;
     public static final int SLIDE_LOW_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 0.75);
     public static final int SLIDE_MID_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 1.5);
@@ -67,9 +66,8 @@ public class Delivery implements Subassembly {
         public double chuteServoLeftCompactPosition = CHUTE_COMPACT_POSITION;
         public double chuteServoLeftOpenPosition = CHUTE_OPEN_POSITION;
 
-        public double chuteServoRightCompactPosition = CHUTE_COMPACT_POSITION;
-        public double chuteServoRightOpenPosition = CHUTE_OPEN_POSITION;
-
+        public double chuteServoRightCompactPosition = 1 - CHUTE_COMPACT_POSITION;
+        public double chuteServoRightOpenPosition = 1 - CHUTE_OPEN_POSITION;
 
         public double doorServoClosedPosition = DOOR_CLOSED_POSITION;
         public double doorServoOpenPosition = DOOR_OPEN_POSITION;
@@ -79,6 +77,13 @@ public class Delivery implements Subassembly {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
+    public static final DcMotorSimple.Direction motorDirection = DcMotorSimple.Direction.REVERSE;
+    private static final double CHUTE_ADJUSTMENT_ANGLE = 90-78.7;
+    // switch + and - by using a button on the controller?
+    private static boolean REVERSE_CHUTE_ADJUSTMENT = false;
+
+    private boolean wasChuteOpenPressed = false;
+
     public Delivery(OpMode opMode) {
         chuteServoLeft = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliveryChuteLeft"));
         chuteServoRight = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliveryChuteRight"));
@@ -146,10 +151,18 @@ public class Delivery implements Subassembly {
         doorServo.setPosition(state.doorServoOpenPosition);
     }
     public void incrementSlideUp() {
-        runSlideToPosition(motor.getCurrentPosition() + SLIDE_INCREMENT);
+        int proposed = motor.getCurrentPosition() + SLIDE_INCREMENT;
+        if (proposed > SLIDE_CAP_POSITION) { proposed = SLIDE_CAP_POSITION; }
+        runSlideToPosition(proposed);
     }
     public void incrementSlideDown() {
-        runSlideToPosition(motor.getCurrentPosition() - SLIDE_INCREMENT);
+        int proposed = motor.getCurrentPosition() - SLIDE_INCREMENT;
+        if (proposed < SLIDE_HOME_POSITION) { proposed = SLIDE_HOME_POSITION; }
+        runSlideToPosition(proposed);
+    }
+    // we will likely need to add a tolerance to this method.
+    public boolean isFoldedUp() {
+        return chuteServoLeft.getPosition() < state.chuteServoLeftOpenPosition -0.1;
     }
 
     /**
@@ -190,12 +203,16 @@ public class Delivery implements Subassembly {
 
         // fold and unfold the chute with the back button as a toggle
         if (gamepad.back) {
-            if (chuteServoLeft.getPosition() < CHUTE_OPEN_POSITION) {
-                setChuteOpenPosition();
-            } else {
-                setChuteCompactPosition();
+            wasChuteOpenPressed = true;
+        } else {
+            if(wasChuteOpenPressed) {
+                if (isFoldedUp()) {
+                    setChuteOpenPosition();
+                } else {
+                    setChuteCompactPosition();
+                }
             }
-            while (gamepad.back) opMode.idle();
+            wasChuteOpenPressed = false;
         }
 
         motorPosition = motor.getCurrentPosition();

@@ -90,7 +90,7 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
     private void hokeyPokey(DriveBase.TravelDirection whichWayDoWeGo, int beats) throws InterruptedException {
         driveBase.go(
                 whichWayDoWeGo,
-                DriveBase.DriveSpeed.FAST
+                DriveBase.DriveSpeed.SLOW
                 );
         keepTheBeat(beats);
         driveBase.stop();
