@@ -58,8 +58,12 @@ public class Runner {
                         boolean met = false;
                         for (Testable assembly:
                              sel) {
-                            log("                     " + assembly.getClass().getName());
-                            met = met || ((Requires)annotation).value().isAssignableFrom(assembly.getClass());
+                            try {
+                                log("                     " + assembly.getClass().getName());
+                                met = met || ((Requires) annotation).value().isAssignableFrom(assembly.getClass());
+                            } catch (NullPointerException ex) {
+                                log("Warning: error checking selector, you might want to look at this");
+                            }
                         }
                         return met;
                     }
