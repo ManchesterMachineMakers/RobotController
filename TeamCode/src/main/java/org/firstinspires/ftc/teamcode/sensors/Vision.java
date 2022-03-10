@@ -143,11 +143,19 @@ public class Vision implements Subassembly {
 
     }
 
-    public VuforiaBase.TrackingResults lookForVuMarks() {
+    public VuforiaBase.TrackingResults lookForVuMarks(Telemetry telemetry) {
         for (String vuMarkTarget :
                 VUMARKS) {
+            float x = 0;
+            float y = 0;
+            telemetry.addData("Target: ", vuMarkTarget)
+                    .addData("X: ", x)
+                    .addData("Y: ", y);
             VuforiaBase.TrackingResults vuforiaResults = currentGame.track(vuMarkTarget);
             if (vuforiaResults.isVisible) {
+                x = vuforiaResults.x;
+                y = vuforiaResults.y;
+                telemetry.update();
                 return vuforiaResults;
             }
         }
