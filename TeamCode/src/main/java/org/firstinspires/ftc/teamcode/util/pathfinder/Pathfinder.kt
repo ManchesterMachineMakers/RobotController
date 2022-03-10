@@ -37,6 +37,8 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
                 else -> {}
             }
         })
+
+        collision?.startThread()
         // pivot
         pivotTo(path.heading)
         // run

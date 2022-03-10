@@ -19,12 +19,10 @@ class Path(originX: Float, originY: Float, targetX: Float, targetY: Float, initH
         val rot = arrayOf(
             (360 - initHeading + newHeading) % 360,
             -(360 - newHeading + initHeading) % 360,
-            (360 - initHeading + oppHeading) % 360,
-            -(360 - oppHeading + initHeading) % 360
         )
         // This is the least rotation (leastRot in Isaac's code)
         rotation = rot.minOf { it }
-        direction = if(rot.indexOf(rotation) > 1) -1.0 else 1.0
+        direction = 1.0
         heading = initHeading + rotation
     }
 }
