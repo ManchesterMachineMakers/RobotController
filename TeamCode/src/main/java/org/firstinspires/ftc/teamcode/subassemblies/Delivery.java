@@ -73,17 +73,17 @@ public class Delivery implements Subassembly {
         public double doorServoOpenPosition = DOOR_OPEN_POSITION;
 
         public boolean runPastLimits = false;
-        public DeliveryState(){}
-    }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    public static final DcMotorSimple.Direction motorDirection = DcMotorSimple.Direction.REVERSE;
+        public DeliveryState() {
+        }
+    }
     private static final double CHUTE_ADJUSTMENT_ANGLE = 90-78.7;
     // switch + and - by using a button on the controller?
     private static boolean REVERSE_CHUTE_ADJUSTMENT = false;
 
     private boolean wasChuteOpenPressed = false;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public Delivery(OpMode opMode) {
         chuteServoLeft = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliveryChuteLeft"));
         chuteServoRight = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliveryChuteRight"));
