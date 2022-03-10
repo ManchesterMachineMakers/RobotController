@@ -231,7 +231,7 @@ public class IsaacArrayDemo extends LinearOpMode {
       float getY(){
         return Coordinate[1];
       }
-  } //END:  class Destination
+  } //END:  class org.firstinspires.ftc.teamcode.util.pathfinder.Destination
 
 //*************************************************************************************************************************
   public void runOpMode() {    
@@ -312,7 +312,7 @@ public class IsaacArrayDemo extends LinearOpMode {
     double distanceWall = 0;
 
 //------------------------------------------------------------------------------------    
-    //create Destination objects
+    //create org.firstinspires.ftc.teamcode.util.pathfinder.Destination objects
     Destination SHO = new Destination("Shoot",100,-901);
     Destination STS = new Destination("StarterStack",-571,-901);
     Destination TZA = new Destination("TargetZoneA",307,-1501);

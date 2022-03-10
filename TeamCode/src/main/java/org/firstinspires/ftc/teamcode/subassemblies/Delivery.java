@@ -1,13 +1,28 @@
 package org.firstinspires.ftc.teamcode.subassemblies;
 
+import android.os.Build;
+
+import com.google.gson.Gson;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ReadWriteFile;
+import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.util.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.Subassembly;
+
+import java.io.File;
+import java.io.IOException;
+
+import androidx.annotation.RequiresApi;
+
+import station.util.Persist;
 
 /**
  * Delivery mechanism for Freight Frenzy
@@ -16,7 +31,8 @@ import org.firstinspires.ftc.teamcode.util.Subassembly;
  *
  */
 public class Delivery implements Subassembly {
-
+    public static DeliveryState state;
+  
     public static final double MOTOR_ENCODERS_PER_ROTATION = 1425.1;
     private static final double CHUTE_COMPACT_POSITION = 0;
     private static final double CHUTE_OPEN_POSITION = 0.4;
@@ -29,14 +45,44 @@ public class Delivery implements Subassembly {
     private static final double DOOR_OPEN_POSITION = 0.5;
     private static final int SLIDE_INCREMENT = (int)(MOTOR_ENCODERS_PER_ROTATION/10);
     private static final double SLIDE_POWER = 0.5;
+    // values for telemetry
+    public int motorPosition;
+    public static final DcMotorSimple.Direction motorDirection = DcMotorSimple.Direction.REVERSE;
+    public double chuteServoLeftPosition;
+    public double chuteServoRightPosition;
+    public double doorServoPosition;
+    public static final Servo.Direction chuteServoLeftDirection = Servo.Direction.FORWARD;
+    public static final Servo.Direction chuteServoRightDirection = Servo.Direction.REVERSE;
 
+    /**
+     * Delivery State - to be written to a file
+     */
+    public class DeliveryState {
+        public int slideHighPosition = SLIDE_HIGH_POSITION;
+        public int slideMidPosition = SLIDE_MID_POSITION;
+        public int slideLowPosition = SLIDE_LOW_POSITION;
+        public int slideHomePosition = SLIDE_HOME_POSITION;
+
+        public double chuteServoLeftCompactPosition = CHUTE_COMPACT_POSITION;
+        public double chuteServoLeftOpenPosition = CHUTE_OPEN_POSITION;
+
+        public double chuteServoRightCompactPosition = 1 - CHUTE_COMPACT_POSITION;
+        public double chuteServoRightOpenPosition = 1 - CHUTE_OPEN_POSITION;
+
+        public double doorServoClosedPosition = DOOR_CLOSED_POSITION;
+        public double doorServoOpenPosition = DOOR_OPEN_POSITION;
+
+        public boolean runPastLimits = false;
+        public DeliveryState(){}
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public static final DcMotorSimple.Direction motorDirection = DcMotorSimple.Direction.REVERSE;
     private static final double CHUTE_ADJUSTMENT_ANGLE = 90-78.7;
     // switch + and - by using a button on the controller?
     private static boolean REVERSE_CHUTE_ADJUSTMENT = false;
 
     private boolean wasChuteOpenPressed = false;
-
 
     public Delivery(OpMode opMode) {
         chuteServoLeft = opMode.hardwareMap.servo.get(RobotConfig.CURRENT.name("servo_DeliveryChuteLeft"));
@@ -49,6 +95,18 @@ public class Delivery implements Subassembly {
         } else {
             gamepad = opMode.gamepad1;
         }
+
+        String filename = RobotConfig.CURRENT.getValue("deliveryCalibrationFile");
+        File file = AppUtil.getInstance().getSettingsFile(filename);
+        try {
+            state = Persist.readFromFile(file.getAbsolutePath());
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+            state = new DeliveryState();
+        }
+        RobotLog.i("retrieved calibration from '%s'", filename);
+        RobotLog.i("Values: %s", new Gson().toJson(state));
+
         zero();
     }
 
@@ -63,28 +121,34 @@ public class Delivery implements Subassembly {
 
     public void zero() {
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setDirection(motorDirection);
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        chuteServoLeft.setDirection(chuteServoLeftDirection);
+        chuteServoRight.setDirection(chuteServoRightDirection);
     }
 
     public void runSlideToPosition(int position) {
+        if (!state.runPastLimits && (position > state.slideHighPosition || position < state.slideHomePosition)) return;
+        if (motor.isBusy() && position == motor.getTargetPosition()) return;
         motor.setTargetPosition(position);
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motor.setPower(SLIDE_POWER);
     }
 
     public void setChuteOpenPosition() {
-        chuteServoLeft.setPosition(CHUTE_OPEN_POSITION);
-        chuteServoRight.setPosition(1 - CHUTE_OPEN_POSITION);
+        chuteServoLeft.setPosition(state.chuteServoLeftOpenPosition);
+        chuteServoRight.setPosition(state.chuteServoRightOpenPosition);
     }
     public void setChuteCompactPosition() {
-        chuteServoLeft.setPosition(CHUTE_COMPACT_POSITION);
-        chuteServoRight.setPosition(1 - CHUTE_COMPACT_POSITION);
+        chuteServoLeft.setPosition(state.chuteServoLeftCompactPosition);
+        chuteServoRight.setPosition(state.chuteServoRightCompactPosition);
     }
     public void setDoorClosedPosition() {
-        doorServo.setPosition(DOOR_CLOSED_POSITION);
+        doorServo.setPosition(state.doorServoClosedPosition);
     }
     public void setDoorOpenPosition() {
-        doorServo.setPosition(DOOR_OPEN_POSITION);
+        doorServo.setPosition(state.doorServoOpenPosition);
     }
     public void incrementSlideUp() {
         int proposed = motor.getCurrentPosition() + SLIDE_INCREMENT;
@@ -98,7 +162,7 @@ public class Delivery implements Subassembly {
     }
     // we will likely need to add a tolerance to this method.
     public boolean isFoldedUp() {
-        return chuteServoLeft.getPosition() < CHUTE_OPEN_POSITION -0.1;
+        return chuteServoLeft.getPosition() < state.chuteServoLeftOpenPosition -0.1;
     }
 
     /**
@@ -112,22 +176,23 @@ public class Delivery implements Subassembly {
      *         D-pad right: open door
      *         back - toggle chute to compact or open position
      */
-    public void controller() {
+    public void controller(LinearOpMode opMode) {
         // set the slide height
         if (!motor.isBusy()) {
             if (gamepad.a) {
-                runSlideToPosition(Delivery.SLIDE_HOME_POSITION);
+                runSlideToPosition(state.slideHomePosition);
             } else if (gamepad.x) {
-                runSlideToPosition(Delivery.SLIDE_LOW_POSITION);
+                runSlideToPosition(state.slideLowPosition);
             } else if (gamepad.y) {
-                runSlideToPosition(Delivery.SLIDE_MID_POSITION);
+                runSlideToPosition(state.slideMidPosition);
             } else if (gamepad.b) {
-                runSlideToPosition(Delivery.SLIDE_HIGH_POSITION);
-            } else if (gamepad.dpad_down) {
-                incrementSlideDown();
-            } else if (gamepad.dpad_up) {
-                incrementSlideUp();
+                runSlideToPosition(state.slideHighPosition);
             }
+        }
+        if (gamepad.dpad_down) {
+            incrementSlideDown();
+        } else if (gamepad.dpad_up) {
+            incrementSlideUp();
         }
         // open and close door with left and right dpad buttons
         if (gamepad.dpad_left) {
@@ -149,5 +214,11 @@ public class Delivery implements Subassembly {
             }
             wasChuteOpenPressed = false;
         }
+
+        motorPosition = motor.getCurrentPosition();
+        chuteServoLeftPosition = chuteServoLeft.getPosition();
+        chuteServoRightPosition = chuteServoRight.getPosition();
+        doorServoPosition = doorServo.getPosition();
     }
+
 }

@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode.navigation;
 
+@Deprecated // Ultimate Goal
 public enum FieldDestinations {
          Shoot ("Shoot", 100, -901),
          StarterStack ("starterStack", -571, -901),

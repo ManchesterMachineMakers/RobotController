@@ -48,11 +48,12 @@ public class FreightFrenzyTeleOp extends MMMFreightFrenzyOpMode {
         driving();
 
         // default controls for the delivery are defined in the Subassembly
-        delivery.controller();
+        delivery.controller(this);
 
         // default controls for the intake are defined in the Subassembly
         intake.controller();
 
+        composeTelemetry();
     }
 
     public void driving() {
@@ -64,15 +65,24 @@ public class FreightFrenzyTeleOp extends MMMFreightFrenzyOpMode {
         v3 = r * Math.sin(robotAngle) + rightX;
         v4 = r * Math.cos(robotAngle) - rightX;
 
-        telemetry.addData("v1", v1);
-        telemetry.addData("v2", v2);
-        telemetry.addData("v3", v3);
-        telemetry.addData("v4", v4);
-        telemetry.update();
-
         driveBase.go(new double[] { v1, v2, v3, v4 });
     }
 
+    public void composeTelemetry() {
+        telemetry.addLine("Current Slide Position")
+                .addData("Motor", delivery.motorPosition);
+        telemetry.addLine("Current Chute Servo Positions")
+                .addData("Left", delivery.chuteServoLeftPosition )
+                .addData("Right", delivery.chuteServoRightPosition );
+        telemetry.addLine("Current Door Servo Position").addData( "Door", delivery.doorServoPosition );
+        telemetry.addLine("Intake Motor").addData("Power", intake.currentPower);
+        telemetry.addLine("Velocity")
+                .addData("v1", v1)
+                .addData("v2", v2)
+                .addData("v3", v3)
+                .addData("v4", v4);
+        telemetry.update();
+    }
 
 
 

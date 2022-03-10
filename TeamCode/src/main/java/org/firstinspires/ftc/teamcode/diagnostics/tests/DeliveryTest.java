@@ -66,7 +66,7 @@ public class DeliveryTest implements Base {
 
         while (!runner.opMode.gamepad1.ps && runner.opMode.opModeIsActive()) {
 
-            delivery.controller();
+            delivery.controller(runner.opMode);
 
             motorPos.setValue(delivery.motor.getCurrentPosition());
             servoLeftPos.setValue(delivery.chuteServoLeft.getPosition());

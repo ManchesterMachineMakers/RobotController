@@ -3,10 +3,11 @@ package org.firstinspires.ftc.teamcode.util;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
 import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drivebase.ProgrammingBoardDriveBase;
@@ -15,13 +16,16 @@ import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
 import org.firstinspires.ftc.teamcode.subassemblies.Gamepad;
+import org.firstinspires.ftc.teamcode.util.pathfinder.DistanceSensorManager;
+import org.firstinspires.ftc.teamcode.util.pathfinder.IMUManager;
+import org.firstinspires.ftc.teamcode.util.pathfinder.Localization;
+import org.firstinspires.ftc.teamcode.util.pathfinder.Pathfinder;
+import org.firstinspires.ftc.teamcode.util.pathfinder.collision.CollisionDetector;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /**
  * Robot hardware configuration.
@@ -29,8 +33,15 @@ import java.util.stream.Stream;
 public class RobotConfig {
     public static final RobotConfig BASE = new RobotConfig() {{
         value("vuforiaKey", "Afbp4I3/////AAABmcEn57recUnKv/3EHsAO+jkAFD02oVRghZ8yX5DjgOIvkxO1ipG/fb3GeprYO+Bp6AVbmvW7ts21c71ldDDS8caXYkWTGpFaJ0CyMMfqJQnUabNsH7/sQjh99KlSOi+dOo75AuLUjuLO3nIksEFYpQ3Q8lAGl0ihH3npeTmO9X9KOTV2NJTNKEXZ3mXxBa8xEs9ZYhQy/ppkpExORmc6R+FJYnyykaTaFaXwdKg/R9LZnPQcLwuDD0EnoYlj74qOwVsekUfKxttKMb+FtFlgYm8pmXI5jqQdyidpSHUQn08G1EvqZBN/iuHWCDVhXP2zFRWcQdTEGltwsg47w/IJuLzFvsz04HEqyBz2Xh9eAbAn");
+        value("deliveryCalibrationFile", "calibration_delivery.ser");
+        value("detectionTimeoutMillis", 3000);
+        value("vuforiaTrackableNames", "FreightFrenzy");
         subassembly(Gamepad.class);
         subassembly(SoundEffects.class);
+        subassembly(IMUManager.class);
+        subassembly(Localization.class);
+        subassembly(CollisionDetector.class);
+        subassembly(Pathfinder.class);
     }};
 
     /**
@@ -56,6 +67,7 @@ public class RobotConfig {
         subassembly(Delivery.class);
         subassembly(Blinkin.class);
         subassembly(Vision.class);
+        subassembly(DistanceSensorManager.class);
         names(Names_FreightFrenzyRobot.class);
     }};
 
@@ -92,7 +104,11 @@ public class RobotConfig {
 
             @Override
             public Constructor<T> value() throws NoSuchMethodException {
-                return type.getConstructor(OpMode.class);
+                try {
+                    return type.getConstructor(LinearOpMode.class);
+                } catch (NoSuchMethodException e) {
+                    return type.getConstructor(OpMode.class);
+                }
             }
         });
     }
@@ -142,7 +158,7 @@ public class RobotConfig {
      * @return the requested subassembly, if it exists; otherwise, null.
      */
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public <T extends Subassembly> T getHardware(Class<T> hardware, OpMode opMode) throws NoSuchMethodException {
+    public <T extends Subassembly> T getHardware(Class<T> hardware, LinearOpMode opMode) throws NoSuchMethodException {
         for(ConfigPair<?, ?> subassemblyAccessor : config) {
             RobotLog.i("Checking if " + subassemblyAccessor.getClass().getMethod("key").getReturnType().getSimpleName() + " works for " + hardware.getSimpleName());
             if(canUseSubassembly(hardware).test(subassemblyAccessor)) {

@@ -94,7 +94,7 @@ public class PIDReckoning {
     }
 
     /**
-     * Returns a Destination representing the bot's current position on the field,
+     * Returns a org.firstinspires.ftc.teamcode.util.pathfinder.Destination representing the bot's current position on the field,
      * based on the IMU, the distance sensors, and the vuMarks
      */
     public Location whereAmI() {
@@ -156,11 +156,11 @@ public class PIDReckoning {
     }
 
     /**
-     * Determines whether the bot has reached a predefined Destination.
+     * Determines whether the bot has reached a predefined org.firstinspires.ftc.teamcode.util.pathfinder.Destination.
      * Checks the difference between measured values and current values.
      * If it's supposed to be on a line, it will also check the LineSensor color.
-     * If within the given tolerances, it will return the predefined Destination.
-     * If not, it will return a Destination named "difference".
+     * If within the given tolerances, it will return the predefined org.firstinspires.ftc.teamcode.util.pathfinder.Destination.
+     * If not, it will return a org.firstinspires.ftc.teamcode.util.pathfinder.Destination named "difference".
      */
     public boolean areWeThereYet(Destination destination, MyPath path, float mmTolerance, float angleTolerance) {
 

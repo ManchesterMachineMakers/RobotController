@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaCurrentGame;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-//import org.firstinspires.ftc.teamcode.navigation.Destination;
+//import org.firstinspires.ftc.teamcode.navigation.org.firstinspires.ftc.teamcode.util.pathfinder.Destination;
 //import org.firstinspires.ftc.teamcode.navigation.FieldDestinations;
 import org.firstinspires.ftc.teamcode.util.RecognitionMatrix;
 import org.firstinspires.ftc.teamcode.util.RobotConfig;
