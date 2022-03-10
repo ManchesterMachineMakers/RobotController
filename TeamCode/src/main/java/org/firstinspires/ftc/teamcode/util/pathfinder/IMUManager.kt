@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.util.RobotConfig
 import org.firstinspires.ftc.teamcode.util.Subassembly
 
 class IMUManager(private val opMode: LinearOpMode) : Subassembly {
-    val imu: BNO055IMU = opMode.hardwareMap[BNO055IMU::class.java, RobotConfig.CURRENT.name("imu")]
+    val imu: BNO055IMU = opMode.hardwareMap[BNO055IMU::class.java, "imu"]
     private val imuParameters = BNO055IMU.Parameters()
     val orientation = Orientation(imu)
     init {
