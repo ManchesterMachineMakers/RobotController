@@ -51,7 +51,7 @@ public class Delivery implements Subassembly {
     public double chuteServoLeftPosition;
     public double chuteServoRightPosition;
     public double doorServoPosition;
-    public static final Servo.Direction chuteServoLeftDirection = Servo.Direction.FORWARD;
+    public static final Servo.Direction chuteServoLeftDirection = Servo.Direction.REVERSE;
     public static final Servo.Direction chuteServoRightDirection = Servo.Direction.REVERSE;
 
     /**
