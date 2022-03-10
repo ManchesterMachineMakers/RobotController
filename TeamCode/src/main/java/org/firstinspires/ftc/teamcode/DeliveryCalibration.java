@@ -71,6 +71,8 @@ public class DeliveryCalibration extends MMMFreightFrenzyOpMode
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override public void runOpMode() {
+        File cfgFile = AppUtil.getInstance().getSettingsFile(RobotConfig.CURRENT.getValue("deliveryCalibrationFile"));
+        cfgFile.delete();
         this.initHardware();
 
         telemetry.log().setCapacity(30);

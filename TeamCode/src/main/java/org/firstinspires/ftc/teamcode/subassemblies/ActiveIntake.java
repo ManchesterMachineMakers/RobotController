@@ -28,7 +28,7 @@ public class ActiveIntake implements Subassembly {
     public double currentPower;
     boolean stop = false;
     public final double FAST_POWER = 1.0;
-    public final double SLOW_POWER_MULTIPLIER = 0.2;
+    public final double SLOW_POWER_MULTIPLIER = 0.5;
     public static final double motorEncoderEventsPerRotation = 753.2;
     public DcMotor motor;
 
