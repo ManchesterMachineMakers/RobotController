@@ -15,6 +15,7 @@
 //import java.util.ArrayList;
 //
 //@Autonomous(name="Inchworm Autonomous")
+//@Disabled
 //public class InchwormAutonomous extends MMMUltimateGoalOpMode {
 //
 //    org.firstinspires.ftc.teamcode.util.pathfinder.Destination targetZone = FieldDestinations.TZA; // default Target Zone A

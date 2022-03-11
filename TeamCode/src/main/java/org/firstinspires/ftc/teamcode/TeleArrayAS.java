@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
 //import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -39,7 +40,8 @@ import org.firstinspires.ftc.teamcode.subassemblies.Shooter;
 
 
 //***************************************************************************************************************************
-@TeleOp(name = "Tele Array")
+@TeleOp(name = "Tele Array", group = "TeleDrive")
+@Disabled
 public class TeleArrayAS extends LinearOpMode {
 
   private VuforiaCurrentGame vuforiaUltimateGoal;

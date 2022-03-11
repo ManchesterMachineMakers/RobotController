@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaBase;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaCurrentGame;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
-@TeleOp(name = "WebcamVuforia (Blocks to Java)")
+@TeleOp(name = "WebcamVuforia (Blocks to Java)", group = "Examples")
 public class VuforiaBlocksTest extends LinearOpMode {
 
     private VuforiaCurrentGame vuforiaFreightFrenzy;

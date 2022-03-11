@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode; //set your package
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -10,7 +11,8 @@ import org.firstinspires.ftc.teamcode.util.MMMUltimateGoalOpMode;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction;
 import static org.firstinspires.ftc.teamcode.navigation.FieldDestinations.TOW;
 
-@TeleOp(name = "InchwormTeleOp", group = "TeleOpMode")
+@TeleOp(name = "InchwormTeleOp", group = "Ultimate Goal")
+@Disabled
 public class InchwormTeleOp extends MMMUltimateGoalOpMode {
 
     double r;

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.drivebase.*;
@@ -7,8 +8,8 @@ import org.firstinspires.ftc.teamcode.drivebase.*;
 
 
 //***************************************************************************************************************************
-@TeleOp(name = "New TeleArray")
-
+@TeleOp(name = "New TeleArray", group = "TeleDrive")
+@Disabled
 public class TeleArrayNew extends LinearOpMode {
   private DriveBase driveBase;
 

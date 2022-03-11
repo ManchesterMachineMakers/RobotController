@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
+@Disabled
 public abstract class TeleDrive extends OpMode {
     private DatagramSocket socket;
     private boolean canRunGamepadThread;

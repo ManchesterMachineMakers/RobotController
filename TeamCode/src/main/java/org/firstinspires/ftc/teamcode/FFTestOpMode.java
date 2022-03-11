@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -7,6 +8,7 @@ import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.util.MMMFreightFrenzyOpMode;
 
 @TeleOp(name = "Test Op Mode", group = "Freight Frenzy")
+@Disabled
 public class FFTestOpMode extends MMMFreightFrenzyOpMode {
 
     @Override

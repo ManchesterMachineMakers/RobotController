@@ -47,9 +47,9 @@ import station.State;
 import station.util.Persist;
 
 /**
- * {@link DeliveryCalibration} calibrates the slide motor, chute servos, and door servo.
+ * {@link DeliveryCalibration} recalibrates the slide motor, chute servos, and door servo.
  */
-@TeleOp(name = "Calibration: Delivery", group = "Diagnostics")
+@TeleOp(name = "Calibration: Delivery - Resets on Init", group = "Calibration")
 public class DeliveryCalibration extends MMMFreightFrenzyOpMode
     {
         int motorPosition = 0;

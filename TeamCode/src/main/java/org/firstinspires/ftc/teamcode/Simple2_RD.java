@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode; //set your package
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.TeleDrive;
@@ -40,7 +41,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Axis;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 
-@TeleOp(name = "Simple2_RD", group = "TeleOpMode")
+@TeleOp(name = "Simple2_RD", group = "TeleDrive")
+@Disabled
 public class Simple2_RD extends TeleDrive {
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
     private ElapsedTime msTime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);

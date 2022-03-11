@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -28,7 +29,8 @@ import java.util.List;
 
 
 //***************************************************************************************************************************
-@Autonomous(name = "IsaacArrayDemo")
+@Autonomous(name = "IsaacArrayDemo", group = "Ultimate Goal")
+@Disabled
 
 public class IsaacArrayDemo extends LinearOpMode {
   

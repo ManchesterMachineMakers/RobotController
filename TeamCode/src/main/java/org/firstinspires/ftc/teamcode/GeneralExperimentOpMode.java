@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogOutput;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.util.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.SoundEffects;
 
 @TeleOp(name = "Experimental", group = "Diagnostics")
+@Disabled
 public class GeneralExperimentOpMode extends LinearOpMode {
     /**
      * Override this method and place your code here.
