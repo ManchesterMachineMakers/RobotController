@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -12,7 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //import org.firstinspires.ftc.teamcode.TeleDrive;
 
 @TeleOp(name = "Simple_RD")
-
+@Disabled
 public class Simple_RD extends TeleDrive {
     private Blinker control_Hub;
     private Blinker expansion_Hub_2;

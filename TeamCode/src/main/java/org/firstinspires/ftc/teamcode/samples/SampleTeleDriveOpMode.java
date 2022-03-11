@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode; //set your package
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.TeleDrive;
 
-@TeleOp(name = "Your TeleOp Name", group = "TeleOpMode")
+@TeleOp(name = "Your TeleOp Name", group = "TeleDrive")
+@Disabled
 public class SampleTeleDriveOpMode extends TeleDrive {
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
