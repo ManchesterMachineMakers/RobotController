@@ -44,8 +44,8 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         driveBase.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
 
         val startLocation = when(alliance) {
-            Alliance.Blue -> FieldDestinations2021.BlueStart
-            Alliance.Red -> FieldDestinations2021.RedStart
+            Alliance.Blue -> FieldDestinations2021.BlueStart1
+            Alliance.Red -> FieldDestinations2021.RedStart1
         }
 
         val vision = getHardware<Vision>()
