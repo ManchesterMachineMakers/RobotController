@@ -64,13 +64,13 @@ public class Delivery implements Subassembly {
         public int slideLowPosition = SLIDE_LOW_POSITION;
         public int slideHomePosition = SLIDE_HOME_POSITION;
 
-        public double chuteServoLeftCompactPosition = 2/360.0;
-        public double chuteServoLeftHomePosition = chuteServoLeftCompactPosition + 90/360.0;
-        public double chuteServoLeftOpenPosition = chuteServoLeftCompactPosition + 120/360.0;
+        public double chuteServoLeftCompactPosition = 2/300.0;
+        public double chuteServoLeftHomePosition = chuteServoLeftCompactPosition + 90/300.0;
+        public double chuteServoLeftOpenPosition = chuteServoLeftCompactPosition + 120/300.0;
 
-        public double chuteServoRightCompactPosition = 1 - 1/360.0;
-        public double chuteServoRightHomePosition = chuteServoRightCompactPosition - 90/360.0;
-        public double chuteServoRightOpenPosition = chuteServoRightCompactPosition - 120/360.0;
+        public double chuteServoRightCompactPosition = 1 - 1/300.0;
+        public double chuteServoRightHomePosition = chuteServoRightCompactPosition - 90/300.0;
+        public double chuteServoRightOpenPosition = chuteServoRightCompactPosition - 120/300.0;
 
         public double doorServoClosedPosition = DOOR_CLOSED_POSITION;
         public double doorServoOpenPosition = DOOR_OPEN_POSITION;
