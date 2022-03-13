@@ -160,9 +160,9 @@ public class DeliveryCalibration extends MMMFreightFrenzyOpMode
                 .addData("High", Delivery.state.slideHighPosition);
 
         telemetryChuteServoPositions.addData("Left Compact", Delivery.state.chuteServoLeftCompactPosition)
-                .addData("Left Open", Delivery.state.chuteServoLeftOpenPosition)
+                .addData("Left Open", Delivery.state.chuteServoLeftDeliverPosition)
                 .addData("Right Compact", Delivery.state.chuteServoRightCompactPosition)
-                .addData("Right Open", Delivery.state.chuteServoRightOpenPosition);
+                .addData("Right Open", Delivery.state.chuteServoRightDeliverPosition);
 
         telemetryDoorServoPositions.addData("Closed", Delivery.state.doorServoClosedPosition)
                 .addData("Open", Delivery.state.doorServoOpenPosition);
@@ -262,8 +262,8 @@ public class DeliveryCalibration extends MMMFreightFrenzyOpMode
             } else if (delivery.gamepad.right_stick_y != 0) {
                 delivery.chuteServoRight.setPosition(delivery.chuteServoRight.getPosition() - (delivery.gamepad.right_stick_y * 0.1));
             } else if (delivery.gamepad.dpad_up) {
-                Delivery.state.chuteServoLeftOpenPosition = chuteServoLeftPosition;
-                Delivery.state.chuteServoRightOpenPosition = chuteServoRightPosition;
+                Delivery.state.chuteServoLeftDeliverPosition = chuteServoLeftPosition;
+                Delivery.state.chuteServoRightDeliverPosition = chuteServoRightPosition;
             } else if (delivery.gamepad.dpad_down) {
                 Delivery.state.chuteServoLeftCompactPosition = chuteServoLeftPosition;
                 Delivery.state.chuteServoRightCompactPosition = chuteServoRightPosition;
