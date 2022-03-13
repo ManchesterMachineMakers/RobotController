@@ -12,7 +12,7 @@ function matrix/priv/build() {
 function matrix/priv/config() {
   echo "Using configuration $1"
   local tmp_config=$(mktemp)
-  sed "s/RobotHardware CURRENT = .*;/RobotHardware CURRENT = $1;/" "$matrix_priv_file" > "$tmp_config"
+  sed "s/RobotConfig CURRENT = .*;/RobotConfig CURRENT = $1;/" "$matrix_priv_file" > "$tmp_config"
   cat "$tmp_config" > "$matrix_priv_file"
   rm "$tmp_config"
 }
