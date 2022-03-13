@@ -71,7 +71,7 @@ public class DuckyVisionTest implements Base {
         }
 
         runner.log("*** ducky-vision vuMark test complete at " + runner.opMode.getRuntime());
-        return false;
+        return true;
     }
 
 
