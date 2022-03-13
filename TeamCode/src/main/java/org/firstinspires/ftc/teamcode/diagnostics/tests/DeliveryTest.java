@@ -35,7 +35,7 @@ public class DeliveryTest implements Base {
         delivery.setDoorClosedPosition();
         Thread.sleep(1000);
         runner.log("Unfold");
-        delivery.setChuteOpenPosition();
+        delivery.setChuteDeliverPosition();
         Thread.sleep(1000);
         runner.log("Fold");
         delivery.setChuteCompactPosition();

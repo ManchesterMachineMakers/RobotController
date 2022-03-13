@@ -30,8 +30,8 @@ import station.util.Persist;
  */
 public class Delivery implements Subassembly {
 
-    private boolean doubleCompare(double a, double b) {
-        return Math.abs(a - b) < 0.01;
+    private boolean isWithinTolerance(double a, double b) {
+        return Math.abs(a - b) < 0.02;
     }
 
     public static DeliveryState state;
@@ -66,11 +66,11 @@ public class Delivery implements Subassembly {
 
         public double chuteServoLeftCompactPosition = 2/300.0;
         public double chuteServoLeftHomePosition = chuteServoLeftCompactPosition + 90/300.0;
-        public double chuteServoLeftOpenPosition = chuteServoLeftCompactPosition + 120/300.0;
+        public double chuteServoLeftDeliverPosition = chuteServoLeftCompactPosition + 120/300.0;
 
         public double chuteServoRightCompactPosition = 1 - 1/300.0;
         public double chuteServoRightHomePosition = chuteServoRightCompactPosition - 90/300.0;
-        public double chuteServoRightOpenPosition = chuteServoRightCompactPosition - 120/300.0;
+        public double chuteServoRightDeliverPosition = chuteServoRightCompactPosition - 120/300.0;
 
         public double doorServoClosedPosition = DOOR_CLOSED_POSITION;
         public double doorServoOpenPosition = DOOR_OPEN_POSITION;
@@ -85,6 +85,8 @@ public class Delivery implements Subassembly {
     private static boolean REVERSE_CHUTE_ADJUSTMENT = false;
 
     private boolean wasDoorOpenPressed = false;
+    private boolean wasDpadLeftPressed = false;
+    private boolean wasDpadRightPressed = false;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public Delivery(OpMode opMode) {
@@ -139,9 +141,9 @@ public class Delivery implements Subassembly {
         motor.setPower(SLIDE_POWER);
     }
 
-    public void setChuteOpenPosition() {
-        chuteServoLeft.setPosition(state.chuteServoLeftOpenPosition);
-        chuteServoRight.setPosition(state.chuteServoRightOpenPosition);
+    public void setChuteDeliverPosition() {
+        chuteServoLeft.setPosition(state.chuteServoLeftDeliverPosition);
+        chuteServoRight.setPosition(state.chuteServoRightDeliverPosition);
     }
     public void setChuteHomePosition() {
         chuteServoLeft.setPosition(state.chuteServoLeftHomePosition);
@@ -203,13 +205,40 @@ public class Delivery implements Subassembly {
         }
         // Change the chute position with the dpad
         if (gamepad.dpad_left) {
-            if(doubleCompare(chuteServoLeftPosition, state.chuteServoLeftCompactPosition)) setChuteOpenPosition();
-            else if(doubleCompare(chuteServoLeftPosition, state.chuteServoLeftHomePosition)) setChuteCompactPosition();
-            else if(doubleCompare(chuteServoLeftPosition, state.chuteServoLeftOpenPosition)) setChuteHomePosition();
-        } else if (gamepad.dpad_right) {
-            if(doubleCompare(chuteServoLeftPosition, state.chuteServoLeftCompactPosition)) setChuteHomePosition();
-            else if(doubleCompare(chuteServoLeftPosition, state.chuteServoLeftHomePosition)) setChuteOpenPosition();
-            else if(doubleCompare(chuteServoLeftPosition, state.chuteServoLeftOpenPosition)) setChuteCompactPosition();
+                wasDpadLeftPressed = true;
+        } else if (wasDpadLeftPressed) {
+            // close the chute up
+            // if it's already compact, do nothing
+            if (isWithinTolerance(chuteServoLeftPosition, state.chuteServoLeftCompactPosition)) {
+//                setChuteDeliverPosition();
+            } else if (isWithinTolerance(chuteServoLeftPosition, state.chuteServoLeftDeliverPosition)) {
+                // if it's in the deliver position, move to home
+                setChuteHomePosition();
+            } else if (isWithinTolerance(chuteServoLeftPosition, state.chuteServoLeftHomePosition)) {
+                // if it's in the home position, move to compact
+                setChuteCompactPosition();
+            }
+
+            wasDpadLeftPressed = false;
+        }
+
+        if (gamepad.dpad_right) {
+                wasDpadRightPressed = true;
+        } else if (wasDpadRightPressed) {
+            // open the chute down
+            // if it's in the compact position, move to home
+            if (isWithinTolerance(chuteServoLeftPosition, state.chuteServoLeftCompactPosition)) {
+                setChuteHomePosition();
+            }
+            // if it's in the home position, move to deliver
+            else if (isWithinTolerance(chuteServoLeftPosition, state.chuteServoLeftHomePosition)) {
+                setChuteDeliverPosition();
+            }
+            // if it's in the deliver position, do nothing.
+            else if (isWithinTolerance(chuteServoLeftPosition, state.chuteServoLeftDeliverPosition)) {
+//                setChuteCompactPosition();
+            }
+            wasDpadRightPressed = false;
         }
 
         // fold and unfold the chute with the back button as a toggle
