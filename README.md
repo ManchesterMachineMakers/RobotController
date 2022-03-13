@@ -1,5 +1,5 @@
 ## Note on documentation
-Documentation specific to our team and for how to do stuff with this code is in [the docs folder](docs).
+Documentation specific to our team and for how to do stuff with this code is in [the wiki](https://github.com/ManchesterMachineMakers/FreightFrenzy/wiki).
 
 ## NOTICE
 
