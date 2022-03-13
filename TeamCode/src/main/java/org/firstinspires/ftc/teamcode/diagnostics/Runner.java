@@ -1,18 +1,24 @@
 package org.firstinspires.ftc.teamcode.diagnostics;
 
 import android.os.Build;
+
 import androidx.annotation.RequiresApi;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.diagnostics.tests.*;
+import org.firstinspires.ftc.teamcode.diagnostics.tests.Base;
+import org.firstinspires.ftc.teamcode.diagnostics.tests.DeliveryTest;
+import org.firstinspires.ftc.teamcode.diagnostics.tests.DriveBaseTest;
+import org.firstinspires.ftc.teamcode.diagnostics.tests.DuckySpinnerTest;
+import org.firstinspires.ftc.teamcode.diagnostics.tests.DuckyVisionTest;
+import org.firstinspires.ftc.teamcode.diagnostics.tests.IntakeTest;
+import org.firstinspires.ftc.teamcode.diagnostics.tests.LightingTest;
+import org.firstinspires.ftc.teamcode.diagnostics.tests.Requires;
+import org.firstinspires.ftc.teamcode.diagnostics.tests.Test;
 import org.firstinspires.ftc.teamcode.diagnostics.util.DiagnosticsOpMode;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
-import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Runner {
@@ -21,7 +27,8 @@ public class Runner {
             new LightingTest(),
             new DeliveryTest(),
             new IntakeTest(),
-            new DuckyVisionTest()
+            new DuckyVisionTest(),
+            new DuckySpinnerTest()
             /*new RingSensorTest()*/ };
             /*new GamepadTest() }; */
     public final DiagnosticsOpMode opMode;
