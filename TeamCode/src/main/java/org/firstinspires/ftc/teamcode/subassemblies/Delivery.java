@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.subassemblies;
 
 import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+
 import com.google.gson.Gson;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -9,18 +11,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ReadWriteFile;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.util.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 import java.io.File;
 import java.io.IOException;
-
-import androidx.annotation.RequiresApi;
 
 import station.util.Persist;
 
@@ -66,8 +64,8 @@ public class Delivery implements Subassembly {
         public double chuteServoLeftCompactPosition = CHUTE_COMPACT_POSITION;
         public double chuteServoLeftOpenPosition = CHUTE_OPEN_POSITION;
 
-        public double chuteServoRightCompactPosition = 1 - CHUTE_COMPACT_POSITION;
-        public double chuteServoRightOpenPosition = 1 - CHUTE_OPEN_POSITION;
+        public double chuteServoRightCompactPosition = (180.0/280.0) - CHUTE_COMPACT_POSITION;
+        public double chuteServoRightOpenPosition = (180.0/280.0) - CHUTE_OPEN_POSITION;
 
         public double doorServoClosedPosition = DOOR_CLOSED_POSITION;
         public double doorServoOpenPosition = DOOR_OPEN_POSITION;
