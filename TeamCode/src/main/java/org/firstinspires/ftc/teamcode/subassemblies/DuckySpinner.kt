@@ -5,6 +5,8 @@ import org.firstinspires.ftc.teamcode.util.KtHardware
 import org.firstinspires.ftc.teamcode.util.Subassembly
 
 class DuckySpinner(private val opMode: LinearOpMode) : Subassembly {
+    val duckySpinnerSpeed = 0.5
+
     val wheel = opMode.hardwareMap.crservo[KtHardware.name("servo_DuckWheel")]
     var running = false
     fun start(power: Double) {
@@ -21,9 +23,9 @@ class DuckySpinner(private val opMode: LinearOpMode) : Subassembly {
             else -> opMode.gamepad2
         }
         if(gamepad.right_trigger > 0.1) {
-            if(!running) start(0.5)
+            if(!running) start(duckySpinnerSpeed)
         } else if(gamepad.left_trigger > 0.1) {
-            if(!running) start(-0.5)
+            if(!running) start(-(duckySpinnerSpeed))
         } else {
             stop()
         }

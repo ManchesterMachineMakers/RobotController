@@ -120,17 +120,19 @@ public class ActiveIntake implements Subassembly {
      *         LT - Push out (slow)
      */
     public void controller() {
-//        if (gamepad.right_bumper) {
-//            go(DcMotorSimple.Direction.FORWARD, FAST_POWER);
-//        } else if (gamepad.left_bumper) {
-//            go(DcMotorSimple.Direction.REVERSE, FAST_POWER);
+        if (gamepad.right_bumper) {
+            go(DcMotorSimple.Direction.FORWARD, FAST_POWER);
+        } else if (gamepad.left_bumper) {
+            go(DcMotorSimple.Direction.REVERSE, FAST_POWER);
 //        } else
-        if (gamepad.right_trigger > 0) {
-            go(DcMotorSimple.Direction.FORWARD, SLOW_POWER_MULTIPLIER * gamepad.right_trigger);
-        } else if (gamepad.left_trigger > 0) {
-            go(DcMotorSimple.Direction.REVERSE, SLOW_POWER_MULTIPLIER * gamepad.left_trigger);
+//        if (gamepad.right_trigger > 0) {
+//            go(DcMotorSimple.Direction.FORWARD, SLOW_POWER_MULTIPLIER * gamepad.right_trigger);
+//        } else if (gamepad.left_trigger > 0) {
+//            go(DcMotorSimple.Direction.REVERSE, SLOW_POWER_MULTIPLIER * gamepad.left_trigger);
         }
-        if ((!gamepad.right_bumper) && (!gamepad.left_bumper) && (gamepad.right_trigger + gamepad.left_trigger == 0)) {
+        if ((!gamepad.right_bumper) && (!gamepad.left_bumper)
+//                && (gamepad.right_trigger + gamepad.left_trigger == 0)
+        ) {
             stop();
         }
 
