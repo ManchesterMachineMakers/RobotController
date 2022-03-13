@@ -29,11 +29,14 @@ import station.util.Persist;
  *
  */
 public class Delivery implements Subassembly {
+
+    private boolean doubleCompare(double a, double b) {
+        return Math.abs(a - b) < 0.01;
+    }
+
     public static DeliveryState state;
   
     public static final double MOTOR_ENCODERS_PER_ROTATION = 1425.1;
-    private static final double CHUTE_COMPACT_POSITION = 0;
-    private static final double CHUTE_OPEN_POSITION = 0.4;
     public static final int SLIDE_HOME_POSITION = 0;
     public static final int SLIDE_LOW_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 0.75);
     public static final int SLIDE_MID_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 1.5);
@@ -61,11 +64,13 @@ public class Delivery implements Subassembly {
         public int slideLowPosition = SLIDE_LOW_POSITION;
         public int slideHomePosition = SLIDE_HOME_POSITION;
 
-        public double chuteServoLeftCompactPosition = CHUTE_COMPACT_POSITION;
-        public double chuteServoLeftOpenPosition = CHUTE_OPEN_POSITION;
+        public double chuteServoLeftCompactPosition = 2/360.0;
+        public double chuteServoLeftHomePosition = chuteServoLeftCompactPosition + 90/360.0;
+        public double chuteServoLeftOpenPosition = chuteServoLeftCompactPosition + 120/360.0;
 
-        public double chuteServoRightCompactPosition = 1 - CHUTE_COMPACT_POSITION;
-        public double chuteServoRightOpenPosition = 1 - CHUTE_OPEN_POSITION;
+        public double chuteServoRightCompactPosition = 1 - 1/360.0;
+        public double chuteServoRightHomePosition = chuteServoRightCompactPosition - 90/360.0;
+        public double chuteServoRightOpenPosition = chuteServoRightCompactPosition - 120/360.0;
 
         public double doorServoClosedPosition = DOOR_CLOSED_POSITION;
         public double doorServoOpenPosition = DOOR_OPEN_POSITION;
@@ -79,7 +84,7 @@ public class Delivery implements Subassembly {
     // switch + and - by using a button on the controller?
     private static boolean REVERSE_CHUTE_ADJUSTMENT = false;
 
-    private boolean wasChuteOpenPressed = false;
+    private boolean wasDoorOpenPressed = false;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public Delivery(OpMode opMode) {
@@ -138,6 +143,10 @@ public class Delivery implements Subassembly {
         chuteServoLeft.setPosition(state.chuteServoLeftOpenPosition);
         chuteServoRight.setPosition(state.chuteServoRightOpenPosition);
     }
+    public void setChuteHomePosition() {
+        chuteServoLeft.setPosition(state.chuteServoLeftHomePosition);
+        chuteServoRight.setPosition(state.chuteServoRightHomePosition);
+    }
     public void setChuteCompactPosition() {
         chuteServoLeft.setPosition(state.chuteServoLeftCompactPosition);
         chuteServoRight.setPosition(state.chuteServoRightCompactPosition);
@@ -159,8 +168,8 @@ public class Delivery implements Subassembly {
         runSlideToPosition(proposed);
     }
     // we will likely need to add a tolerance to this method.
-    public boolean isFoldedUp() {
-        return chuteServoLeft.getPosition() < state.chuteServoLeftOpenPosition -0.1;
+    public boolean isDoorClosed() {
+        return doorServo.getPosition() < state.doorServoOpenPosition - 0.1;
     }
 
     /**
@@ -192,25 +201,29 @@ public class Delivery implements Subassembly {
         } else if (gamepad.dpad_up) {
             incrementSlideUp();
         }
-        // open and close door with left and right dpad buttons
+        // Change the chute position with the dpad
         if (gamepad.dpad_left) {
-            setDoorClosedPosition();
+            if(doubleCompare(chuteServoLeftPosition, state.chuteServoLeftCompactPosition)) setChuteOpenPosition();
+            else if(doubleCompare(chuteServoLeftPosition, state.chuteServoLeftHomePosition)) setChuteCompactPosition();
+            else if(doubleCompare(chuteServoLeftPosition, state.chuteServoLeftOpenPosition)) setChuteHomePosition();
         } else if (gamepad.dpad_right) {
-            setDoorOpenPosition();
+            if(doubleCompare(chuteServoLeftPosition, state.chuteServoLeftCompactPosition)) setChuteHomePosition();
+            else if(doubleCompare(chuteServoLeftPosition, state.chuteServoLeftHomePosition)) setChuteOpenPosition();
+            else if(doubleCompare(chuteServoLeftPosition, state.chuteServoLeftOpenPosition)) setChuteCompactPosition();
         }
 
         // fold and unfold the chute with the back button as a toggle
         if (gamepad.back) {
-            wasChuteOpenPressed = true;
+            wasDoorOpenPressed = true;
         } else {
-            if(wasChuteOpenPressed) {
-                if (isFoldedUp()) {
-                    setChuteOpenPosition();
+            if(wasDoorOpenPressed) {
+                if (isDoorClosed()) {
+                    setDoorOpenPosition();
                 } else {
-                    setChuteCompactPosition();
+                    setDoorClosedPosition();
                 }
             }
-            wasChuteOpenPressed = false;
+            wasDoorOpenPressed = false;
         }
 
         motorPosition = motor.getCurrentPosition();
