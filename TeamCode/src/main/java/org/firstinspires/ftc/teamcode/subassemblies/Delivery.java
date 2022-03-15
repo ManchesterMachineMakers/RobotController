@@ -42,8 +42,8 @@ public class Delivery implements Subassembly {
     public static final int SLIDE_MID_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 1.5);
     public static final int SLIDE_HIGH_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 3);
     public static final int SLIDE_CAP_POSITION = SLIDE_HIGH_POSITION;
-    private static final double DOOR_CLOSED_POSITION = 0;
-    private static final double DOOR_OPEN_POSITION = 0.5;
+    private static final double DOOR_CLOSED_POSITION = 5/300;
+    private static final double DOOR_OPEN_POSITION = 150/300;
     private static final int SLIDE_INCREMENT = (int)(MOTOR_ENCODERS_PER_ROTATION/10);
     private static final double SLIDE_POWER = 0.5;
     // values for telemetry
@@ -64,13 +64,16 @@ public class Delivery implements Subassembly {
         public int slideLowPosition = SLIDE_LOW_POSITION;
         public int slideHomePosition = SLIDE_HOME_POSITION;
 
-        public double chuteServoLeftCompactPosition = 2/300.0;
-        public double chuteServoLeftHomePosition = chuteServoLeftCompactPosition + 90/300.0;
-        public double chuteServoLeftDeliverPosition = chuteServoLeftCompactPosition + 120/300.0;
+        // this goes backwards from what it should be
+        public double chuteServoLeftBasePosition = 2/300.0;
+        public double chuteServoLeftCompactPosition = chuteServoLeftBasePosition + 180/300.0;
+        public double chuteServoLeftHomePosition = chuteServoLeftBasePosition + 90/300.0;
+        public double chuteServoLeftDeliverPosition = chuteServoLeftBasePosition + 60/300.0;
 
-        public double chuteServoRightCompactPosition = 1 - 1/300.0;
-        public double chuteServoRightHomePosition = chuteServoRightCompactPosition - 90/300.0;
-        public double chuteServoRightDeliverPosition = chuteServoRightCompactPosition - 120/300.0;
+        public double chuteServoRightBasePosition = 1 - 1/300.0;
+        public double chuteServoRightCompactPosition = chuteServoRightBasePosition - 180/300.0;
+        public double chuteServoRightHomePosition = chuteServoRightBasePosition - 90/300.0;
+        public double chuteServoRightDeliverPosition = chuteServoRightBasePosition - 60/300.0;
 
         public double doorServoClosedPosition = DOOR_CLOSED_POSITION;
         public double doorServoOpenPosition = DOOR_OPEN_POSITION;
@@ -84,6 +87,10 @@ public class Delivery implements Subassembly {
     // switch + and - by using a button on the controller?
     private static boolean REVERSE_CHUTE_ADJUSTMENT = false;
 
+    private boolean wasSlideHomeRequested;
+    private boolean wasSlideLowRequested;
+    private boolean wasSlideMidRequested;
+    private boolean wasSlideHighRequested;
     private boolean wasDoorOpenPressed = false;
     private boolean wasDpadLeftPressed = false;
     private boolean wasDpadRightPressed = false;
@@ -187,17 +194,30 @@ public class Delivery implements Subassembly {
      */
     public void controller(LinearOpMode opMode) {
         // set the slide height
-        if (!motor.isBusy()) {
-            if (gamepad.a) {
+        if (wasSlideHomeRequested || wasSlideLowRequested || wasSlideMidRequested || wasSlideHighRequested ) {
+            if (wasSlideHomeRequested) {
                 runSlideToPosition(state.slideHomePosition);
-            } else if (gamepad.x) {
+                wasSlideHomeRequested = false;
+            } else if (wasSlideLowRequested) {
                 runSlideToPosition(state.slideLowPosition);
-            } else if (gamepad.y) {
+                wasSlideLowRequested = false;
+            } else if (wasSlideMidRequested) {
                 runSlideToPosition(state.slideMidPosition);
-            } else if (gamepad.b) {
+                wasSlideMidRequested = false;
+            } else if (wasSlideHighRequested) {
                 runSlideToPosition(state.slideHighPosition);
+                wasSlideHighRequested = false;
             }
+        } else if (gamepad.a) {
+            wasSlideHomeRequested = true;
+        } else if (gamepad.x) {
+            wasSlideLowRequested = true;
+        } else if (gamepad.y) {
+            wasSlideMidRequested = true;
+        } else if (gamepad.b) {
+            wasSlideHighRequested = true;
         }
+
         if (gamepad.dpad_down) {
             incrementSlideDown();
         } else if (gamepad.dpad_up) {
