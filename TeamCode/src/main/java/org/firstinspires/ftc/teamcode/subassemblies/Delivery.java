@@ -71,8 +71,8 @@ public class Delivery implements Subassembly {
         public double chuteServoLeftDeliverPosition = chuteServoLeftBasePosition + 60/300.0;
 
         public double chuteServoRightBasePosition = 1 - 1/300.0;
-        public double chuteServoRightCompactPosition = chuteServoRightBasePosition - 180/300.0;
-        public double chuteServoRightHomePosition = chuteServoRightBasePosition - 90/300.0;
+        public double chuteServoRightCompactPosition = chuteServoRightBasePosition - 195/300.0;
+        public double chuteServoRightHomePosition = chuteServoRightBasePosition - 92/300.0;
         public double chuteServoRightDeliverPosition = chuteServoRightBasePosition - 60/300.0;
 
         public double doorServoClosedPosition = DOOR_CLOSED_POSITION;
