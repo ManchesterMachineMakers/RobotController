@@ -4,7 +4,7 @@ import java.lang.Math.toDegrees
 import kotlin.math.atan2
 import kotlin.math.sqrt
 
-class Path(originX: Float, originY: Float, targetX: Float, targetY: Float, initHeading: Double) {
+class Path(originX: Float, originY: Float, targetX: Float, targetY: Float, initHeading: Double, clearanceRadius: Float) {
     val heading: Double
     val distance: Double
     val rotation: Double
@@ -15,7 +15,7 @@ class Path(originX: Float, originY: Float, targetX: Float, targetY: Float, initH
         val deltaY = targetY - originY
         val newHeading = toDegrees(atan2(deltaY, deltaX).toDouble()) + 90
         val oppHeading = if (newHeading < 180) newHeading + 180 else newHeading - 180
-        distance = sqrt(deltaX * deltaX + deltaY * deltaY).toDouble()
+        distance = sqrt(deltaX * deltaX + deltaY * deltaY).toDouble() - clearanceRadius
         val rot = arrayOf(
             (360 - initHeading + newHeading) % 360,
             -(360 - newHeading + initHeading) % 360,

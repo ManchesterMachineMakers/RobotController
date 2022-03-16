@@ -25,9 +25,9 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         driveBase?.stop()
     }
 
-    fun runTo(targetX: Float, targetY: Float, currentLocationFallback: OpenGLMatrix? = null, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
+    fun runTo(targetX: Float, targetY: Float, currentLocationFallback: OpenGLMatrix? = null, clearance: Float = 0F, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
         val location = localization?.getRobotLocation() ?: currentLocationFallback ?: throw NoPositionError()
-        val path = Path(location[0, 0], location[1, 0], targetX, targetY, localization?.imu?.orientation?.psi ?: 0.0)
+        val path = Path(location[0, 0], location[1, 0], targetX, targetY, localization?.imu?.orientation?.psi ?: 0.0, clearance)
         driveBase?.setStopMode(DcMotor.ZeroPowerBehavior.BRAKE)
         // Collision handlers
         collision?.observe("pathfinder_runTo" to {
@@ -58,6 +58,10 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
     }
 
     fun runTo(target: Destination, currentLocationFallback: OpenGLMatrix? = null, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
-        runTo(target.x, target.y, currentLocationFallback, speed)
+        runTo(target.destX, target.destY, currentLocationFallback, target.clearanceRadius, speed)
+    }
+
+    fun isWithinTolerance(a: Float, b: Float, t: Float) : Boolean {
+        
     }
 }
