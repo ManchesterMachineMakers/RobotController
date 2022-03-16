@@ -10,6 +10,8 @@ class IMUManager(private val opMode: LinearOpMode) : Subassembly {
     val imu: BNO055IMU = opMode.hardwareMap[BNO055IMU::class.java, "imu"]
     private val imuParameters = BNO055IMU.Parameters()
     val orientation = Orientation(imu)
+    //TODO: Don't forget that the IMU is rotated and on its side
+    // compared to last season.
     init {
         //  set mode to "IMU". This will use the
         // device's gyro and its accelerometer
@@ -32,6 +34,7 @@ class IMUManager(private val opMode: LinearOpMode) : Subassembly {
 
     fun getRobotLocation(): OpenGLMatrix? {
         //TODO: implement
+        // should build in some smoothing here.
         return null
     }
 }
