@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.subassemblies.DuckySpinner;
 import org.firstinspires.ftc.teamcode.util.MMMFreightFrenzyOpMode;
 
 @TeleOp(name = "Freight Frenzy Full", group = "Freight Frenzy")
@@ -17,10 +18,11 @@ public class FreightFrenzyTeleOp extends MMMFreightFrenzyOpMode {
     double periodLength = 120; //seconds
     double endgameLength = 30; //seconds
     boolean inEndgame = false;
+    DuckySpinner duckySpinner;
 //    int pitchDegrees = 0;
     public void runOpMode() throws InterruptedException {
         initOpMode();
-
+        duckySpinner = new DuckySpinner(this);
         waitForStart();
         runtime.reset();
         driveBase.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -52,6 +54,9 @@ public class FreightFrenzyTeleOp extends MMMFreightFrenzyOpMode {
 
         // default controls for the intake are defined in the Subassembly
         intake.controller();
+
+        // default controls for the ducky spinner are defined in the Subassembly
+        duckySpinner.controller();
 
         composeTelemetry();
     }
