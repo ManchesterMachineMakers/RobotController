@@ -39,8 +39,8 @@ public class Delivery implements Subassembly {
     public static final double MOTOR_ENCODERS_PER_ROTATION = 1425.1;
     public static final int SLIDE_HOME_POSITION = 0;
     public static final int SLIDE_LOW_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 0.75);
-    public static final int SLIDE_MID_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 1.5);
-    public static final int SLIDE_HIGH_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 3);
+    public static final int SLIDE_MID_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 2);
+    public static final int SLIDE_HIGH_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 3.5);
     public static final int SLIDE_CAP_POSITION = SLIDE_HIGH_POSITION;
     private static final double DOOR_CLOSED_POSITION = 5/300.0;
     private static final double DOOR_OPEN_POSITION = 150/300.0;
@@ -66,7 +66,7 @@ public class Delivery implements Subassembly {
 
         // this goes backwards from what it should be
         public double chuteServoLeftBasePosition = 2/300.0;
-        public double chuteServoLeftCompactPosition = chuteServoLeftBasePosition + 180/300.0;
+        public double chuteServoLeftCompactPosition = chuteServoLeftBasePosition + 195/300.0;
         public double chuteServoLeftHomePosition = chuteServoLeftBasePosition + 90/300.0;
         public double chuteServoLeftDeliverPosition = chuteServoLeftBasePosition + 60/300.0;
 
