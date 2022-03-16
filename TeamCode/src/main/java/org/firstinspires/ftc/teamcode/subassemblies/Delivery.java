@@ -142,7 +142,13 @@ public class Delivery implements Subassembly {
 
     public void runSlideToPosition(int position) {
         if (!state.runPastLimits && (position > state.slideHighPosition || position < state.slideHomePosition)) return;
-        if (motor.isBusy() && position == motor.getTargetPosition()) return;
+        if (motor.isBusy()) {
+            if (motor.getPower() == 0) {
+                motor.setPower(SLIDE_POWER);
+            } else {
+                return;
+            }
+        }
         motor.setTargetPosition(position);
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motor.setPower(SLIDE_POWER);
@@ -237,6 +243,8 @@ public class Delivery implements Subassembly {
             } else if (isWithinTolerance(chuteServoLeftPosition, state.chuteServoLeftHomePosition)) {
                 // if it's in the home position, move to compact
                 setChuteCompactPosition();
+            } else {
+                setChuteHomePosition();
             }
 
             wasDpadLeftPressed = false;
@@ -257,6 +265,8 @@ public class Delivery implements Subassembly {
             // if it's in the deliver position, do nothing.
             else if (isWithinTolerance(chuteServoLeftPosition, state.chuteServoLeftDeliverPosition)) {
 //                setChuteCompactPosition();
+            } else {
+                setChuteHomePosition();
             }
             wasDpadRightPressed = false;
         }
