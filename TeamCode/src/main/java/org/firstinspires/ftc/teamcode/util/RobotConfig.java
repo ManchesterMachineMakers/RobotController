@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.sensors.Vision;
 import org.firstinspires.ftc.teamcode.subassemblies.ActiveIntake;
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin;
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
+import org.firstinspires.ftc.teamcode.subassemblies.DuckySpinner;
 import org.firstinspires.ftc.teamcode.subassemblies.Gamepad;
 import org.firstinspires.ftc.teamcode.util.pathfinder.DistanceSensorManager;
 import org.firstinspires.ftc.teamcode.util.pathfinder.IMUManager;
@@ -68,6 +69,7 @@ public class RobotConfig {
         subassembly(Blinkin.class);
         subassembly(Vision.class);
         subassembly(DistanceSensorManager.class);
+        subassembly(DuckySpinner.class);
         names(Names_FreightFrenzyRobot.class);
     }};
 

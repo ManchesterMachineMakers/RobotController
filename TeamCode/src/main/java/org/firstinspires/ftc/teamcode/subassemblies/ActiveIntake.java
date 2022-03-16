@@ -1,18 +1,13 @@
 package org.firstinspires.ftc.teamcode.subassemblies;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
-import org.firstinspires.ftc.teamcode.util.Names;
 import org.firstinspires.ftc.teamcode.util.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.Subassembly;
 
@@ -129,12 +124,15 @@ public class ActiveIntake implements Subassembly {
             go(DcMotorSimple.Direction.FORWARD, FAST_POWER);
         } else if (gamepad.left_bumper) {
             go(DcMotorSimple.Direction.REVERSE, FAST_POWER);
-        } else if (gamepad.right_trigger > 0) {
-            go(DcMotorSimple.Direction.FORWARD, SLOW_POWER_MULTIPLIER * gamepad.right_trigger);
-        } else if (gamepad.left_trigger > 0) {
-            go(DcMotorSimple.Direction.REVERSE, SLOW_POWER_MULTIPLIER * gamepad.left_trigger);
+//        } else
+//        if (gamepad.right_trigger > 0) {
+//            go(DcMotorSimple.Direction.FORWARD, SLOW_POWER_MULTIPLIER * gamepad.right_trigger);
+//        } else if (gamepad.left_trigger > 0) {
+//            go(DcMotorSimple.Direction.REVERSE, SLOW_POWER_MULTIPLIER * gamepad.left_trigger);
         }
-        if ((!gamepad.right_bumper) && (!gamepad.left_bumper) && (gamepad.right_trigger + gamepad.left_trigger == 0)) {
+        if ((!gamepad.right_bumper) && (!gamepad.left_bumper)
+//                && (gamepad.right_trigger + gamepad.left_trigger == 0)
+        ) {
             stop();
         }
 
