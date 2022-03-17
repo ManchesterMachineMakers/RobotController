@@ -49,7 +49,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         // pivot
         pivotTo(path.heading)
         currentMotorPositions = driveBase?.checkMotorPositions()
-        calcNewTranslation(getAverageDistanceTraveled(startingMotorPositions, currentMotorPositions), localization?.imu?.orientation?.psi ?: targetAngle)
+        calcNewTranslation(getAverageDistanceTraveled(startingMotorPositions, currentMotorPositions), localization?.imu?.orientation?.psi ?: path.heading)
         // run
         driveBase?.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
         driveBase?.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
