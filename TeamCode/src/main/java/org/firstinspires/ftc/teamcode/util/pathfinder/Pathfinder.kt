@@ -29,8 +29,8 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         driveBase?.go(direction, speed)
         while(!isWithinTolerance(localization?.imu?.orientation?.psi ?: targetAngle, targetAngle, pivotTolerance) && driveBase?.isBusy == true && opMode.opModeIsActive()) opMode.idle()
 
-        runPID(currentAngle, targetAngle, pivotTolerance) { _, initial, target, correction ->
-            val power = correction / (target - initial)
+        runPID(currentAngle, targetAngle, pivotTolerance, 2.0) { _, _, target, _ ->
+            val power = calculateCorrection()
             driveBase?.go(direction, power)
 
             localization?.imu?.orientation?.psi ?: target
