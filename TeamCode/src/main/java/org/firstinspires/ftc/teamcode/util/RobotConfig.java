@@ -84,7 +84,7 @@ public class RobotConfig {
      * Current config
      * DO NOT EDIT - Set by build matrix script
      */
-    public static final RobotConfig CURRENT = PROGRAMMING_BOARD;
+    public static final RobotConfig CURRENT = FULL_ROBOT;
 
 
 
