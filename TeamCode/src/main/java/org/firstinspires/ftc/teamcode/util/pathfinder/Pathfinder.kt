@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase
 import org.firstinspires.ftc.teamcode.util.KtHardware
 import org.firstinspires.ftc.teamcode.util.Subassembly
+import org.firstinspires.ftc.teamcode.util.pid.runPID;
 import org.firstinspires.ftc.teamcode.util.pathfinder.collision.Collision
 import org.firstinspires.ftc.teamcode.util.pathfinder.collision.CollisionDetector
 import kotlin.math.abs
@@ -27,6 +28,14 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         driveBase?.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER)
         driveBase?.go(direction, speed)
         while(!isWithinTolerance(localization?.imu?.orientation?.psi ?: targetAngle, targetAngle, pivotTolerance) && driveBase?.isBusy == true && opMode.opModeIsActive()) opMode.idle()
+
+        runPID(currentAngle, targetAngle, pivotTolerance) { _, initial, target, correction ->
+            val power = correction / (target - initial)
+            driveBase?.go(direction, power)
+
+            localization?.imu?.orientation?.psi ?: target
+        }
+
         driveBase?.stop()
     }
 
@@ -49,7 +58,8 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         // pivot
         pivotTo(path.heading)
         currentMotorPositions = driveBase?.checkMotorPositions()
-        calcNewTranslation(getAverageDistanceTraveled(startingMotorPositions, currentMotorPositions), localization?.imu?.orientation?.psi ?: path.heading)
+        val newTranslation = calcNewTranslation(getAverageDistanceTraveled(startingMotorPositions, currentMotorPositions), localization?.imu?.orientation?.psi ?: path.heading)
+        
         // run
         driveBase?.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
         driveBase?.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
@@ -71,7 +81,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
     }
 
     fun isWithinTolerance(a: Double, b: Double, t: Double) : Boolean {
-        return abs(a - b) > abs(t)
+        return abs(b - a) < abs(t)
     }
 
     fun getAverageDistanceTraveled(from: IntArray?, to: IntArray?) : Int {
@@ -97,7 +107,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         //      .   |   .
 
         // determine quadrant
-        val quadrant : Int = (heading/90).toInt() // INT: 0 = less than 90, 1 = 91-180, 2 = 181-270, 3 = 271-360
+        val quadrant: Int = (heading/90).toInt() // INT: 0 = less than 90, 1 = 91-180, 2 = 181-270, 3 = 271-360
         val quadrantHeading = heading % 90
 
         // SOH CAH TOA - y = opposite, x = adjacent
