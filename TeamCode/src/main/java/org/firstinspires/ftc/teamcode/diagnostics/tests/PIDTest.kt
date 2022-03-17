@@ -10,11 +10,11 @@ class PIDTest : Base {
         val initial = 0.0
         val target = 6.0
         val tolerance = 0.01
-        runner.log("At start; initial value: $initial, target: $target, tolerance: $tolerance")
+        runner.log("Correction\tInitial\tCurrent\tTarget\tTolerance\tError")
+        runner.log("0\t$initial\t$initial\t$target\t$tolerance\t0")
         val final = runPID(initial, target, tolerance) { initialInLoop, current, targetInLoop, correction ->
-            runner.log("PID loop; initial value: $initialInLoop, current: $current, target: $targetInLoop, correction: $correction")
             val actCorrection = correction / (target - initial)
-            runner.log("PID loop; correcting by $actCorrection")
+            runner.log("$actCorrection\t$initialInLoop\t$current\t$targetInLoop\t$tolerance\t$correction")
             current + actCorrection
         }
         runner.log("Finished PID loop; final: $final, target: $target")
