@@ -83,7 +83,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         vision?.deactivateTFOD()
         val deliverTo = if(muffinRecognitions?.isNotEmpty() == true) {
             val recognition = muffinRecognitions[0]
-            val position = MuffinPosition.of(recognition.left, recognition.imageWidth)
+            val position = MuffinPosition.of(recognition.left + (recognition.width / 2), recognition.imageWidth)
             log("Recognition found at (${recognition.left}, ${recognition.top}); placement: $position")
             report("There's a muffin at the ${position}! I love muffins.")
             blinkin?.detected(position)
