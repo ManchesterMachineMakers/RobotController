@@ -27,10 +27,10 @@ public class Names_ProgrammingBoard {
     public static final String sensor_Color = "color";
     public static final String sensor_Rings = "touchsensor";
 
-    public static final String servo_DeliveryDoor = "servo1";
+    public static final String servo_DeliveryDoor = "servoDCL";
     public static final String servo_DeliveryChuteLeft = "servoDCL";
     public static final String servo_DeliveryChuteRight = "servoDCR";
-    public static final String servo_BlinkinLED =  "servo1";
+    public static final String servo_BlinkinLED =  "servoDCR";
     public static final String servo_DuckWheel = "duckWheel";
 
     public static final String motor_LeftFront = "left_front";

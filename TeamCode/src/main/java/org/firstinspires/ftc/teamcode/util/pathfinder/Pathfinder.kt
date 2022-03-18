@@ -29,7 +29,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         driveBase?.go(direction, speed)
         while(!isWithinTolerance(localization?.imu?.orientation?.psi ?: targetAngle, targetAngle, pivotTolerance) && driveBase?.isBusy == true && opMode.opModeIsActive()) opMode.idle()
 
-        runPID(currentAngle, targetAngle, pivotTolerance, 100.0) { _, _, target, _ ->
+        runPID(opMode, currentAngle, targetAngle, pivotTolerance, 100.0) { _, _, target, _ ->
             val power = calculateCorrection()
             driveBase?.go(direction, power)
 
@@ -54,7 +54,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
             }
         })
 
-        collision?.startThread()
+        // collision?.startThread()
         // pivot
         pivotTo(path.heading)
         currentMotorPositions = driveBase?.checkMotorPositions()
@@ -73,7 +73,8 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         )
         while (driveBase?.isBusy == true) opMode.idle()
         collision?.removeObserver("pathfinder_runTo")
-        collision?.stopThread()
+        // collision?.stopThread()
+        collision?.stop()
     }
 
     fun runTo(target: Destination, currentLocationFallback: OpenGLMatrix? = null, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {

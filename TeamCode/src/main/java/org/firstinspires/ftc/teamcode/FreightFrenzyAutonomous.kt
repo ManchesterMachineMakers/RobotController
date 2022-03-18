@@ -62,7 +62,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         waitForStart()
         log("Getting recognitions")
         blinkin?.detecting()
-        val muffinRecognitions = vision?.definiteRecognitions?.filter { recognition -> recognition.label == "muffin" }
+        val muffinRecognitions = vision?.definiteRecognitions?.filter { recognition -> recognition.label == "muffin" && recognition.confidence > 0.98 }
         vision?.deactivateTFOD()
         val deliverTo = if(muffinRecognitions?.isNotEmpty() == true) {
             val recognition = muffinRecognitions[0]
@@ -85,7 +85,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         }
         pathfinder?.runTo(targetHub.destination, startLocation.destination.matrix)
 
-        delivery?.setChuteOpenPosition()
+        delivery?.setChuteDeliverPosition()
         delivery?.setDoorOpenPosition()
 
         log("Parking in warehouse")

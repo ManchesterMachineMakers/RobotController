@@ -29,7 +29,7 @@ class PIDTest : Base {
         fun actualRun() {
             runner.log("Correction\tInitial\tCurrent\tTarget\tTolerance\tError\tConstant")
             runner.log("0\t$initial\t$initial\t$target\t$tolerance\t0\t$k")
-            val final = runPID(initial, target, tolerance, k) { initialInLoop, current, targetInLoop, correction ->
+            val final = runPID(runner.opMode, initial, target, tolerance, k) { initialInLoop, current, targetInLoop, correction ->
                 val actCorrection = calculateCorrection()
                 runner.log("$actCorrection\t$initialInLoop\t$current\t$targetInLoop\t$tolerance\t$correction\t$k")
                 correctionLn.setValue(actCorrection)
@@ -51,7 +51,7 @@ class PIDTest : Base {
                 kLn.setValue(k)
                 runner.opMode.sleep(50)
             } else if(gamepad.dpad_down) {
-                k += 10
+                k -= 10
                 if(initial > k) k = initial
                 kLn.setValue(k)
                 runner.opMode.sleep(50)
