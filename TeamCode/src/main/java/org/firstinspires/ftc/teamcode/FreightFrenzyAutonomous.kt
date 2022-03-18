@@ -77,7 +77,10 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         intake?.stop()
         log("Getting recognitions")
         blinkin?.detecting()
-        val muffinRecognitions = vision?.definiteRecognitions?.filter { recognition -> recognition.label == "muffin" && recognition.confidence > 0.95 }
+        val muffinRecognitions = vision
+        			?.definiteRecognitions
+        			?.filter { recognition -> recognition.label == "muffin" && recognition.confidence > 0.95 }
+        			?.sortedByDescending { it.confidence }
         vision?.deactivateTFOD()
         val deliverTo = if(muffinRecognitions?.isNotEmpty() == true) {
             val recognition = muffinRecognitions[0]
