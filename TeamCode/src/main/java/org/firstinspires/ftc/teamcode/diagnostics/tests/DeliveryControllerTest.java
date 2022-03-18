@@ -18,6 +18,10 @@ public class DeliveryControllerTest implements Base {
         Thread.sleep(3000);
         
         Delivery delivery = Testable.getOrDie(sel, Delivery.class);
+        
+        runner.opMode.telemetry.speak("Note: you are now able to run the slide motor with impunity. Please be careful.");
+        
+        delivery.state.runPastLimits = true;
 
         runner.log("Testing Controls");
 
