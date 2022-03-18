@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.util.pathfinder.collision
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.teamcode.util.KtHardware
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.pathfinder.DistanceSensorManager
@@ -19,11 +20,15 @@ class CollisionDetector(private val opMode: LinearOpMode) : Subassembly {
         private set
 
     fun startThread() = runBlocking {
+        RobotLog.i("Running a blocking thread")
         launch {
+            RobotLog.i("Running a non-blocking thread")
             while(opMode.opModeIsActive() && !stopRequested) {
+                RobotLog.v("Polling in a non-blocking thread")
                 poll()
             }
         }
+        RobotLog.i("Exiting the blocking thread")
     }
 
     fun stopThread() { stopRequested = true }
@@ -56,9 +61,14 @@ class CollisionDetector(private val opMode: LinearOpMode) : Subassembly {
     }
 
     private fun dispatch(collision: Collision) = runBlocking {
+        RobotLog.i("Dispatching in a blocking thread")
         for (handler in handlers) {
-            launch { handler.value(collision) }
+            launch {
+                // RobotLog.v("Dispatching a non-blocking handler")
+                handler.value(collision)
+            }
         }
+        RobotLog.i("Exiting the Dispatch blocking thread")
     }
 
     fun observe(handler: Pair<String, CollisionHandler>) {
