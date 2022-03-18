@@ -116,7 +116,8 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
             Alliance.Blue -> FieldDestinations2021.BlueWarehouse
             Alliance.Red -> FieldDestinations2021.RedWarehouse
         }
-        pathfinder?.runTo(targetWarehouse.destination, targetHub.destination.matrix)
+        pathfinder?.runTo(startLocation.destination, targetHub.destination.matrix)
+        pathfinder?.runTo(targetWarehouse.destination, startLocation.destination.matrix)
 
         log("Closing delivery")
         delivery?.setDoorClosedPosition()
