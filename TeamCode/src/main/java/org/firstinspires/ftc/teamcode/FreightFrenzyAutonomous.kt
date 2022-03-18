@@ -110,6 +110,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
 
         delivery?.setChuteDeliverPosition()
         delivery?.setDoorOpenPosition()
+        keepTheBeat(3)
 
         log("Parking in warehouse")
         val targetWarehouse = when(alliance) {
