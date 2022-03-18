@@ -85,7 +85,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         }
         pathfinder?.runTo(targetHub.destination, startLocation.destination.matrix)
 
-        delivery?.setChuteDeliverPosition()
+        delivery?.setChuteOpenPosition()
         delivery?.setDoorOpenPosition()
 
         log("Parking in warehouse")
