@@ -64,7 +64,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         driveBase?.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
         driveBase?.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
         driveBase?.go(
-                if(path.direction < 0)
+                if(path.direction > 0)
                     DriveBase.TravelDirection.reverse
                 else
                     DriveBase.TravelDirection.forward,
