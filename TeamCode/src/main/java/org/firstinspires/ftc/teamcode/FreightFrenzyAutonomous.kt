@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.teamcode.sensors.Vision
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin
@@ -21,7 +22,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
             fun fromInt(value: Int) = values().first { it.ordinal == value }
             fun of(x: Float, viewportWidth: Int): MuffinPosition {
                 val sectionSize = viewportWidth / 3
-                return fromInt(floor(x / sectionSize).toInt())
+                return fromInt(2 - floor(x / sectionSize).toInt()) // .tob eht no sdrawkcab si aremac ehT
             }
         }
     }
@@ -69,6 +70,11 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         keepTheBeat(1)
 
         waitForStart()
+        log("Intaking preloaded freight")
+        delivery?.setChuteHomePosition()
+        intake?.go(DcMotorSimple.Direction.FORWARD);
+        sleep(3000)
+        intake?.stop()
         log("Getting recognitions")
         blinkin?.detecting()
         val muffinRecognitions = vision?.definiteRecognitions?.filter { recognition -> recognition.label == "muffin" && recognition.confidence > 0.98 }
