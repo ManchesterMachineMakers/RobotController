@@ -12,7 +12,7 @@ class PIDTest : Base {
         val tolerance = 0.01
         runner.log("Correction\tInitial\tCurrent\tTarget\tTolerance\tError")
         runner.log("0\t$initial\t$initial\t$target\t$tolerance\t0")
-        val final = runPID(initial, target, tolerance, 2.0) { initialInLoop, current, targetInLoop, correction ->
+        val final = runPID(initial, target, tolerance, 100.0) { initialInLoop, current, targetInLoop, correction ->
             val actCorrection = calculateCorrection()
             runner.log("$actCorrection\t$initialInLoop\t$current\t$targetInLoop\t$tolerance\t$correction")
             current + actCorrection
