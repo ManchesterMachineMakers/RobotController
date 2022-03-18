@@ -115,5 +115,6 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         log("Closing delivery")
         delivery?.setDoorClosedPosition()
         delivery?.setChuteCompactPosition()
+        delivery?.runSlideToPosition(Delivery.SLIDE_HOME_POSITION);
     }
 }
