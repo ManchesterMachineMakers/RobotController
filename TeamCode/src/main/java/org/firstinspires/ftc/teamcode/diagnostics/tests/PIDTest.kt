@@ -12,7 +12,7 @@ class PIDTest : Base {
     override fun run(sel: Array<Testable>?, runner: Runner): Boolean {
         var k = 100.0
         val initial = 0.0
-        val target = 3600.0
+        var target = 3600.0
         val tolerance = 0.01
 
         val gamepad = KTestable.getOrDie<Gamepad>(sel).get(1)
@@ -46,11 +46,11 @@ class PIDTest : Base {
         runner.log("Initializing PID test; use dpad up/down to adjust constant, X to run test")
         while(runner.opMode.opModeIsActive() && !gamepad.ps) {
             if(gamepad.dpad_up) {
-                k++
+                k += 10
                 kLn.setValue(k)
                 runner.opMode.sleep(50)
             } else if(gamepad.dpad_down) {
-                k--
+                k += 10
                 kLn.setValue(k)
                 runner.opMode.sleep(50)
             }
