@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.util.pathfinder.FieldDestinations2021
 import org.firstinspires.ftc.teamcode.util.pathfinder.Pathfinder
 import kotlin.math.floor
 
-open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightFrenzyOpMode() {
+open class FreightFrenzyAutonomous(private val alliance: Alliance, private val startLocation: FieldDestinations2021) : MMMFreightFrenzyOpMode() {
     enum class MuffinPosition {
         Left, Middle, Right;
 
@@ -43,10 +43,11 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         initOpMode()
         driveBase.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
 
-        val startLocation = when(alliance) {
-            Alliance.Blue -> FieldDestinations2021.BlueStart1
-            Alliance.Red -> FieldDestinations2021.RedStart1
-        }
+        // The starting location is now passed in.
+        //        val startLocation = when(alliance) {
+        //            Alliance.Blue -> FieldDestinations2021.BlueStart1
+        //            Alliance.Red -> FieldDestinations2021.RedStart1
+        //        }
 
         val vision = getHardware<Vision>()
         vision?.initVuforiaForTFOD()
@@ -80,7 +81,10 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         val muffinRecognitions = vision
         			?.definiteRecognitions
         			?.sortedByDescending { it.confidence }
+        // don't need TF anymore.  Need vumarks instead.
         vision?.deactivateTFOD()
+        vision?.initVuforiaForVuMarks()
+
         val deliverTo = if(muffinRecognitions?.isNotEmpty() == true) {
             val recognition = muffinRecognitions[0]
             val position = MuffinPosition.of(recognition.left + (recognition.width / 2), recognition.imageWidth)
