@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.diagnostics.tests.Requires;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.Test;
 import org.firstinspires.ftc.teamcode.diagnostics.util.DiagnosticsOpMode;
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
+import org.firstinspires.ftc.teamcode.diagnostics.tests.PIDTest;
 
 import java.lang.annotation.Annotation;
 import java.util.stream.Stream;
@@ -28,7 +29,8 @@ public class Runner {
             new DeliveryTest(),
             new IntakeTest(),
             new DuckyVisionTest(),
-            new DuckySpinnerTest()
+            new DuckySpinnerTest(),
+            new PIDTest()
             /*new RingSensorTest()*/ };
             /*new GamepadTest() }; */
     public final DiagnosticsOpMode opMode;

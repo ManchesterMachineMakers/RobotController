@@ -28,11 +28,19 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
         boolean deliveryEnabled = (delivery != null);
         boolean intakeEnabled = (intake != null);
 
+        report("Warning! Please retract the slides completely to zero before running this op mode!");
+        keepTheBeat(3);
+        report("Slides are now AT ZERO.  If they are not FULLY RETRACTED, you will break them!");
+        keepTheBeat(3);
+        report("If they are not retracted, stop this OpMode, retract the slides, and restart.");
+        keepTheBeat(5);
         // Start it talking
         report("Are you ready?");
 
         waitForStart();
         runtime.reset();
+        telemetry.clear();
+        telemetry.setAutoClear(false);
         
         // You put your Whole Self in
         report("You put your Whole Self in,");
@@ -81,11 +89,11 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
         report("Yeah!");
     }
 
-    private void report(String message) {
-        telemetry.speak(message);
-        telemetry.addLine(message);
-        telemetry.update();
-    }
+//    private void report(String message) {
+//        telemetry.speak(message);
+//        telemetry.addLine(message);
+//        telemetry.update();
+//    }
 
     private void hokeyPokey(DriveBase.TravelDirection whichWayDoWeGo, int beats) throws InterruptedException {
         driveBase.go(
@@ -94,14 +102,5 @@ public class AutoOpModeHokeyPokey extends MMMFreightFrenzyOpMode {
                 );
         keepTheBeat(beats);
         driveBase.stop();
-    }
-
-    private void keepTheBeat(int beats) throws InterruptedException {
-        while (opModeIsActive() /*&& driveBase.isBusy()*/ && beats > 0) {
-            RobotLog.i("Waiting in an English garden");
-            Thread.sleep(900); // wait one beat
-            RobotLog.i("If the sun doesn't come from sitting in the English rain");
-            beats--;
-        }
     }
 }

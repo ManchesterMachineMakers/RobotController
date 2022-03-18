@@ -42,10 +42,10 @@ public class Delivery implements Subassembly {
     public static final int SLIDE_MID_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 2);
     public static final int SLIDE_HIGH_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 3.5);
     public static final int SLIDE_CAP_POSITION = SLIDE_HIGH_POSITION;
-    private static final double DOOR_CLOSED_POSITION = 5/300.0;
-    private static final double DOOR_OPEN_POSITION = 150/300.0;
+    private static final double DOOR_CLOSED_POSITION = 6/300.0;
+    private static final double DOOR_OPEN_POSITION = DOOR_CLOSED_POSITION + 120/300.0;
     private static final int SLIDE_INCREMENT = (int)(MOTOR_ENCODERS_PER_ROTATION/10);
-    private static final double SLIDE_POWER = 0.5;
+    private static final double SLIDE_POWER = 0.8;
     // values for telemetry
     public int motorPosition;
     public static final DcMotorSimple.Direction motorDirection = DcMotorSimple.Direction.REVERSE;

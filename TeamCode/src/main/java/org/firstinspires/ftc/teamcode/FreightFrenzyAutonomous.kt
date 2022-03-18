@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.teamcode.sensors.Vision
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin
@@ -22,7 +22,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
             fun fromInt(value: Int) = values().first { it.ordinal == value }
             fun of(x: Float, viewportWidth: Int): MuffinPosition {
                 val sectionSize = viewportWidth / 3
-                return fromInt(floor(x / sectionSize).toInt())
+                return fromInt(2 - floor(x / sectionSize).toInt()) // .tob eht no sdrawkcab si aremac ehT
             }
         }
     }
@@ -59,19 +59,36 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         val delivery = getHardware<Delivery>()
         val pathfinder = getHardware<Pathfinder>()
 
+        report("Warning! Please retract the slides completely to zero before running this op mode!")
+        keepTheBeat(3)
+        report("Slides are now AT ZERO.  If they are not FULLY RETRACTED, you will break them!")
+        keepTheBeat(3)
+        report("If they are not retracted, stop this OpMode, retract the slides, and restart.")
+        keepTheBeat(5)
+        // Start it talking
+        report("Are you ready?")
+        keepTheBeat(1)
+
         waitForStart()
+        log("Intaking preloaded freight")
+        delivery?.setChuteHomePosition()
+        intake?.go(DcMotorSimple.Direction.FORWARD);
+        sleep(3000)
+        intake?.stop()
         log("Getting recognitions")
         blinkin?.detecting()
-        val muffinRecognitions = vision?.definiteRecognitions?.filter { recognition -> recognition.label == "muffin" }
+        val muffinRecognitions = vision?.definiteRecognitions?.filter { recognition -> recognition.label == "muffin" && recognition.confidence > 0.98 }
         vision?.deactivateTFOD()
         val deliverTo = if(muffinRecognitions?.isNotEmpty() == true) {
             val recognition = muffinRecognitions[0]
             val position = MuffinPosition.of(recognition.left, recognition.imageWidth)
             log("Recognition found at (${recognition.left}, ${recognition.top}); placement: $position")
+            report("There's a muffin at the ${position}! I love muffins.")
             blinkin?.detected(position)
             position
         } else {
             log("No recognitions; delivering to middle")
+            report("Did not find a muffin. Too bad!")
             blinkin?.autonomousDefault()
             MuffinPosition.Middle
         }

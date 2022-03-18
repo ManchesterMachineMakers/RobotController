@@ -27,24 +27,24 @@ public class Names_ProgrammingBoard {
     public static final String sensor_Color = "color";
     public static final String sensor_Rings = "touchsensor";
 
-    public static final String servo_DeliveryDoor = "servo1";
+    public static final String servo_DeliveryDoor = "servoDCL";
     public static final String servo_DeliveryChuteLeft = "servoDCL";
     public static final String servo_DeliveryChuteRight = "servoDCR";
-    public static final String servo_BlinkinLED =  "servo1";
+    public static final String servo_BlinkinLED =  "servoDCR";
     public static final String servo_DuckWheel = "duckWheel";
 
     public static final String motor_LeftFront = "left_front";
     public static final String motor_RightFront = "left_front";
     public static final String motor_LeftRear = "left_front";
     public static final String motor_RightRear = "left_front";
-    public static final String motor_Intake = "left_front";
-    public static final String motor_DeliveryMotor = "left_front";
+    public static final String motor_Intake = "delivery1";
+    public static final String motor_DeliveryMotor = "delivery1";
     // public static final String motor_DuckySpinner = "left_front";
 
     public static final String range_Front = "front";
     // public static final String range_Rear = "front";
-    public static final String range_Left = "front";
-    public static final String range_Right = "front";
+    public static final String range_Left = "rear";
+    public static final String range_Right = "rear";
 
     public static final String camera_Default = "Webcam 1";
 
