@@ -58,11 +58,15 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         val delivery = getHardware<Delivery>()
         val pathfinder = getHardware<Pathfinder>()
 
-        telemetry.addLine("Slides are now AT ZERO.  If they are not FULLY RETRACTED, you will break them!  If they are not retracted, stop this OpMode, retract the slides, and restart.")
-        telemetry.update()
-        this.idle()
-        telemetry.speak("Warning! Please retract the slides completely to zero before running this op mode!")
-        this.idle()
+        report("Warning! Please retract the slides completely to zero before running this op mode!")
+        keepTheBeat(3)
+        report("Slides are now AT ZERO.  If they are not FULLY RETRACTED, you will break them!")
+        keepTheBeat(3)
+        report("If they are not retracted, stop this OpMode, retract the slides, and restart.")
+        keepTheBeat(5)
+        // Start it talking
+        report("Are you ready?")
+        keepTheBeat(1)
 
         waitForStart()
         log("Getting recognitions")
@@ -73,10 +77,12 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
             val recognition = muffinRecognitions[0]
             val position = MuffinPosition.of(recognition.left, recognition.imageWidth)
             log("Recognition found at (${recognition.left}, ${recognition.top}); placement: $position")
+            report("There's a muffin at the ${position}! I love muffins.")
             blinkin?.detected(position)
             position
         } else {
             log("No recognitions; delivering to middle")
+            report("Did not find a muffin. Too bad!")
             blinkin?.autonomousDefault()
             MuffinPosition.Middle
         }
