@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.diagnostics.tests.Base;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.DeliveryTest;
+import org.firstinspires.ftc.teamcode.diagnostics.tests.DeliveryControllerTest;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.DriveBaseTest;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.DuckySpinnerTest;
 import org.firstinspires.ftc.teamcode.diagnostics.tests.DuckyVisionTest;
@@ -30,7 +31,8 @@ public class Runner {
             new IntakeTest(),
             new DuckyVisionTest(),
             new DuckySpinnerTest(),
-            new PIDTest()
+            new PIDTest(),
+            new DeliveryControllerTest()
             /*new RingSensorTest()*/ };
             /*new GamepadTest() }; */
     public final DiagnosticsOpMode opMode;
