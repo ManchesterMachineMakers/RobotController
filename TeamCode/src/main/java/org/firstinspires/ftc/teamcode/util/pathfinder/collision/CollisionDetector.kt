@@ -26,6 +26,7 @@ class CollisionDetector(private val opMode: LinearOpMode) : Subassembly {
             while(opMode.opModeIsActive() && !stopRequested) {
                 RobotLog.v("Polling in a non-blocking thread")
                 poll()
+                yield()
             }
         }
         RobotLog.i("Exiting the blocking thread")
