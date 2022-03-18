@@ -13,6 +13,11 @@ import org.firstinspires.ftc.teamcode.subassemblies.Gamepad;
 public class DeliveryTest implements Base {
 
     public boolean run(Testable[] sel, Runner runner) throws Exception {
+        runner.opMode.telemetry.speak("Important! Please retract the slides completely to zero before running this op mode!");
+        runner.opMode.telemetry.speak("Repeat: Please retract the slides completely to zero before running this op mode!");
+        runner.opMode.telemetry.addLine("Slides are now AT ZERO.  If they are not FULLY RETRACTED, you will break them!  If they are not retracted, stop this OpMode, retract the slides, and restart.");
+        runner.opMode.telemetry.update();
+
         Delivery delivery = Testable.getOrDie(sel, Delivery.class);
         runner.log("Home");
         delivery.runSlideToPosition(Delivery.SLIDE_HOME_POSITION);

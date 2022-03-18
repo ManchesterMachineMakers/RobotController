@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.teamcode.sensors.Vision
@@ -58,6 +57,13 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
 
         val delivery = getHardware<Delivery>()
         val pathfinder = getHardware<Pathfinder>()
+
+        telemetry.speak("Important! Please retract the slides completely to zero before running this op mode!")
+        this.idle()
+        telemetry.speak("Repeat: Please retract the slides completely to zero before running this op mode!")
+        this.idle()
+        telemetry.addLine("Slides are now AT ZERO.  If they are not FULLY RETRACTED, you will break them!  If they are not retracted, stop this OpMode, retract the slides, and restart.")
+        telemetry.update()
 
         waitForStart()
         log("Getting recognitions")
