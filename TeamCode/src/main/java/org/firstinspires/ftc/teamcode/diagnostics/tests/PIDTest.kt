@@ -48,9 +48,11 @@ class PIDTest : Base {
             if(gamepad.dpad_up) {
                 k++
                 kLn.setValue(k)
+                runner.opMode.sleep(50)
             } else if(gamepad.dpad_down) {
                 k--
                 kLn.setValue(k)
+                runner.opMode.sleep(50)
             }
             if(gamepad.x) {
                 actualRun()
