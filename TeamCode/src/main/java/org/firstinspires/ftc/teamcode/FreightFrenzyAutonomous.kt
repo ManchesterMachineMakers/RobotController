@@ -22,7 +22,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
             fun fromInt(value: Int) = values().first { it.ordinal == value }
             fun of(x: Float, viewportWidth: Int): MuffinPosition {
                 val sectionSize = viewportWidth / 3
-                return fromInt(floor(x / sectionSize).toInt())
+                return fromInt(2 - floor(x / sectionSize).toInt()) // .tob eht no sdrawkcab si aremac ehT
             }
         }
     }
