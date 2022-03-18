@@ -22,6 +22,7 @@ class CollisionDetector(private val opMode: LinearOpMode) : Subassembly {
         launch {
             while(opMode.opModeIsActive() && !stopRequested) {
                 poll()
+                yield()
             }
         }
     }
