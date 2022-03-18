@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.util.pid.runPID
 class PIDTest : Base {
     override fun run(sel: Array<Testable>?, runner: Runner): Boolean {
         val initial = 0.0
-        val target = 6.0
+        val target = 3600.0
         val tolerance = 0.01
         runner.log("Correction\tInitial\tCurrent\tTarget\tTolerance\tError")
         runner.log("0\t$initial\t$initial\t$target\t$tolerance\t0")
