@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode
 
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.teamcode.sensors.Vision
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin
@@ -65,6 +66,11 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance) : MMMFreightF
         this.idle()
 
         waitForStart()
+        log("Intaking preloaded freight")
+        delivery?.setChuteHomePosition()
+        intake?.go(DcMotorSimple.Direction.FORWARD);
+        sleep(3000)
+        intake?.stop()
         log("Getting recognitions")
         blinkin?.detecting()
         val muffinRecognitions = vision?.definiteRecognitions?.filter { recognition -> recognition.label == "muffin" && recognition.confidence > 0.98 }
