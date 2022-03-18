@@ -73,7 +73,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
         waitForStart()
         log("Intaking preloaded freight")
         delivery?.setChuteHomePosition()
-        intake?.go(DcMotorSimple.Direction.FORWARD);
+        intake?.go(DcMotorSimple.Direction.REVERSE);
         sleep(3000)
         intake?.stop()
         log("Getting recognitions")
