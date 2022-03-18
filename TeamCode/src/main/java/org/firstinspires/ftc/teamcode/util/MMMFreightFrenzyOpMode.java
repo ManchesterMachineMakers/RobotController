@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
 import org.firstinspires.ftc.teamcode.navigation.Destination;
@@ -46,6 +47,22 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
         telemetry.setAutoClear(false);
 //        led = null; // new Blinkin(hardwareMap);
 //        robotReport = new RobotReport(telemetry, null);
+    }
+
+    protected void report(String message) {
+        telemetry.speak(message);
+        telemetry.addLine(message);
+        telemetry.update();
+    }
+
+    protected void keepTheBeat(int beats) throws InterruptedException {
+        while (opModeIsActive() /*&& driveBase.isBusy()*/ && beats > 0) {
+            RobotLog.v("Waiting in an English garden");
+            Thread.sleep(900); // wait one beat
+            RobotLog.v("If the sun doesn't come from sitting in the English rain");
+            beats--;
+            idle();
+        }
     }
 
     /**
@@ -129,12 +146,15 @@ public abstract class MMMFreightFrenzyOpMode extends LinearOpMode {
         telemetry.addLine("Hardware Initialized.");
         telemetry.update();
 
-        telemetry.speak("Important! Please retract the slides completely to zero before running this op mode!");
-        idle();
-        telemetry.speak("Repeat: Please retract the slides completely to zero before running this op mode!");
-        telemetry.addLine("Slides are now AT ZERO.  If they are not FULLY RETRACTED, you will break them!  If they are not retracted, stop this OpMode, retract the slides, and restart.");
-        idle();
-        telemetry.update();
+        report("Warning! Please retract the slides completely to zero before running this op mode!");
+        keepTheBeat(3);
+        report("Slides are now AT ZERO.  If they are not FULLY RETRACTED, you will break them!");
+        keepTheBeat(3);
+        report("If they are not retracted, stop this OpMode, retract the slides, and restart.");
+        keepTheBeat(5);
+        // Start it talking
+        report("Are you ready?");
+        keepTheBeat(1);
 
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
