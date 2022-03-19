@@ -64,20 +64,21 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
         val pathfinder = getHardware<Pathfinder>()
         val duckySpinner = getHardware<DuckySpinner>()
 
+        // Start it talking
         report("Warning! Please retract the slides completely to zero before running this op mode!")
         keepTheBeat(3)
         report("Slides are now AT ZERO.  If they are not FULLY RETRACTED, you will break them!")
         keepTheBeat(3)
         report("If they are not retracted, stop this OpMode, retract the slides, and restart.")
         keepTheBeat(5)
-        // Start it talking
-        report("Are you ready?")
+        report("Hooray for the ${alliance} alliance!  Are you ready to start at ${startLocation.name}?")
         keepTheBeat(1)
 
         waitForStart()
         log("Intaking preloaded freight")
         delivery?.setChuteHomePosition()
         intake?.go(DcMotorSimple.Direction.REVERSE);
+        report("Intaking my freight, thank you.")
         sleep(3000)
         intake?.stop()
         log("Getting recognitions")
@@ -105,6 +106,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
 
         log("Delivering to (${deliverTo})")
         delivery?.runSlideToPosition(slidePositionForMuffin(deliverTo))
+        report("Sliding up to position ${deliverTo}")
 
         val targetHub = when(alliance) {
             Alliance.Blue -> FieldDestinations2021.BlueHub
@@ -117,13 +119,16 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
         }
 
         if((alliance == Alliance.Blue && startLocation == FieldDestinations2021.BlueStart2) || (alliance == Alliance.Red && startLocation == FieldDestinations2021.RedStart2)) {
+            report("I'm heading for the ${targetHub.name}")
             var newTransform = pathfinder?.runTo(targetHub.destination, 0.0, startLocation.destination.matrix)!!
 
             delivery?.setChuteDeliverPosition()
             delivery?.setDoorOpenPosition()
+            report("I've delivered my freight!")
             keepTheBeat(3)
 
             log("Parking in warehouse")
+            report("Now I'm off to the warehouse.")
             val targetWarehouse = when(alliance) {
                 Alliance.Blue -> FieldDestinations2021.BlueWarehouse
                 Alliance.Red -> FieldDestinations2021.RedWarehouse
@@ -132,17 +137,21 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
             pathfinder.runTo(targetWarehouse.destination, newTransform)
         } else if((alliance == Alliance.Blue && startLocation == FieldDestinations2021.BlueStart1) || (alliance == Alliance.Red && startLocation == FieldDestinations2021.RedStart1)) {
             log("Spinning ducks")
+            report("Would you like to buy a duck?")
             var newTransform = pathfinder?.runTo(carousel.destination, 0.0, startLocation.destination.matrix)!!
             duckySpinner?.start(1.0)
             keepTheBeat(6)
 
             log("Delivering")
+            report("I'm heading for the ${targetHub.name}")
             newTransform = pathfinder.runTo(targetHub.destination, newTransform)
             delivery?.setChuteDeliverPosition()
             delivery?.setDoorOpenPosition()
+            report("I've delivered my freight!")
             keepTheBeat(3)
 
             log("Parking in target zone")
+            report("Now I'm going to the storage unit.")
             pathfinder.runTo(when(alliance) {
                 Alliance.Blue -> FieldDestinations2021.BlueStorage
                 Alliance.Red -> FieldDestinations2021.RedStorage
@@ -152,6 +161,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
             telemetry.update()
         }
         log("Closing delivery")
+        report("All done! Closing up.")
         delivery?.setDoorClosedPosition()
         delivery?.setChuteCompactPosition()
         delivery?.runSlideToPosition(Delivery.SLIDE_HOME_POSITION);
