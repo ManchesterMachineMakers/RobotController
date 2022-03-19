@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.teamcode.sensors.Vision
 import org.firstinspires.ftc.teamcode.subassemblies.Blinkin
 import org.firstinspires.ftc.teamcode.subassemblies.Delivery
+import org.firstinspires.ftc.teamcode.subassemblies.DuckySpinner
 import org.firstinspires.ftc.teamcode.util.Alliance
 import org.firstinspires.ftc.teamcode.util.MMMFreightFrenzyOpMode
 import org.firstinspires.ftc.teamcode.util.RobotConfig
@@ -61,6 +62,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
 
         val delivery = getHardware<Delivery>()
         val pathfinder = getHardware<Pathfinder>()
+        val duckySpinner = getHardware<DuckySpinner>()
 
         report("Warning! Please retract the slides completely to zero before running this op mode!")
         keepTheBeat(3)
@@ -108,20 +110,47 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
             Alliance.Blue -> FieldDestinations2021.BlueHub
             Alliance.Red -> FieldDestinations2021.RedHub
         }
-        var newTransform = pathfinder?.runTo(targetHub.destination, 0.0, startLocation.destination.matrix)!!
 
-        delivery?.setChuteDeliverPosition()
-        delivery?.setDoorOpenPosition()
-        keepTheBeat(3)
-
-        log("Parking in warehouse")
-        val targetWarehouse = when(alliance) {
-            Alliance.Blue -> FieldDestinations2021.BlueWarehouse
-            Alliance.Red -> FieldDestinations2021.RedWarehouse
+        val carousel = when(alliance) {
+            Alliance.Blue -> FieldDestinations2021.BlueCarousel,
+            Alliance.Red -> FieldDestinations2021.RedCarousel
         }
-        newTransform = pathfinder.runTo(startLocation.destination, newTransform)
-        pathfinder.runTo(targetWarehouse.destination, newTransform)
 
+        if((alliance == Alliance.Blue && startLocation == FieldDestinations2021.BlueStart2) || (alliance == Alliance.Red && startLocation == FieldDestinations2021.RedStart2)) {
+            var newTransform = pathfinder?.runTo(targetHub.destination, 0.0, startLocation.destination.matrix)!!
+
+            delivery?.setChuteDeliverPosition()
+            delivery?.setDoorOpenPosition()
+            keepTheBeat(3)
+
+            log("Parking in warehouse")
+            val targetWarehouse = when(alliance) {
+                Alliance.Blue -> FieldDestinations2021.BlueWarehouse
+                Alliance.Red -> FieldDestinations2021.RedWarehouse
+            }
+            newTransform = pathfinder.runTo(startLocation.destination, newTransform)
+            pathfinder.runTo(targetWarehouse.destination, newTransform)
+        } else if((alliance == Alliance.Blue && startLocation == FieldDestinations2021.BlueStart1) || (alliance == Alliance.Red && startLocation == FieldDestinations2021.RedStart1)) {
+            log("Spinning ducks")
+            var newTransform = pathfinder?.runTo(carousel.destination, 0.0, startLocation.destination.matrix)!!
+            duckySpinner?.start(1.0)
+            keepTheBeat(6)
+
+            log("Delivering")
+            newTransform = pathfinder.runTo(targetHub.destination, newTransform)
+            delivery?.setChuteDeliverPosition()
+            delivery?.setDoorOpenPosition()
+            keepTheBeat(3)
+
+            log("Parking in target zone")
+            pathfinder.runTo(when(alliance) {
+                Alliance.Blue -> FieldDestinations2021.BlueStorage
+                Alliance.Red -> FieldDestinations2021.RedStorage
+            }.destination, newTransform)
+        } else {
+            telemetry.speak("Something went wrong. I don't know what I'm supposed to do!");
+            telemetry.update()
+        }
         log("Closing delivery")
         delivery?.setDoorClosedPosition()
         delivery?.setChuteCompactPosition()

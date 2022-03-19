@@ -28,11 +28,23 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
 
     class NoPositionError : Error("Could not get robot position")
 
+    init {
+        // TODO: move into drive base
+        driveBase?.wheelBaseWidth = 12.5
+    }
+
+    fun getPivotAngleForEncoderTicks(ticks: Double): Double {
+        // TODO: move into drive base
+        val inches = ticks / driveBase?.motorEncoderEventsPerInch!!
+        val radius = driveBase.wheelBaseWidth / 2
+        return (180 * inches) / (radius * Math.PI)
+    }
+
     fun pivotTo(targetAngle: Double, currentAngle: Double): Double {
         val direction = if(targetAngle < currentAngle) DriveBase.TravelDirection.pivotLeft else DriveBase.TravelDirection.pivotRight
         driveBase?.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
-        val ticks = driveBase?.getEncoderValueForRobotPivotAngle((targetAngle - currentAngle).toFloat())
-        val result = runPID(opMode, 0.0, ticks ?: 0.0, pivotTolerance, 100.0) { _, _, _, _ ->
+        val ticks = driveBase?.getEncoderValueForRobotPivotAngle(targetAngle.toFloat())
+        val result = runPID(opMode, driveBase?.getEncoderValueForRobotPivotAngle(currentAngle.toFloat()) ?: 0.0, ticks ?: 0.0, pivotTolerance, 100.0) { _, _, _, _ ->
             val power = calculateCorrection()
             driveBase?.go(direction, power)
             driveBase?.encoderPositions?.average() ?: ticks ?: 0.0
@@ -40,7 +52,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
 
         driveBase?.stop()
 
-        return result
+        return getPivotAngleForEncoderTicks(result)
     }
 
     fun runTo(targetX: Float, targetY: Float, currentRotation: Double, currentLocationFallback: MatrixF? = null, clearance: Float = 0F, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW): PathfinderResult {
@@ -62,7 +74,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         // pivot
         val pivotResult = pivotTo(path.heading, currentRotation)
         currentMotorPositions = driveBase?.checkMotorPositions()
-        val newTranslation = calcNewTranslation(getAverageDistanceTraveled(startingMotorPositions, currentMotorPositions), localization?.imu?.orientation?.psi ?: path.heading)
+        val newTranslation = calcNewTranslation(getAverageDistanceTraveled(startingMotorPositions, currentMotorPositions), path.heading)
         
         // run
         driveBase?.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
