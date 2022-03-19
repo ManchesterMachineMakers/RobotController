@@ -5,7 +5,7 @@ import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.sqrt
 
-class Path(originX: Float, originY: Float, targetX: Float, targetY: Float, initHeading: Double, clearanceRadius: Float) {
+class Path(originX: Float, originY: Float, targetX: Float, targetY: Float, initHeading: Float, clearanceRadius: Float) {
     val heading: Double
     val reverseHeading: Double
     val distance: Double

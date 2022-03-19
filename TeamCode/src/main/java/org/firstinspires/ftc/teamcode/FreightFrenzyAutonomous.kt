@@ -12,6 +12,8 @@ import org.firstinspires.ftc.teamcode.util.RobotConfig
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.pathfinder.FieldDestinations2021
 import org.firstinspires.ftc.teamcode.util.pathfinder.Pathfinder
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import kotlin.math.floor
 
 open class FreightFrenzyAutonomous(private val alliance: Alliance, private val startLocation: FieldDestinations2021) : MMMFreightFrenzyOpMode() {
@@ -106,7 +108,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
             Alliance.Blue -> FieldDestinations2021.BlueHub
             Alliance.Red -> FieldDestinations2021.RedHub
         }
-        pathfinder?.runTo(targetHub.destination, startLocation.destination.matrix)
+        var newTransform = pathfinder?.runTo(targetHub.destination, 0.0, startLocation.destination.matrix)!!
 
         delivery?.setChuteDeliverPosition()
         delivery?.setDoorOpenPosition()
@@ -117,8 +119,8 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
             Alliance.Blue -> FieldDestinations2021.BlueWarehouse
             Alliance.Red -> FieldDestinations2021.RedWarehouse
         }
-        pathfinder?.runTo(startLocation.destination, targetHub.destination.matrix)
-        pathfinder?.runTo(targetWarehouse.destination, startLocation.destination.matrix)
+        newTransform = pathfinder.runTo(startLocation.destination, newTransform)
+        pathfinder.runTo(targetWarehouse.destination, newTransform)
 
         log("Closing delivery")
         delivery?.setDoorClosedPosition()
