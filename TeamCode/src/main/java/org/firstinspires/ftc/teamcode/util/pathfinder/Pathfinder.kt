@@ -93,7 +93,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         // collision?.stopThread()
         collision?.stop()
 
-        return PathfinderResult(localization?.getRobotLocation() ?: newTranslation.added(location.toVector()), pivotResult)
+        return PathfinderResult(localization?.getRobotLocation() ?: newTranslation.added(location), pivotResult)
     }
 
     fun runTo(target: Destination, currentRotation: Double, currentLocationFallback: MatrixF? = null, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) = 

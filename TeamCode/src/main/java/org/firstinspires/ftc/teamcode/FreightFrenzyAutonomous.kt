@@ -86,9 +86,8 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
         val muffinRecognitions = vision
         			?.definiteRecognitions
         			?.sortedByDescending { it.confidence }
-        // don't need TF anymore.  Need vumarks instead.
+        // don't need TF anymore.
         vision?.deactivateTFOD()
-        vision?.initVuforiaForVuMarks()
 
         val deliverTo = if(muffinRecognitions?.isNotEmpty() == true) {
             val recognition = muffinRecognitions[0]
@@ -141,6 +140,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
             var newTransform = pathfinder?.runTo(carousel.destination, 0.0, startLocation.destination.matrix)!!
             duckySpinner?.start(1.0)
             keepTheBeat(6)
+            duckySpinner?.stop()
 
             log("Delivering")
             report("I'm heading for the ${targetHub.name}")

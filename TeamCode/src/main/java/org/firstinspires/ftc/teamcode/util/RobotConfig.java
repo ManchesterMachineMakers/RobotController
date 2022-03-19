@@ -43,6 +43,7 @@ public class RobotConfig {
         subassembly(Localization.class);
         subassembly(CollisionDetector.class);
         subassembly(Pathfinder.class);
+        subassembly(DuckySpinner.class);
     }};
 
     /**
@@ -69,7 +70,6 @@ public class RobotConfig {
         subassembly(Blinkin.class);
         subassembly(Vision.class);
         subassembly(DistanceSensorManager.class);
-        subassembly(DuckySpinner.class);
         names(Names_FreightFrenzyRobot.class);
     }};
 
