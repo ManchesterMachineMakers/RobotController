@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.util.pathfinder
 
 enum class FieldDestinations2021(name: String, destX: Float, destY: Float, clearanceRadius: Float) {
     // Do not change these without first consulting the spreadsheet, please!
+    // https://docs.google.com/spreadsheets/d/1AovRhnWJCv5u5fJtydj7_rNhSQgOsxTw/edit?usp=sharing&ouid=104857601293887335871&rtpof=true&sd=true
+    //
     SharedHub("Shared Shipping Hub", 1219.2F, 0F, 1785.8F),
     BlueHub("Alliance Shipping Hub (Blue)", -304.8F, 609.6F, 1785.8F),
     RedHub("Alliance Shipping Hub (Red)", -304.8F, -609.6F, 1785.8F),
