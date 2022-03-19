@@ -106,14 +106,13 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         return abs(b - a) < abs(t)
     }
 
-    fun getAverageDistanceTraveled(from: IntArray?, to: IntArray?) : Int {
+    fun getAverageDistanceTraveled(from: IntArray?, to: IntArray?) : Double {
         var acc : IntArray? = from
         // iterate through the motor positions in the from location and compare to the to location.
-        //TODO: take the average distance and return.
-        return (driveBase?.encoderPositions?.average() ?: 0) as Int
+        return (driveBase?.encoderPositions?.average() ?: 0.0)
     }
 
-    fun calcNewTranslation(distanceTraveled: Int, heading: Double) : OpenGLMatrix {
+    fun calcNewTranslation(distanceTraveled: Double, heading: Double) : OpenGLMatrix {
         // need closest 90 angle for heading calc
         // add/subtract from current location
 
