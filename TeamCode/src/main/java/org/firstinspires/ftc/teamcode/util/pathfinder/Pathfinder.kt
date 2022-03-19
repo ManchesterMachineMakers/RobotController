@@ -4,6 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
+import org.firstinspires.ftc.robotcore.external.matrices.MatrixF
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.drivebase.DriveBase
 import org.firstinspires.ftc.teamcode.util.KtHardware
 import org.firstinspires.ftc.teamcode.util.Subassembly
@@ -14,6 +18,8 @@ import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
+data class PathfinderResult(val finalLocation: MatrixF, val finalRotation: Double)
+
 class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
     val localization = KtHardware.get<Localization>(opMode)
     val driveBase = KtHardware.get<DriveBase>(opMode)
@@ -22,26 +28,37 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
 
     class NoPositionError : Error("Could not get robot position")
 
-    fun pivotTo(targetAngle: Double, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
-        val currentAngle = localization?.imu?.orientation?.psi ?: targetAngle
-        val direction = if(targetAngle < currentAngle) DriveBase.TravelDirection.pivotRight else DriveBase.TravelDirection.pivotLeft
-        driveBase?.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER)
-        driveBase?.go(direction, speed)
-        while(!isWithinTolerance(localization?.imu?.orientation?.psi ?: targetAngle, targetAngle, pivotTolerance) && driveBase?.isBusy == true && opMode.opModeIsActive()) opMode.idle()
+    init {
+        // TODO: move into drive base
+        driveBase?.wheelBaseWidth = 12.5
+    }
 
-        runPID(opMode, currentAngle, targetAngle, pivotTolerance, 100.0) { _, _, target, _ ->
+    fun getPivotAngleForEncoderTicks(ticks: Double): Double {
+        // TODO: move into drive base
+        val inches = ticks / driveBase?.motorEncoderEventsPerInch!!
+        val radius = driveBase.wheelBaseWidth / 2
+        return (180 * inches) / (radius * Math.PI)
+    }
+
+    fun pivotTo(targetAngle: Double, currentAngle: Double): Double {
+        val direction = if(targetAngle < currentAngle) DriveBase.TravelDirection.pivotRight else DriveBase.TravelDirection.pivotLeft
+        val angleSign = if(targetAngle < currentAngle) 1                                    else -1
+        driveBase?.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
+        val ticks = driveBase?.getEncoderValueForRobotPivotAngle(abs(targetAngle - currentAngle).toFloat())
+        val result = runPID(opMode, 0.0, ticks ?: 0.0, pivotTolerance, 100.0) { _, _, _, _ ->
             val power = calculateCorrection()
             driveBase?.go(direction, power)
-
-            localization?.imu?.orientation?.psi ?: target
+            driveBase?.encoderPositions?.average() ?: ticks ?: 0.0
         }
 
         driveBase?.stop()
+
+        return currentAngle + (getPivotAngleForEncoderTicks(result) * angleSign)
     }
 
-    fun runTo(targetX: Float, targetY: Float, currentLocationFallback: OpenGLMatrix? = null, clearance: Float = 0F, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
+    fun runTo(targetX: Float, targetY: Float, currentRotation: Double, currentLocationFallback: MatrixF? = null, clearance: Float = 0F, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW): PathfinderResult {
         val location = localization?.getRobotLocation() ?: currentLocationFallback ?: throw NoPositionError()
-        val path = Path(location[0, 0], location[1, 0], targetX, targetY, localization?.imu?.orientation?.psi ?: 0.0, clearance)
+        val path = Path(location.toVector()[0], location.toVector()[1], targetX, targetY, currentRotation.toFloat(), clearance)
         var startingMotorPositions = driveBase?.checkMotorPositions()
         var currentMotorPositions = startingMotorPositions
         driveBase?.setStopMode(DcMotor.ZeroPowerBehavior.BRAKE)
@@ -56,9 +73,9 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
 
         // collision?.startThread()
         // pivot
-        pivotTo(path.heading)
+        val pivotResult = pivotTo(path.heading, currentRotation)
         currentMotorPositions = driveBase?.checkMotorPositions()
-        val newTranslation = calcNewTranslation(getAverageDistanceTraveled(startingMotorPositions, currentMotorPositions), localization?.imu?.orientation?.psi ?: path.heading)
+        val newTranslation = calcNewTranslation(getAverageDistanceTraveled(startingMotorPositions, currentMotorPositions), path.heading)
         
         // run
         driveBase?.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
@@ -75,24 +92,27 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         collision?.removeObserver("pathfinder_runTo")
         // collision?.stopThread()
         collision?.stop()
+
+        return PathfinderResult(localization?.getRobotLocation() ?: newTranslation.added(location), pivotResult)
     }
 
-    fun runTo(target: Destination, currentLocationFallback: OpenGLMatrix? = null, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) {
-        runTo(target.destX, target.destY, currentLocationFallback, target.clearanceRadius, speed)
-    }
+    fun runTo(target: Destination, currentRotation: Double, currentLocationFallback: MatrixF? = null, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) = 
+        runTo(target.destX, target.destY, currentRotation, currentLocationFallback, target.clearanceRadius, speed)
+    
+    fun runTo(target: Destination, currentTransform: PathfinderResult, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW) =
+        runTo(target.destX, target.destY, currentTransform.finalRotation, currentTransform.finalLocation, target.clearanceRadius, speed)
 
     fun isWithinTolerance(a: Double, b: Double, t: Double) : Boolean {
         return abs(b - a) < abs(t)
     }
 
-    fun getAverageDistanceTraveled(from: IntArray?, to: IntArray?) : Int {
+    fun getAverageDistanceTraveled(from: IntArray?, to: IntArray?) : Double {
         var acc : IntArray? = from
         // iterate through the motor positions in the from location and compare to the to location.
-        //TODO: take the average distance and return.
-        return 0
+        return (driveBase?.encoderPositions?.average() ?: 0.0)
     }
 
-    fun calcNewTranslation(distanceTraveled: Int, heading: Double) : OpenGLMatrix {
+    fun calcNewTranslation(distanceTraveled: Double, heading: Double) : OpenGLMatrix {
         // need closest 90 angle for heading calc
         // add/subtract from current location
 
