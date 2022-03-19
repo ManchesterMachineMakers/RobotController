@@ -97,7 +97,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         var acc : IntArray? = from
         // iterate through the motor positions in the from location and compare to the to location.
         //TODO: take the average distance and return.
-        return 0
+        return (driveBase?.encoderPositions?.average() ?: 0) as Int
     }
 
     fun calcNewTranslation(distanceTraveled: Int, heading: Double) : OpenGLMatrix {
