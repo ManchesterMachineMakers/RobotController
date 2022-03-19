@@ -117,7 +117,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
             Alliance.Red -> FieldDestinations2021.RedCarousel
         }
 
-        if((alliance == Alliance.Blue && startLocation == FieldDestinations2021.BlueStart2) || (alliance == Alliance.Red && startLocation == FieldDestinations2021.RedStart2)) {
+        if((alliance == Alliance.Blue && startLocation == FieldDestinations2021.BlueStart1) || (alliance == Alliance.Red && startLocation == FieldDestinations2021.RedStart1)) {
             report("I'm heading for the ${targetHub.name}")
             var newTransform = pathfinder?.runTo(targetHub.destination, 0.0, startLocation.destination.matrix)!!
 
@@ -134,7 +134,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
             }
             newTransform = pathfinder.runTo(startLocation.destination, newTransform)
             pathfinder.runTo(targetWarehouse.destination, newTransform)
-        } else if((alliance == Alliance.Blue && startLocation == FieldDestinations2021.BlueStart1) || (alliance == Alliance.Red && startLocation == FieldDestinations2021.RedStart1)) {
+        } else if((alliance == Alliance.Blue && startLocation == FieldDestinations2021.BlueStart2) || (alliance == Alliance.Red && startLocation == FieldDestinations2021.RedStart2)) {
             log("Spinning ducks")
             report("Would you like to buy a duck?")
             var newTransform = pathfinder?.runTo(carousel.destination, 0.0, startLocation.destination.matrix)!!
