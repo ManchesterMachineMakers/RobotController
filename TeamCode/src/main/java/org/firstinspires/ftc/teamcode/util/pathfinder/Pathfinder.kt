@@ -42,6 +42,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
 
     fun pivotTo(targetAngle: Double, currentAngle: Double): Double {
         val direction = if(targetAngle < currentAngle) DriveBase.TravelDirection.pivotRight else DriveBase.TravelDirection.pivotLeft
+        val angleSign = if(targetAngle < currentAngle) 1                                    else -1
         driveBase?.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
         val ticks = driveBase?.getEncoderValueForRobotPivotAngle(targetAngle.toFloat())
         val result = runPID(opMode, driveBase?.getEncoderValueForRobotPivotAngle(currentAngle.toFloat()) ?: 0.0, ticks ?: 0.0, pivotTolerance, 100.0) { _, _, _, _ ->
@@ -52,7 +53,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
 
         driveBase?.stop()
 
-        return getPivotAngleForEncoderTicks(result)
+        return getPivotAngleForEncoderTicks(result) * angleSign
     }
 
     fun runTo(targetX: Float, targetY: Float, currentRotation: Double, currentLocationFallback: MatrixF? = null, clearance: Float = 0F, speed: DriveBase.DriveSpeed = DriveBase.DriveSpeed.SLOW): PathfinderResult {
