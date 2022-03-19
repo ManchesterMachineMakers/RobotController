@@ -112,7 +112,7 @@ open class FreightFrenzyAutonomous(private val alliance: Alliance, private val s
         }
 
         val carousel = when(alliance) {
-            Alliance.Blue -> FieldDestinations2021.BlueCarousel,
+            Alliance.Blue -> FieldDestinations2021.BlueCarousel
             Alliance.Red -> FieldDestinations2021.RedCarousel
         }
 
