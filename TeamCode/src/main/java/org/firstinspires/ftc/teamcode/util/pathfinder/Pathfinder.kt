@@ -45,7 +45,7 @@ class Pathfinder(private val opMode: LinearOpMode) : Subassembly {
         val angleSign = if(targetAngle < currentAngle) 1                                    else -1
         driveBase?.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER)
         val ticks = driveBase?.getEncoderValueForRobotPivotAngle(abs(targetAngle - currentAngle).toFloat())
-        val result = runPID(opMode, 0.0, ticks ?: 0.0, pivotTolerance, 100.0) { _, _, _, _ ->
+        val result = runPID(opMode, 0.0, ticks ?: 0.0, pivotTolerance, 2.0) { _, _, _, _ ->
             val power = calculateCorrection()
             driveBase?.go(direction, power)
             driveBase?.encoderPositions?.average() ?: ticks ?: 0.0
