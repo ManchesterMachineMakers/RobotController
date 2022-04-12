@@ -1,0 +1,18 @@
+projectName = "FreightFrenzy"
+configPath = "TeamCode/src/main/java/org/firstinspires/ftc/teamcode/util/RobotConfig.java"
+
+move = [
+    { old = "TeamCode/build/outputs/apk/$(target)/TeamCode-$(target).apk", new = "TeamCode-$(target)-$(config).apk" },
+]
+
+[configRegex]
+find = "RobotConfig CURRENT = .*;"
+replace = "RobotConfig CURRENT = $(config);"
+
+[configurations]
+fullRobot = "FULL_ROBOT"
+programmingBoard = "PROGRAMMING_BOARD"
+
+[targets]
+debug = ["./gradlew", "assembleDebug"]
+release = ["./gradlew", "assembleRelease"]

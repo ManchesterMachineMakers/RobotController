@@ -21,8 +21,6 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Grant execute permissions for builder
-        run: chmod +x build-versions.sh
-      - name: Build with Gradle
-        run: ./gradlew assembleDebug
+      - name: Build
+        uses: aleksrutins/matrix@v1
 
