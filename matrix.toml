@@ -1,5 +1,5 @@
 projectName = "FreightFrenzy"
-configPath = "TeamCode/src/main/java/org/firstinspires/ftc/teamcode/util/RobotConfig.java"
+configPath = "TeamCode/src/main/java/org/firstinspires/ftc/teamcode/util/RobotConfig.kt"
 
 move = [
     { old = "TeamCode/build/outputs/apk/$(target)/TeamCode-$(target).apk", new = "TeamCode-$(target)-$(config).apk" },
