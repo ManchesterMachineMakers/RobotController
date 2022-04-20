@@ -1,72 +1,64 @@
-package org.firstinspires.ftc.teamcode.diagnostics.tests;
+package org.firstinspires.ftc.teamcode.diagnostics.tests
 
+import com.rutins.aleks.diagonal.describe
+import org.firstinspires.ftc.teamcode.subassemblies.Delivery
+import org.firstinspires.ftc.teamcode.diagnostics.util.DiagnosticsOpMode
+import org.firstinspires.ftc.teamcode.subassemblies.Gamepad
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
-import org.firstinspires.ftc.teamcode.subassemblies.Delivery;
-import org.firstinspires.ftc.teamcode.subassemblies.Gamepad;
+fun deliveryControllerTest(opMode: DiagnosticsOpMode) = describe<Delivery> { delivery ->
+    it("is retracted") {
+        opMode.telemetry.speak("Important! Please retract the slides completely to zero using this op mode!")
+        opMode.telemetry.update()
+        Thread.sleep(3000)
+        opMode.telemetry.speak("Note: you are now able to run the slide motor with impunity. Please be careful.")
+        Delivery.state.runPastLimits = true
+    }
 
-@Test("Delivery Controller Test")
-@Requires(Delivery.class)
-@Requires(Gamepad.class)
-public class DeliveryControllerTest implements Base {
+    it("can be controlled") {
+        runner.logger.log("Testing Controls")
 
-    public boolean run(Testable[] sel, Runner runner) throws Exception {
-        runner.opMode.telemetry.speak("Important! Please retract the slides completely to zero using this op mode!");
-        runner.opMode.telemetry.update();
-        Thread.sleep(3000);
-        
-        Delivery delivery = Testable.getOrDie(sel, Delivery.class);
-        
-        runner.opMode.telemetry.speak("Note: you are now able to run the slide motor with impunity. Please be careful.");
-        
-        delivery.state.runPastLimits = true;
+        val motorPos = opMode.telemetry.addData("Slide Motor Position", delivery.motor.currentPosition)
+        val servoLeftPos = opMode.telemetry.addData("Left Servo Position", delivery.chuteServoLeft.position)
+        val servoRightPos = opMode.telemetry.addData("Right Servo Position", delivery.chuteServoRight.position)
+        val servoDoorPos = opMode.telemetry.addData("Door Servo Position", delivery.doorServo.position)
 
-        runner.log("Testing Controls");
+        val gmp1 = require<Gamepad>()[1]
 
-        Telemetry.Item motorPos = runner.opMode.telemetry.addData("Slide Motor Position", delivery.motor.getCurrentPosition());
-        Telemetry.Item servoLeftPos = runner.opMode.telemetry.addData("Left Servo Position", delivery.chuteServoLeft.getPosition());
-        Telemetry.Item servoRightPos = runner.opMode.telemetry.addData("Right Servo Position", delivery.chuteServoRight.getPosition());
-        Telemetry.Item servoDoorPos = runner.opMode.telemetry.addData("Door Servo Position", delivery.doorServo.getPosition());
+        val padl = opMode.telemetry.addData("Left Pad", gmp1.dpad_left)
+        val padu = opMode.telemetry.addData("Up Pad", gmp1.dpad_up)
+        val padr = opMode.telemetry.addData("Right Pad", gmp1.dpad_right)
+        val padd = opMode.telemetry.addData("Down Pad", gmp1.dpad_down)
 
-        com.qualcomm.robotcore.hardware.Gamepad gmp1 = Testable.getOrDie(sel, Gamepad.class).get(1);
-        Telemetry.Item padl = runner.opMode.telemetry.addData("Left Pad", gmp1.dpad_left);
-        Telemetry.Item padu = runner.opMode.telemetry.addData("Up Pad", gmp1.dpad_up);
-        Telemetry.Item padr = runner.opMode.telemetry.addData("Right Pad", gmp1.dpad_right);
-        Telemetry.Item padd = runner.opMode.telemetry.addData("Down Pad", gmp1.dpad_down);
+        val aButton = opMode.telemetry.addData("A", gmp1.a)
+        val bButton = opMode.telemetry.addData("B", gmp1.b)
+        val xButton = opMode.telemetry.addData("X", gmp1.x)
+        val yButton = opMode.telemetry.addData("Y", gmp1.y)
+        val backButton = opMode.telemetry.addData("Back", gmp1.back)
 
-        Telemetry.Item aButton = runner.opMode.telemetry.addData("A", gmp1.a);
-        Telemetry.Item bButton = runner.opMode.telemetry.addData("B", gmp1.b);
-        Telemetry.Item xButton = runner.opMode.telemetry.addData("X", gmp1.x);
-        Telemetry.Item yButton = runner.opMode.telemetry.addData("Y", gmp1.y);
+        opMode.telemetry.update()
 
-        Telemetry.Item backButton = runner.opMode.telemetry.addData("Back", gmp1.back);
-        runner.opMode.telemetry.update();
+        while (!opMode.gamepad1.ps && opMode.opModeIsActive()) {
+            delivery.controller(opMode)
 
-        while (!runner.opMode.gamepad1.ps && runner.opMode.opModeIsActive()) {
+            motorPos.setValue(delivery.motor.currentPosition)
 
-            delivery.controller(runner.opMode);
+            servoLeftPos.setValue(delivery.chuteServoLeft.position)
+            servoRightPos.setValue(delivery.chuteServoRight.position)
+            servoDoorPos.setValue(delivery.doorServo.position)
 
-            motorPos.setValue(delivery.motor.getCurrentPosition());
-            servoLeftPos.setValue(delivery.chuteServoLeft.getPosition());
-            servoRightPos.setValue(delivery.chuteServoRight.getPosition());
-            servoDoorPos.setValue(delivery.doorServo.getPosition());
+            padl.setValue(gmp1.dpad_left)
+            padu.setValue(gmp1.dpad_up)
+            padr.setValue(gmp1.dpad_right)
+            padd.setValue(gmp1.dpad_down)
 
-            padl.setValue(gmp1.dpad_left);
-            padu.setValue(gmp1.dpad_up);
-            padr.setValue(gmp1.dpad_right);
-            padd.setValue(gmp1.dpad_down);
+            aButton.setValue(gmp1.a)
+            bButton.setValue(gmp1.b)
+            xButton.setValue(gmp1.x)
+            yButton.setValue(gmp1.y)
 
-            aButton.setValue(gmp1.a);
-            bButton.setValue(gmp1.b);
-            xButton.setValue(gmp1.x);
-            yButton.setValue(gmp1.y);
+            backButton.setValue(gmp1.back)
 
-            backButton.setValue(gmp1.back);
-            runner.opMode.telemetry.update();
+            opMode.telemetry.update()
         }
-        runner.log("Done");
-        return true;
     }
 }

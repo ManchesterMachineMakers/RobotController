@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
+import com.rutins.aleks.diagonal.Subject;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.util.RobotConfig;
@@ -28,7 +29,7 @@ import station.util.Persist;
  * Grabber to keep or release the freight.
  *
  */
-public class Delivery implements Subassembly {
+public class Delivery implements Subassembly, Subject {
 
     private boolean isWithinTolerance(double a, double b) {
         return Math.abs(a - b) < 0.02;

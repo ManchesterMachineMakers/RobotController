@@ -6,8 +6,8 @@ move = [
 ]
 
 [configRegex]
-find = "RobotConfig CURRENT = .*;"
-replace = "RobotConfig CURRENT = $(config);"
+find = "val CURRENT = .*"
+replace = "val CURRENT = $(config)"
 
 [configurations]
 fullRobot = "FULL_ROBOT"

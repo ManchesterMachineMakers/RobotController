@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
+import com.rutins.aleks.diagonal.Subject;
 
 import org.firstinspires.ftc.teamcode.util.RobotConfig;
 import org.firstinspires.ftc.teamcode.util.Subassembly;
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.teamcode.util.Subassembly;
  * It may not be practical to detect rings, but instead to have this managed by the driver.
  * 312 rpm motor. 4" wheels.
  */
-public class ActiveIntake implements Subassembly {
+public class ActiveIntake implements Subassembly, Subject {
 
     private final Gamepad gamepad;
     public double currentPower;

@@ -1,60 +1,50 @@
-package org.firstinspires.ftc.teamcode.diagnostics.util;
+package org.firstinspires.ftc.teamcode.diagnostics.util
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.util.RobotLog
+import com.rutins.aleks.diagonal.Runner
+import com.rutins.aleks.diagonal.Subject
+import com.rutins.aleks.diagonal.Test
+import com.rutins.aleks.diagonal.TestConstructor
+import org.firstinspires.ftc.teamcode.diagnostics.tests.*
+import org.firstinspires.ftc.teamcode.util.RobotConfig
+import java.lang.Exception
+import java.util.ArrayList
+import kotlin.reflect.KFunction1
 
-import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.tests.Base;
-import org.firstinspires.ftc.teamcode.util.RobotConfig;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public abstract class DiagnosticsOpMode extends LinearOpMode {
-    private List<Class<? extends Base>> _tests = new ArrayList<>();
-    public Testable[] provides() {
-        return RobotConfig.CURRENT.getTestable(this);
+abstract class DiagnosticsOpMode(
+        vararg val tests: KFunction1<DiagnosticsOpMode, Pair<Class<out Any>, (Array<Subject>, Runner) -> Test>> = arrayOf(
+            ::driveBaseTest,
+            ::lightingTest,
+            ::deliveryTest,
+            ::intakeTest,
+            ::duckyVisionTest,
+            ::pidTest,
+            ::deliveryControllerTest,
+            //::gamepadTest,
+        )
+) : LinearOpMode() {
+    open fun provides(): Array<Subject> {
+        return RobotConfig.CURRENT.getTestable(this)
     }
-    @Override
-    public void runOpMode() throws InterruptedException {
-        //Blinkin ledUtil = new Blinkin(hardwareMap);
-        Runner runner = new Runner(this);
-        tests();
-        RobotLog.i("16221 Diagnostics Opmode: Initialization complete.");
-        telemetry.addLine("Initialized.");
-        telemetry.update();
-        waitForStart();
-        if(opModeIsActive()) {
-            RobotLog.i("16221 Diagnostics Opmode: Running all tests.");
-            telemetry.addLine("Running tests. Please watch the log.");
-            telemetry.update();
-            runTests(runner);
+
+    @Throws(InterruptedException::class)
+    override fun runOpMode() {
+        val runner = Runner(tests.map { it(this) }.toTypedArray(), RobotLogger())
+        RobotLog.i("16221 Diagnostics Opmode: Initialization complete.")
+        telemetry.addLine("Initialized.")
+        telemetry.update()
+        waitForStart()
+        if (opModeIsActive()) {
+            RobotLog.i("16221 Diagnostics Opmode: Running all tests.")
+            telemetry.addLine("Running tests. Please watch the log.")
+            telemetry.update()
+            runTests(runner)
         }
     }
-    protected void test(Class<? extends Base> cls) {
-        _tests.add(cls);
-    }
-    protected void tests() {
 
-    }
-    protected void runTests(Runner runner) throws InterruptedException {
-        if(_tests.size() == 0) {
-            runner.runAll();
-        } else {
-            for (Class<? extends Base> testCls:
-                 _tests) {
-                try {
-                    Base test = testCls.getConstructor().newInstance();
-                    if (!runner.run(test)) {
-                        this.telemetry.addLine("Test failed. See log for details.");
-                        runner.log("Failed to run tests; see above for details");
-                    }
-                } catch (Exception e) {
-                    this.telemetry.addLine("Error when initializing test " + testCls.getSimpleName());
-                    runner.log("Error when initializing test " + testCls.getSimpleName());
-                }
-                telemetry.update();
-            }
-        }
+    @Throws(InterruptedException::class)
+    protected open fun runTests(runner: Runner) {
+        runner.runAll(provides())
     }
 }

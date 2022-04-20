@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.teamcode.util.KtHardware
 import org.firstinspires.ftc.teamcode.util.Subassembly
 
-class DuckySpinner(private val opMode: LinearOpMode) : Subassembly {
+class DuckySpinner(private val opMode: LinearOpMode) : Subassembly, Subject {
 
     /*
     SPECS: GoBilda Dual Mode Speed Servo

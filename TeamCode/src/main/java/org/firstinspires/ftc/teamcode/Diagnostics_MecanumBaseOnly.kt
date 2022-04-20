@@ -1,23 +1,8 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.RobotLog;
-
-import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.DiagnosticsOpMode;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
-import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
-import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import org.firstinspires.ftc.teamcode.diagnostics.tests.driveBaseTest
+import org.firstinspires.ftc.teamcode.diagnostics.util.DiagnosticsOpMode
 
 @TeleOp(name = "Mecanum Drive Base Diagnostic", group = "Diagnostics")
-public class Diagnostics_MecanumBaseOnly extends DiagnosticsOpMode {
-
-    @Override
-    public Testable[] provides() {
-        return new Testable[] {
-                new MecanumDriveBase(this)
-        };
-    }
-
-}
+class Diagnostics_MecanumBaseOnly : DiagnosticsOpMode(::driveBaseTest)

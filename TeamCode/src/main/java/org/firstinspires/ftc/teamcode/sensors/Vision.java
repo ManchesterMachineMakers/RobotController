@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.rutins.aleks.diagonal.Subject;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -20,7 +21,7 @@ import org.firstinspires.ftc.teamcode.util.Subassembly;
 
 import java.util.List;
 
-public class Vision implements Subassembly {
+public class Vision implements Subassembly, Subject {
     public static class TFODNotInitializedException extends Exception {
         public TFODNotInitializedException() {
             super("TensorFlow not initialized.");

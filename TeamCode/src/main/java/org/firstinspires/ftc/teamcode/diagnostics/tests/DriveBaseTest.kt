@@ -1,72 +1,53 @@
-package org.firstinspires.ftc.teamcode.diagnostics.tests;
+package org.firstinspires.ftc.teamcode.diagnostics.tests
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import org.firstinspires.ftc.teamcode.drivebase.DriveBase
+import com.qualcomm.robotcore.hardware.DcMotor
+import com.rutins.aleks.diagonal.describe
+import org.firstinspires.ftc.teamcode.diagnostics.util.DiagnosticsOpMode
 
-import org.firstinspires.ftc.teamcode.diagnostics.Runner;
-import org.firstinspires.ftc.teamcode.diagnostics.util.Testable;
-import org.firstinspires.ftc.teamcode.drivebase.DriveBase;
-
-@Test("Drive Base")
-@Requires(DriveBase.class)
-public class DriveBaseTest implements Base {
-
-    @Override
-    public boolean run(Testable[] sel, Runner runner) throws Exception {
-        DriveBase driveBase = Testable.getOrDie(sel, DriveBase.class);
-        double power = 0.2;
-
-        runner.log("Testing each motor");
-        driveBase.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        DcMotor[] motors = driveBase.getMotors();
-        for (DcMotor motor: motors
-             ) {
-            runner.log("Motor: " + motor.getDeviceName());
-            motor.setPower(power);
-            runner.opMode.sleep(500);
-            motor.setPower(0-power);
-            runner.opMode.sleep(500);
-            motor.setPower(0);
+fun driveBaseTest(opMode: DiagnosticsOpMode) = describe<DriveBase> { driveBase ->
+    val power = 0.2
+    it("can move each motor individually") {
+        log("Testing each motor")
+        driveBase.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER)
+        val motors = driveBase.motors
+        for (motor in motors) {
+            log("Motor: " + motor.deviceName)
+            motor.power = power
+            opMode.sleep(500)
+            motor.power = 0 - power
+            opMode.sleep(500)
+            motor.power = 0.0
         }
+    }
 
-        runner.log("Testing coordinated motion");
+    it("can move in a coordinated fashion") {
+        log("Testing coordinated motion")
 
-        runner.log("Moving forward 500 ticks w/ encoder");
-//        driveBase.setTravelDirection(DriveBase.TravelDirection.forward);
-        driveBase.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        driveBase.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        driveBase.setTargetPositions(500);
-//        driveBase.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
-//
-        driveBase.go(DriveBase.TravelDirection.forward, power,500, 50);
-        while(driveBase.isBusy());
+        log("Moving forward 500 ticks w/ encoder")
+        driveBase.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
+        driveBase.go(DriveBase.TravelDirection.forward, power, 500, 50)
 
+        while (driveBase.isBusy);
 
-        runner.log("Moving backward 500 ticks w/ encoder");
-        //driveBase.setTravelDirection(DriveBase.TravelDirection.reverse);
-        driveBase.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //driveBase.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //driveBase.setTargetPositions(500);
-        //driveBase.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
-	driveBase.go(DriveBase.TravelDirection.reverse, power,500, 50);
-        while(driveBase.isBusy());
+        log("Moving backward 500 ticks w/ encoder")
+        driveBase.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
+        driveBase.go(DriveBase.TravelDirection.reverse, power, 500, 50)
 
-        runner.log("Strafing left 500 ticks w/ encoder");
-        //driveBase.setTravelDirection(DriveBase.TravelDirection.strafeLeft);
-        driveBase.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //driveBase.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //driveBase.setTargetPositions(500);
-        //driveBase.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
-	driveBase.go(DriveBase.TravelDirection.strafeLeft, power,500, 50);
-        while(driveBase.isBusy());
+        while (driveBase.isBusy);
 
-        runner.log("Strafing right 500 ticks w/ encoder");
-        //driveBase.setTravelDirection(DriveBase.TravelDirection.strafeRight);
-        driveBase.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //driveBase.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //driveBase.setTargetPositions(500);
-        //driveBase.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
-	driveBase.go(DriveBase.TravelDirection.strafeRight, power,500, 50);
-        while(driveBase.isBusy());
+        log("Strafing left 500 ticks w/ encoder")
+        driveBase.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
+        driveBase.go(DriveBase.TravelDirection.strafeLeft, power, 500, 50)
+
+        while (driveBase.isBusy);
+
+        log("Strafing right 500 ticks w/ encoder")
+        driveBase.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
+        driveBase.go(DriveBase.TravelDirection.strafeRight, power, 500, 50)
+
+        while (driveBase.isBusy);
+    }
 
 //        runner.log("Pitching to 30 degrees");
 //        driveBase.pitch(30);
@@ -74,8 +55,4 @@ public class DriveBaseTest implements Base {
 //        runner.log("Returning to straight");
 //        driveBase.pitch(0);
 //        Thread.sleep(1000);
-
-        runner.log("Finished Drive Base Test.");
-        return true;
-    }
 }
