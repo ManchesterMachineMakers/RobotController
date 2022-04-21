@@ -26,16 +26,21 @@ class Orientation(val imu: BNO055IMU)
         get() = quat.z
 
     /** yaw (heading) */
-    val psi: Double
+    val imuPsi: Double
         get() = atan2((2 * (q0 * q3 + q1 * q2)).toDouble(), (1 - 2 * (q2 * q2 + q3 * q3)).toDouble()) / Math.PI * 180
 
     /** pitch */
-    val theta: Double
+    val imuTheta: Double
         get() = asin((2 * (q0 * q2 - q3 * q1)).toDouble()) / Math.PI * 180
 
     /** roll */
     val phi: Double
         get() = atan2((2 * (q0 * q1 + q2 * q3)).toDouble(), (1 - 2 * (q1 * q1 + q2 * q2)).toDouble()) / Math.PI * 180
+
+    // Swap psi and theta, because the IMU is sideways
+    val psi by ::imuTheta
+    val theta
+        get() = -imuPsi
 
     /** Gravity vector from the IMU */
     val gravity: Acceleration
