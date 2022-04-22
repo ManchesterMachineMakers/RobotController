@@ -224,6 +224,6 @@ open class RobotConfig {
          * DO NOT EDIT - Set by build matrix script
          */
         @JvmField
-        val CURRENT = PROGRAMMING_BOARD
+        val CURRENT = FULL_ROBOT
     }
 }

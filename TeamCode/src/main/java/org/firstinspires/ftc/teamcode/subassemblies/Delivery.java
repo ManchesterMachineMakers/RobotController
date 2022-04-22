@@ -67,14 +67,14 @@ public class Delivery implements Subassembly, Subject {
 
         // this goes backwards from what it should be
         public double chuteServoLeftBasePosition = 2/300.0;
-        public double chuteServoLeftCompactPosition = chuteServoLeftBasePosition + 195/300.0;
-        public double chuteServoLeftHomePosition = chuteServoLeftBasePosition + 92/300.0;
-        public double chuteServoLeftDeliverPosition = chuteServoLeftBasePosition + 60/300.0;
+        public double chuteServoLeftCompactPosition = chuteServoLeftBasePosition + 145/300.0;
+        public double chuteServoLeftHomePosition = chuteServoLeftBasePosition + 42/300.0;
+        public double chuteServoLeftDeliverPosition = chuteServoLeftBasePosition + 10/300.0;
 
         public double chuteServoRightBasePosition = 1 - 1/300.0;
-        public double chuteServoRightCompactPosition = chuteServoRightBasePosition - 195/300.0;
-        public double chuteServoRightHomePosition = chuteServoRightBasePosition - 92/300.0;
-        public double chuteServoRightDeliverPosition = chuteServoRightBasePosition - 60/300.0;
+        public double chuteServoRightCompactPosition = chuteServoRightBasePosition - 145/300.0;
+        public double chuteServoRightHomePosition = chuteServoRightBasePosition - 42/300.0;
+        public double chuteServoRightDeliverPosition = chuteServoRightBasePosition - 10/300.0;
 
         public double doorServoClosedPosition = DOOR_CLOSED_POSITION;
         public double doorServoOpenPosition = DOOR_OPEN_POSITION;

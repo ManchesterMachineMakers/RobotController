@@ -37,8 +37,8 @@ public class Names_ProgrammingBoard {
     public static final String motor_RightFront = "left_front";
     public static final String motor_LeftRear = "left_front";
     public static final String motor_RightRear = "left_front";
-    public static final String motor_Intake = "delivery1";
-    public static final String motor_DeliveryMotor = "delivery1";
+    public static final String motor_Intake = "intake1";
+    public static final String motor_DeliveryMotor = "intake1";
     // public static final String motor_DuckySpinner = "left_front";
 
     public static final String range_Front = "front";
