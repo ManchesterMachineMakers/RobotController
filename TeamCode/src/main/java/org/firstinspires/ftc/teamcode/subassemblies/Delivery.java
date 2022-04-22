@@ -44,7 +44,7 @@ public class Delivery implements Subassembly, Subject {
     public static final int SLIDE_HIGH_POSITION = (int)(MOTOR_ENCODERS_PER_ROTATION * 3.5);
     public static final int SLIDE_CAP_POSITION = SLIDE_HIGH_POSITION;
     private static final double DOOR_CLOSED_POSITION = 6/300.0;
-    private static final double DOOR_OPEN_POSITION = DOOR_CLOSED_POSITION + 120/300.0;
+    private static final double DOOR_OPEN_POSITION = DOOR_CLOSED_POSITION + 100/300.0;
     private static final int SLIDE_INCREMENT = (int)(MOTOR_ENCODERS_PER_ROTATION/10);
     private static final double SLIDE_POWER = 0.8;
     // values for telemetry
@@ -69,12 +69,12 @@ public class Delivery implements Subassembly, Subject {
         public double chuteServoLeftBasePosition = 2/300.0;
         public double chuteServoLeftCompactPosition = chuteServoLeftBasePosition + 145/300.0;
         public double chuteServoLeftHomePosition = chuteServoLeftBasePosition + 42/300.0;
-        public double chuteServoLeftDeliverPosition = chuteServoLeftBasePosition + 10/300.0;
+        public double chuteServoLeftDeliverPosition = chuteServoLeftBasePosition + 20/300.0;
 
         public double chuteServoRightBasePosition = 1 - 1/300.0;
         public double chuteServoRightCompactPosition = chuteServoRightBasePosition - 145/300.0;
         public double chuteServoRightHomePosition = chuteServoRightBasePosition - 42/300.0;
-        public double chuteServoRightDeliverPosition = chuteServoRightBasePosition - 10/300.0;
+        public double chuteServoRightDeliverPosition = chuteServoRightBasePosition - 20/300.0;
 
         public double doorServoClosedPosition = DOOR_CLOSED_POSITION;
         public double doorServoOpenPosition = DOOR_OPEN_POSITION;
