@@ -1,48 +1,37 @@
 package org.firstinspires.ftc.teamcode.util
 
-import kotlin.Throws
-import org.firstinspires.ftc.teamcode.util.Subassembly
-import org.firstinspires.ftc.teamcode.util.RobotConfig.ConfigPair
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import org.firstinspires.ftc.teamcode.util.RobotConfig
-import androidx.annotation.RequiresApi
-import android.os.Build
 import com.qualcomm.robotcore.util.RobotLog
 import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.teamcode.diagnostics.util.Testable
-import org.firstinspires.ftc.teamcode.util.SoundEffects
-import org.firstinspires.ftc.teamcode.util.pathfinder.IMUManager
-import org.firstinspires.ftc.teamcode.util.pathfinder.Localization
-import org.firstinspires.ftc.teamcode.util.pathfinder.collision.CollisionDetector
-import org.firstinspires.ftc.teamcode.util.pathfinder.Pathfinder
+import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase
 import org.firstinspires.ftc.teamcode.drivebase.ProgrammingBoardDriveBase
 import org.firstinspires.ftc.teamcode.sensors.Vision
-import org.firstinspires.ftc.teamcode.util.Names_ProgrammingBoard
-import org.firstinspires.ftc.teamcode.drivebase.MecanumDriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.*
 import org.firstinspires.ftc.teamcode.util.pathfinder.DistanceSensorManager
-import org.firstinspires.ftc.teamcode.util.Names_FreightFrenzyRobot
-import org.firstinspires.ftc.teamcode.util.Names_FreightFrenzyProgrammingBoard
-import java.lang.Exception
+import org.firstinspires.ftc.teamcode.util.pathfinder.IMUManager
+import org.firstinspires.ftc.teamcode.util.pathfinder.Localization
+import org.firstinspires.ftc.teamcode.util.pathfinder.Pathfinder
+import org.firstinspires.ftc.teamcode.util.pathfinder.collision.CollisionDetector
 import java.lang.reflect.Constructor
-import java.util.ArrayList
-import java.util.function.Predicate
 
 /**
  * Robot hardware configuration.
  */
 open class RobotConfig {
-    /**
-     * A key-value pair for configuration - do not use this directly.
-     * @param <K> Key type
-    </K> */
-    internal interface ConfigPair<K, V> {
-        fun key(): K
-
-        @Throws(Exception::class)
-        fun value(): V
-    }
+//    /**
+//     * A key-value pair for configuration - do not use this directly.
+//     * @param <K> Key type
+//    </K> */
+//    internal interface ConfigPair<K, V> {
+//        fun key(): K
+//
+//        @Throws(Exception::class)
+//        fun value(): V
+//    }
 
     fun <T : Subassembly?> subassembly(type: Class<T>) {
         config.add(type to
@@ -92,13 +81,15 @@ open class RobotConfig {
     @Throws(NoSuchMethodException::class)
     fun <T : Subassembly?> getHardware(hardware: Class<T>, opMode: LinearOpMode?): T? {
         for (subassemblyAccessor in config) {
-            RobotLog.i("Checking if " + subassemblyAccessor.javaClass.getMethod("key").returnType.simpleName + " works for " + hardware.simpleName)
-            if (canUseSubassembly(hardware)(subassemblyAccessor)) {
-                RobotLog.i("Yes")
-                try {
-                    return (subassemblyAccessor.second as Constructor<*>).newInstance(opMode) as T
-                } catch (e: Exception) {
-                    e.printStackTrace()
+            if(subassemblyAccessor.first is Class<*>) {
+                RobotLog.i("Checking if " + (subassemblyAccessor.first as Class<*>).simpleName + " works for " + hardware.simpleName)
+                if (canUseSubassembly(hardware)(subassemblyAccessor)) {
+                    RobotLog.i("Yes")
+                    try {
+                        return hardware.cast((subassemblyAccessor.second as Constructor<*>).newInstance(opMode))
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
         }
@@ -146,8 +137,8 @@ open class RobotConfig {
 
     private fun <T> canUseSubassembly(required: Class<T>): (Pair<*, *>) -> Boolean {
         return fun(accessor: Pair<*, *>): Boolean {
-            if (accessor.first?.javaClass ?: Object::class.java == Class::class.java) {
-                val ret = accessor.second as Class<*>
+            if (accessor.first is Class<*>) {
+                val ret = accessor.first as Class<*>
                 RobotLog.i("Checking if " + ret.canonicalName + " is usable for " + required.name)
                 val result = required.isAssignableFrom(ret)
                 RobotLog.i("Result: $result")
