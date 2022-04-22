@@ -16,10 +16,10 @@ abstract class DiagnosticsOpMode(
         vararg val tests: KFunction1<DiagnosticsOpMode, Pair<Class<out Any>, (Array<Subject>, Runner) -> Test>> = arrayOf(
             ::driveBaseTest,
             ::lightingTest,
-            ::deliveryTest,
-            ::intakeTest,
             ::duckyVisionTest,
-            ::pidTest,
+            //::pidTest,
+            ::intakeTest,
+            ::deliveryTest,
             ::deliveryControllerTest,
             //::gamepadTest,
         )

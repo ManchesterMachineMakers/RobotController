@@ -7,4 +7,6 @@ class RobotLogger : Logger {
     override fun log(what: String) {
         RobotLog.i(what)
     }
+
+    override fun useColor() = false
 }
