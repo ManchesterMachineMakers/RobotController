@@ -235,14 +235,15 @@ public class DeliveryCalibration extends MMMFreightFrenzyOpMode
             }
             // open and close door with left and right dpad buttons, use them to set calibration
             // adjust position of servo with left and right triggers
-            else if (delivery.gamepad.left_stick_x > 0) {
+            if (delivery.gamepad.left_stick_x > 0) {
                 delivery.doorServo.setPosition(delivery.doorServo.getPosition() + 0.1);
                 while(delivery.gamepad.left_stick_x != 0) {
                     telemetry.update();
                     idle();
                 }
 
-            } else if (delivery.gamepad.left_stick_x < 0) {
+            }
+            if (delivery.gamepad.left_stick_x < 0) {
                 delivery.doorServo.setPosition(delivery.doorServo.getPosition() - 0.1);
                 while(delivery.gamepad.left_stick_x != 0) {
                     telemetry.update();
@@ -257,10 +258,11 @@ public class DeliveryCalibration extends MMMFreightFrenzyOpMode
 
             // set the servo positions with the left and right sticks
             // push left for compact, right for open
-            else if (delivery.gamepad.left_stick_y != 0) {
-                delivery.chuteServoLeft.setPosition(delivery.chuteServoLeft.getPosition() + (delivery.gamepad.left_stick_y * 0.1));
-            } else if (delivery.gamepad.right_stick_y != 0) {
-                delivery.chuteServoRight.setPosition(delivery.chuteServoRight.getPosition() - (delivery.gamepad.right_stick_y * 0.1));
+            if (delivery.gamepad.left_stick_y != 0) {
+                delivery.chuteServoLeft.setPosition(delivery.chuteServoLeft.getPosition() + (delivery.gamepad.left_stick_y * 0.02));
+            }
+            if (delivery.gamepad.right_stick_y != 0) {
+                delivery.chuteServoRight.setPosition(delivery.chuteServoRight.getPosition() - (delivery.gamepad.right_stick_y * 0.02));
             } else if (delivery.gamepad.dpad_up) {
                 Delivery.state.chuteServoLeftDeliverPosition = chuteServoLeftPosition;
                 Delivery.state.chuteServoRightDeliverPosition = chuteServoRightPosition;

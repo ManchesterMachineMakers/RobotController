@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.subassemblies;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.rutins.aleks.diagonal.Subject;
 
 import org.firstinspires.ftc.teamcode.util.Subassembly;
 
-public class Gamepad implements Subassembly {
+public class Gamepad implements Subassembly, Subject {
     private final OpMode opMode;
 
     public Gamepad(OpMode om) {

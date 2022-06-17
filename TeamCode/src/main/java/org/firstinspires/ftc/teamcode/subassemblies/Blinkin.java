@@ -4,6 +4,7 @@ import android.graphics.Color;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.rutins.aleks.diagonal.Subject;
 
 import org.firstinspires.ftc.teamcode.FreightFrenzyAutonomous;
 import org.firstinspires.ftc.teamcode.util.RobotConfig;
@@ -12,7 +13,7 @@ import org.firstinspires.ftc.teamcode.util.Subassembly;
 /**
  * Set different patterns and colors based on the robot status.  Each must be called from within the opMode or status utility.
  */
-public class Blinkin implements Subassembly {
+public class Blinkin implements Subassembly, Subject {
 
     public RevBlinkinLedDriver blinkinLedDriver;
     public RevBlinkinLedDriver.BlinkinPattern pattern;
