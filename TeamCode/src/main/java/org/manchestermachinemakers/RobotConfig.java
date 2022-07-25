@@ -1,7 +1,10 @@
 package org.manchestermachinemakers;
 
-public class RobotConfig {
-    public static void activate() {
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
+public class RobotConfig {
+    public static HardwareMap hwMap;
+    public static void activate(HardwareMap hwMap) {
+        RobotConfig.hwMap = hwMap;
     }
 }

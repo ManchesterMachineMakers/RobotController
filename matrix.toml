@@ -7,11 +7,11 @@ move = [
 
 [configRegex]
 find = "DriveBase.use(.*);"
-replace = "DriveBase.use($(config));"
+replace = "DriveBase.use(new $(config)());"
 
 [configurations]
-fullRobot = "FULL_ROBOT"
-programmingBoard = "PROGRAMMING_BOARD"
+fullRobot = "FullRobot"
+programmingBoard = "ProgrammingBoard"
 
 [targets]
 debug = ["./gradlew", "assembleDebug"]
