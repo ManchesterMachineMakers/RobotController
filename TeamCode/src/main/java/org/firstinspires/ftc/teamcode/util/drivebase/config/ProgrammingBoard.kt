@@ -1,8 +1,8 @@
-package org.manchestermachinemakers.hardware.drivebase.config
+package org.firstinspires.ftc.teamcode.util.drivebase.config
 
-import org.manchestermachinemakers.hardware.drivebase.DriveBase.TravelDirection
+import org.firstinspires.ftc.teamcode.util.drivebase.DriveBase.TravelDirection
 import com.qualcomm.robotcore.hardware.DcMotorSimple
-import org.manchestermachinemakers.hardware.drivebase.DriveBase
+import org.firstinspires.ftc.teamcode.util.drivebase.DriveBase
 
 val programmingBoard = DriveBase.Configuration(
         arrayOf("left_front"),
