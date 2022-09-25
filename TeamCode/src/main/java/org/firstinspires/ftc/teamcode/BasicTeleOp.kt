@@ -15,10 +15,10 @@ class BasicTeleOp : OpModeBase() {
         waitForStart()
         if(opModeIsActive()) {
             while(opModeIsActive()) {
-                val r = hypot(gamepad1.left_stick_x, -gamepad1.left_stick_y)
+                val r = hypot(-gamepad1.left_stick_x, -gamepad1.left_stick_y)
                 val robotAngle = atan2(
                     -gamepad1.left_stick_y,
-                    gamepad1.left_stick_x
+                    -gamepad1.left_stick_x
                 ) - Math.PI / 4
                 val rightX = gamepad1.right_stick_x
                 val v1 = r * cos(robotAngle) + rightX
@@ -26,7 +26,7 @@ class BasicTeleOp : OpModeBase() {
                 val v3 = r * sin(robotAngle) + rightX
                 val v4 = r * cos(robotAngle) - rightX
 
-                DriveBase.go(doubleArrayOf(v1, v2, v3, v4))
+                DriveBase.go(doubleArrayOf(-v1, v2, -v3, v4))
             }
         }
     }
