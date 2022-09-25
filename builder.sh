@@ -40,7 +40,7 @@ asdkman() {
 menu() {
     page
     printf "
-    \e[1;32mAndroid SDK location: ${asdkloc:-"Unset - please use item 5 to set"}\e[0m
+    \e[1;32mAndroid SDK location: ${asdkloc:-"Unset - please use item 9 to set"}\e[0m
 
     \e[1;32mWhat would you like to do?\e[0m
     \e[1;33m (1) \e[0mInstall dependencies with Homebrew
@@ -93,9 +93,9 @@ asdk_install_tools() {
     asdkloc=$loc
     printf "\e[1;32mDownloading...\e[0m\n"
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        curl https://dl.google.com/android/repository/commandlinetools-mac-6858069_latest.zip > ~/cmdline-android-sdk.zip
+        curl https://dl.google.com/android/repository/commandlinetools-mac-8512546_latest.zip > ~/cmdline-android-sdk.zip
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        curl https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip > ~/cmdline-android-sdk.zip
+        curl https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip > ~/cmdline-android-sdk.zip
     else
         printf "`backlines 1`[1;32mDownloading... \e[1;31mERROR\nCould not detect OS or using Windows\n\e[0m"
         exit 1
