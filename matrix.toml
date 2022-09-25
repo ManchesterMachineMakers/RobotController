@@ -1,17 +1,17 @@
 projectName = "FreightFrenzy"
-configPath = "TeamCode/src/main/java/org/firstinspires/ftc/teamcode/util/RobotConfig.kt"
+configPath = "TeamCode/src/main/java/org/firstinspires/ftc/teamcode/util/OpModeBase.kt"
 
 move = [
     { old = "TeamCode/build/outputs/apk/$(target)/TeamCode-$(target).apk", new = "TeamCode-$(target)-$(config).apk" },
 ]
 
 [configRegex]
-find = "val CURRENT = .*"
-replace = "val CURRENT = $(config)"
+find = "RobotConfig.activate(hardwareMap, .*)"
+replace = "RobotConfig.activate(hardwareMap, $(config))"
 
 [configurations]
-fullRobot = "FULL_ROBOT"
-programmingBoard = "PROGRAMMING_BOARD"
+programmingBoard = "::programmingBoard"
+fullRobot = "::fullRobot"
 
 [targets]
 debug = ["./gradlew", "assembleDebug"]

@@ -2,7 +2,7 @@ name: Android CI - Pull Request
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ season/power-play ]
   workflow_dispatch:
 
 jobs:
@@ -22,5 +22,5 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build
-        uses: aleksrutins/matrix@v1
+        uses: aleksrutins/matrix@v1.1
 
