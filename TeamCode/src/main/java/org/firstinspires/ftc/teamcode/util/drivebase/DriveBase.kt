@@ -320,7 +320,7 @@ object DriveBase {
         val motors = getMotors()!!
         for (motor in motors) {
             if (motor?.mode == RunMode.RUN_TO_POSITION) {
-                if (motor?.isBusy) {
+                if (motor.isBusy) {
                     return true
                 }
             } else {
@@ -396,12 +396,11 @@ object DriveBase {
             }
             RobotLog.i("Power: $power Directions: $directions")
             val motors = getMotors()!!
-            var motorPower = power
             for (i in motors.indices) {
                 // motors should always be set to the base direction.
                 // power varies by the directions given.  If forward, positive.
                 // if reverse, negative.
-                motorPower = power * if (directions[i] == DcMotorSimple.Direction.FORWARD) 1 else -1
+                val motorPower = power * if (directions[i] == DcMotorSimple.Direction.FORWARD) 1 else -1
                 motors[i]?.power = motorPower
             }
             power
@@ -607,10 +606,6 @@ object DriveBase {
         val ftheta = Math.asin(h / fp)
         val fbp = fp * Math.cos(ftheta)
         return (fr - (rbp + fbp)) * motorEncoderEventsPerMM
-    }
-
-    fun pitch(degrees: Int) {
-        RobotLog.ww("16221 Drive Base", "Pitching not available for this drive base")
     }
     //TODO: Get Isaac's encoder value for MM routine.
 }
