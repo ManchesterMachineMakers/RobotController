@@ -1,8 +1,7 @@
-projectName = "FreightFrenzy"
 configPath = "TeamCode/src/main/java/org/firstinspires/ftc/teamcode/util/OpModeBase.kt"
 
 move = [
-    { old = "TeamCode/build/outputs/apk/$(target)/TeamCode-$(target).apk", new = "TeamCode-$(target)-$(config).apk" },
+    { from = "TeamCode/build/outputs/apk/$(target)/TeamCode-$(target).apk", to = "TeamCode-$(target)-$(config).apk" },
 ]
 
 [configRegex]
