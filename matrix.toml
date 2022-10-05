@@ -1,16 +1,16 @@
-configPath = "TeamCode/src/main/java/org/firstinspires/ftc/teamcode/util/OpModeBase.kt"
+configPath = "TeamCode/src/main/java/org/firstinspires/ftc/teamcode/util/RobotConfig.kt"
 
 move = [
     { from = "TeamCode/build/outputs/apk/$(target)/TeamCode-$(target).apk", to = "TeamCode-$(target)-$(config).apk" },
 ]
 
 [configRegex]
-find = "RobotConfig.activate(hardwareMap, .*)"
-replace = "RobotConfig.activate(hardwareMap, $(config))"
+find = "fun init() { .* }"
+replace = "fun init() { $(config) }"
 
 [configurations]
-programmingBoard = "::programmingBoard"
-fullRobot = "::fullRobot"
+programmingBoard = "programmingBoard()"
+fullRobot = "fullRobot()"
 
 [targets]
 debug = ["./gradlew", "assembleDebug"]

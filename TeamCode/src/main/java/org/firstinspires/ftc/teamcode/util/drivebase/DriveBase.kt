@@ -6,11 +6,16 @@ import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.util.RobotLog
+import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion
+import org.firstinspires.ftc.robotcore.external.ExportToBlocks
 import org.firstinspires.ftc.teamcode.util.Conversions
 import org.firstinspires.ftc.teamcode.util.RobotConfig
+import kotlin.math.asin
+import kotlin.math.cos
+import kotlin.math.sin
 
 
-object DriveBase {
+object DriveBase : BlocksOpModeCompanion() {
     private var config: Configuration? = null
 
     @JvmStatic
@@ -82,7 +87,12 @@ object DriveBase {
      * @param driveSpeed how fast we should go - use the enum
      * @return the current power for the drive speed
      */
-    fun getDriveSpeedPower(driveSpeed: DriveSpeed?): Double {
+    @ExportToBlocks(
+        comment = "Returns the power value for the given drive speed, or null.",
+        tooltip = "Returns the power value for the given drive speed, or null.",
+        parameterLabels = ["Drive Speed"]
+    )
+    @JvmStatic fun getDriveSpeedPower(driveSpeed: DriveSpeed?): Double {
         return driveSpeedConfigurations.getOrDefault(driveSpeed, 0.0)
     }
 
@@ -98,6 +108,10 @@ object DriveBase {
      * Initialize all motors to run using encoders.
      * Set travel to forward and power to  0.
      */
+    @ExportToBlocks(
+        comment = "Initialize all motors to run using encoders. Set travel to forward and power to 0."
+    )
+    @JvmStatic
     fun initMotors() {
 
         // Output all configuration information for the drive base.
@@ -127,6 +141,8 @@ object DriveBase {
     /**
      * Remove instances of motors, travel directions, speeds
      */
+    @ExportToBlocks
+    @JvmStatic
     fun cleanup() {
         stop()
     }
@@ -136,6 +152,7 @@ object DriveBase {
      * @param runMode how the motors should run - use the enum.
      * @return boolean success
      */
+    @ExportToBlocks @JvmStatic
     fun setRunMode(runMode: RunMode?): Boolean {
         return try {
             val motors = getMotors()!!
@@ -154,6 +171,7 @@ object DriveBase {
      * @param behavior zero power behavior - use the enum
      * @return boolean success
      */
+    @ExportToBlocks @JvmStatic
     fun setStopMode(behavior: ZeroPowerBehavior?): Boolean {
         return try {
             for (motor in getMotors()!!) {
@@ -170,6 +188,7 @@ object DriveBase {
      * Returns the encoder values for all motors.
      * @return current positions of all motors, in order configured.
      */
+    @ExportToBlocks @JvmStatic
     fun getEncoderPositions(): Array<Int?> {
         val motors = getMotors()!!
         val positions = Array<Int?>(motors.size) { 0 }
@@ -184,6 +203,7 @@ object DriveBase {
      * @param tolerance position tolerance
      * @return position tolerance from each motor, in order configured.
      */
+    @ExportToBlocks @JvmStatic
     fun setPositionTolerance(tolerance: Int): IntArray {
         // set position tolerance
         val motors = getMotors()!!
@@ -200,6 +220,7 @@ object DriveBase {
      * This probably is unnecessary.  We can remove it if so.
      * @return position tolerance from each motor, in order configured.
      */
+    @ExportToBlocks @JvmStatic
     fun getPositionTolerance(): IntArray {
         // set position tolerance
         val motors = getMotors()!!
@@ -213,6 +234,7 @@ object DriveBase {
     /**
      * Returns the current position of each motor as an integer array.
      */
+    @ExportToBlocks @JvmStatic
     fun checkMotorPositions(): Array<Int?> {
         val motors = getMotors()!!
         val positions = Array<Int?>(motors.size) {0}
@@ -228,6 +250,7 @@ object DriveBase {
      * @param tolerance
      * @return
      */
+    @ExportToBlocks(parameterLabels = ["Target Ticks", "Tolerance"]) @JvmStatic
     fun stopOnTicks(targetTicks: IntArray, tolerance: Int): Array<Boolean> {
         val positions = checkMotorPositions()
         val motors = getMotors()!!
@@ -247,6 +270,7 @@ object DriveBase {
      * @param travelDirection which way should the bot go?
      * @return  success
      */
+    @ExportToBlocks @JvmStatic
     fun setTravelDirection(travelDirection: TravelDirection?): Boolean {
         // our motor configuration
         return try {
@@ -266,6 +290,7 @@ object DriveBase {
         }
     }
 
+    @ExportToBlocks(parameterLabels = ["Directions"]) @JvmStatic
     fun setMotorDirections(directions: Array<DcMotorSimple.Direction?>): Boolean {
         try {
             val motors = getMotors()!!
@@ -279,6 +304,7 @@ object DriveBase {
         return false
     }
 
+    @ExportToBlocks @JvmStatic
     fun getMotorDirections(): Array<DcMotorSimple.Direction?>? {
         try {
             val motors = getMotors()!!
@@ -293,6 +319,7 @@ object DriveBase {
         return null
     }
 
+    @ExportToBlocks @JvmStatic
     fun getTravelDirection(): TravelDirection? {
         try {
             val motors = getMotors()!!
@@ -316,6 +343,7 @@ object DriveBase {
         return null
     }
 
+    @ExportToBlocks @JvmStatic
     fun isBusy(): Boolean {
         val motors = getMotors()!!
         for (motor in motors) {
@@ -338,6 +366,7 @@ object DriveBase {
      * Stop all motors - set power to 0.
      * @return power
      */
+    @ExportToBlocks @JvmStatic
     fun stop(): Double {
         val motors = getMotors()!!
         for (motor in motors) {
@@ -350,6 +379,7 @@ object DriveBase {
      * Is the drivebase really stopped, by using the runmode STOP_AND_RESET_ENCODER?
      * @return
      */
+    @ExportToBlocks @JvmStatic
     fun isStopped(): Boolean {
         val motors = getMotors()!!
         var stopped = true
@@ -365,6 +395,7 @@ object DriveBase {
      * @param driveSpeed how fast?
      * @return the power to the motors
      */
+    @ExportToBlocks @JvmStatic
     fun go(direction: TravelDirection?, driveSpeed: DriveSpeed?): Double {
         val power = getDriveSpeedPower(driveSpeed)
         return go(direction, power)
@@ -376,6 +407,7 @@ object DriveBase {
      * @param power power value for the motors
      * @return the power to the motors
      */
+    @ExportToBlocks(parameterLabels = ["Direction", "Power"]) @JvmStatic
     fun go(direction: TravelDirection?, power: Double): Double {
         val directions = getMotorConfigurations(direction)
         return go(directions, power)
@@ -387,6 +419,7 @@ object DriveBase {
      * @param power power value for the motors
      * @return the power to the motors
      */
+    @ExportToBlocks(parameterLabels = ["Directions", "Power"])
     fun go(directions: Array<DcMotorSimple.Direction?>?, power: Double): Double {
         return try {
             if (directions == null) {
@@ -416,6 +449,7 @@ object DriveBase {
      * @param powerLevels power level for motor, in order as configured.
      * @return the power level of the first motor.
      */
+    @ExportToBlocks(parameterLabels = ["Power Levels"]) @JvmStatic
     fun go(powerLevels: DoubleArray): Double {
         val motors = getMotors()!!
 
@@ -439,6 +473,7 @@ object DriveBase {
      * @param powerLevel
      * @return
      */
+    @ExportToBlocks(parameterLabels = ["Power Level"]) @JvmStatic
     fun go(powerLevel: Double): Double {
         val motors = getMotors()!!
         for (i in motors.indices) {
@@ -453,6 +488,7 @@ object DriveBase {
      * @param power the power to each motor
      * @param encoderTicks the distance each motor  should go, by the encoders
      */
+    @ExportToBlocks(parameterLabels = ["Travel Direction", "Power", "Encoder Ticks"]) @JvmStatic
     fun go(travelDirection: TravelDirection?, power: Double, encoderTicks: Int): Double {
         return go(travelDirection, power, encoderTicks, 0)
     }
@@ -464,6 +500,7 @@ object DriveBase {
      * @param encoderTicks the distance each motor  should go, by the encoders
      * @param tolerance the tolerance to set on each motor
      */
+    @ExportToBlocks(parameterLabels = ["Travel Direction", "Power", "Encoder Ticks", "Tolerance"]) @JvmStatic
     fun go(
         travelDirection: TravelDirection?,
         power: Double,
@@ -486,6 +523,7 @@ object DriveBase {
      * @param encoderTicks a  list of  encoder tick values,  distances  that each motor should go by the encoders.
      * @param tolerance the tolerance to set on each motor
      */
+    @ExportToBlocks(parameterLabels = ["Power", "Encoder Ticks", "Tolerance"]) @JvmStatic
     fun go(power: Double, encoderTicks: IntArray, tolerance: Int): Double {
         val currentPositions = getEncoderPositions()
         RobotLog.i("Current Positions when driving ticks: $currentPositions")
@@ -509,6 +547,7 @@ object DriveBase {
      * Set target position for all motors at once.
      * @param encoderTicks represents the target position for each motor.
      */
+    @ExportToBlocks @JvmStatic
     fun setTargetPositions(encoderTicks: Int): Double {
         val motors = getMotors()!!
         for (i in motors.indices) {
@@ -520,6 +559,7 @@ object DriveBase {
     /**
      * Get target position for all motors at once.
      */
+    @ExportToBlocks @JvmStatic
     fun getTargetPositions(): IntArray {
         val motors = getMotors()!!
         val targetTicks = IntArray(motors.size)
@@ -601,10 +641,10 @@ object DriveBase {
         val rp = inchwormRearMM
         val fp = inchwormFrontMM
         val fr = rp + fp
-        val rbp = rp * Math.cos(theta)
-        val h = rp * Math.sin(theta)
-        val ftheta = Math.asin(h / fp)
-        val fbp = fp * Math.cos(ftheta)
+        val rbp = rp * cos(theta)
+        val h = rp * sin(theta)
+        val ftheta = asin(h / fp)
+        val fbp = fp * cos(ftheta)
         return (fr - (rbp + fbp)) * motorEncoderEventsPerMM
     }
     //TODO: Get Isaac's encoder value for MM routine.

@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import org.firstinspires.ftc.teamcode.util.OpModeBase
 import org.firstinspires.ftc.teamcode.util.drivebase.DriveBase
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -10,8 +10,8 @@ import kotlin.math.sin
 
 
 @TeleOp(name = "Basic TeleOp")
-class BasicTeleOp : OpModeBase() {
-    override fun run() {
+class BasicTeleOp : LinearOpMode() {
+    override fun runOpMode() {
         waitForStart()
         if(opModeIsActive()) {
             while(opModeIsActive()) {
