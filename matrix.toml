@@ -1,4 +1,4 @@
-configPath = "TeamCode/src/main/java/org/firstinspires/ftc/teamcode/util/RobotConfig.kt"
+configPath = "TeamCode/src/main/java/org/firstinspires/ftc/teamcode/RobotConfig.kt"
 
 move = [
     { from = "TeamCode/build/outputs/apk/$(target)/TeamCode-$(target).apk", to = "TeamCode-$(target)-$(config).apk" },
