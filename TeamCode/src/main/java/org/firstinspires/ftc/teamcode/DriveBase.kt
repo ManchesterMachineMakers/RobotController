@@ -111,7 +111,7 @@ object DriveBase : BlocksOpModeCompanion() {
         comment = "Initialize all motors to run using encoders. Set travel to forward and power to 0."
     )
     @JvmStatic
-    fun initMotors() {
+    fun initMotors(): Void {
 
         // Output all configuration information for the drive base.
         RobotLog.i("*******  Drive Base Configuration *******")
@@ -135,6 +135,7 @@ object DriveBase : BlocksOpModeCompanion() {
 
         // set motor power to 0.
         stop()
+        return null as Void
     }
 
     /**
