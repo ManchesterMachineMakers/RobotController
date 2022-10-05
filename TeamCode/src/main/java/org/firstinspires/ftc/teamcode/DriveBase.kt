@@ -13,8 +13,8 @@ import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.sin
 
-
 object DriveBase : BlocksOpModeCompanion() {
+
     private var config: Configuration? = null
 
     @JvmStatic
@@ -111,7 +111,7 @@ object DriveBase : BlocksOpModeCompanion() {
         comment = "Initialize all motors to run using encoders. Set travel to forward and power to 0."
     )
     @JvmStatic
-    fun initMotors(): Void {
+    fun initMotors() {
 
         // Output all configuration information for the drive base.
         RobotLog.i("*******  Drive Base Configuration *******")
@@ -135,7 +135,6 @@ object DriveBase : BlocksOpModeCompanion() {
 
         // set motor power to 0.
         stop()
-        return null as Void
     }
 
     /**

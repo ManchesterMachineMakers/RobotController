@@ -16,6 +16,7 @@ object RobotConfig : BlocksOpModeCompanion() {
     @ExportToBlocks(
         comment = "Initialize the robot - do this first!"
     )
+    @JvmStatic
     fun init() { fullRobot() } // DO NOT CHANGE THIS
 
     inline fun <reified T> getHardware(name: String): T = hardwareMap.get(T::class.java, name)

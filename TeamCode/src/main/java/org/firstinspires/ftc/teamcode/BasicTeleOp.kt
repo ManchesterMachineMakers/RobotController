@@ -11,6 +11,7 @@ import kotlin.math.sin
 @TeleOp(name = "Basic TeleOp")
 class BasicTeleOp : LinearOpMode() {
     override fun runOpMode() {
+        RobotConfig.init()
         waitForStart()
         if(opModeIsActive()) {
             while(opModeIsActive()) {
