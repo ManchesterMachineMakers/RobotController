@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.util.drivebase.config
 
-import org.firstinspires.ftc.teamcode.util.drivebase.DriveBase
+import org.firstinspires.ftc.teamcode.DriveBase
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 
 val mecanum = DriveBase.Configuration(
