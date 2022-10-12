@@ -103,14 +103,15 @@ asdk_install_tools() {
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
         curl https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip > ~/cmdline-android-sdk.zip
     else
-        printf "`backlines 1`[1;32mDownloading... \e[1;31mERROR\nCould not detect OS or using Windows\n\e[0m"
+        backlines 1
+        printf "\e[1;32mDownloading... \e[1;31mERROR\nCould not detect OS or using Windows\n\e[0m"
         exit 1
     fi
     backlines 4
     printf "\e[1;32mDownloading... \e[0;32mDone\e[0m\n"
     printf "\e[1;32mUnzipping...\e[0m\n"
     unzip -q ~/cmdline-android-sdk.zip -d ~/cmdline-android-sdk
-    mv ~/cmdline-android-sdk/cmdline-tools $(bash -c "mkdir -p $asdkloc && cd $asdkloc && pwd && cd .. && rm -rf $asdkloc")
+    mv ~/cmdline-android-sdk/cmdline-tools "$(bash -c "mkdir -p $asdkloc && cd $asdkloc && pwd && cd .. && rm -rf $asdkloc")"
     rm -rf ~/cmdline-android-sdk
     backlines 1
     printf "\e[1;32mUnzipping... \e[0;32mDone\e[0m\n"
@@ -123,7 +124,7 @@ page
 echo "Detecting Homebrew..."
 brew -v > /dev/null 2>&1
 
-if [ "$?" != "0" ]; then
+if ! brew -v > /dev/null 2>&1; then
     has_homebrew=0
 fi
 
