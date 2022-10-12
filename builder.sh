@@ -10,7 +10,7 @@ filename() {
     path=$1
     path=${path##*/}
     path=${path%.*}
-    printf $path
+    printf '%s' "$path"
 }
 
 asdkloc=$(cat asdk_location.dat)
@@ -20,13 +20,13 @@ page() {
 }
 key() {
     printf "\e[1;32m - Press any key to continue - \e[0m\n"
-    read -n1 dummy
+    read -rn1
 }
 asdk() {
     page
     printf "\e[1;32mAndroid SDK location: \e[0m"
-    read loc
-    echo $loc > asdk_location.dat
+    read -r loc
+    echo "$loc" > asdk_location.dat
     asdkloc=$(cat asdk_location.dat)
 }
 asdkmangr() {
@@ -39,11 +39,16 @@ asdkman() {
 }
 menu() {
     page
+    if [[ "$has_homebrew" != "1" ]]; then
+        homebrew_msg="(warning: homebrew is not installed)"
+    else
+        homebrew_msg=""
+    fi
     printf "
-    \e[1;32mAndroid SDK location: ${asdkloc:-"Unset - please use item 9 to set"}\e[0m
+    \e[1;32mAndroid SDK location: %s\e[0m
 
     \e[1;32mWhat would you like to do?\e[0m
-    \e[1;33m (1) \e[0mInstall dependencies with Homebrew
+    \e[1;33m (1) \e[0mInstall dependencies with Homebrew \e[2m%s\e[0m
     \e[1;33m (2) \e[0mInstall Android SDK
     \e[1;33m (3) \e[0mInstall required Android SDK components
     \e[1;33m (4) \e[0m(First build) Remove signed FtcRobotController from smartphone
@@ -53,9 +58,9 @@ menu() {
     \e[1;33m (8) \e[0mBuild, install, run & watch logs
     \e[1;33m (9) \e[0mSet Android SDK location
     \e[1;33m (q) \e[0mQuit
-    "
+    " "${asdkloc:-"Unset - please use item 9 to set"}" "$homebrew_msg"
     printf "\e[33m> \e[0m"
-    read -n1 choice
+    read -rn1 choice
     case $choice in
         1) indeps; key; menu;;
         2) asdk_install_tools; key; menu;;
@@ -87,9 +92,10 @@ install() {
 asdk_install_tools() {
     page
     printf "\e[1;32mWhere would you like me to put the Android SDK? \e[1;33m[~/Android] \e[0;34m"
-    read loc
-    echo ${loc:="~/Android"} > asdk_location.dat
-    printf "`backlines 1`\e[1;32mWhere would you like me to put the Android SDK? \e[0;36m~/Android\e[0m\n"
+    read -r loc
+    echo "${loc:="~/Android"}" > asdk_location.dat
+    backlines 1
+    printf "\e[1;32mWhere would you like me to put the Android SDK? \e[0;36m~/Android\e[0m\n"
     asdkloc=$loc
     printf "\e[1;32mDownloading...\e[0m\n"
     if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -100,12 +106,14 @@ asdk_install_tools() {
         printf "`backlines 1`[1;32mDownloading... \e[1;31mERROR\nCould not detect OS or using Windows\n\e[0m"
         exit 1
     fi
-    printf "$(backlines 4)\e[1;32mDownloading... \e[0;32mDone\e[0m\n"
+    backlines 4
+    printf "\e[1;32mDownloading... \e[0;32mDone\e[0m\n"
     printf "\e[1;32mUnzipping...\e[0m\n"
     unzip -q ~/cmdline-android-sdk.zip -d ~/cmdline-android-sdk
     mv ~/cmdline-android-sdk/cmdline-tools $(bash -c "mkdir -p $asdkloc && cd $asdkloc && pwd && cd .. && rm -rf $asdkloc")
     rm -rf ~/cmdline-android-sdk
-    printf "`backlines 1`\e[1;32mUnzipping... \e[0;32mDone\e[0m\n"
+    backlines 1
+    printf "\e[1;32mUnzipping... \e[0;32mDone\e[0m\n"
 }
 run() {
     install && adb shell monkey -p com.qualcomm.ftcrobotcontroller 1 && adb logcat
