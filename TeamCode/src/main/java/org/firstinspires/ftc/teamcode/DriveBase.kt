@@ -9,11 +9,12 @@ import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion
 import org.firstinspires.ftc.robotcore.external.ExportToBlocks
 import org.firstinspires.ftc.teamcode.util.Conversions
+import org.firstinspires.ftc.teamcode.util.CustomBlocksOpModeCompanion
 import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.sin
 
-object DriveBase : BlocksOpModeCompanion() {
+object DriveBase : CustomBlocksOpModeCompanion() {
 
     private var config: Configuration? = null
 
