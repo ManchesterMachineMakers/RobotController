@@ -7,6 +7,7 @@ import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
 
+public const val POWER_COEFFICIENT = 1.2
 
 @TeleOp(name = "Basic TeleOp")
 class BasicTeleOp : LinearOpMode() {
@@ -27,7 +28,7 @@ class BasicTeleOp : LinearOpMode() {
                 val v3 = r * sin(robotAngle) + rightX
                 val v4 = r * cos(robotAngle) - rightX
 
-                DriveBase.go(doubleArrayOf(-v1, v2, -v3, v4))
+                DriveBase.go(doubleArrayOf(-(v1 / POWER_COEFFICIENT), v2 / POWER_COEFFICIENT, -(v3 / POWER_COEFFICIENT), v4 / POWER_COEFFICIENT))
             }
         }
     }

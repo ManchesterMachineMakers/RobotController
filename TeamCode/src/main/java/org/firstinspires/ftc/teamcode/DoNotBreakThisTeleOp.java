@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.BasicTeleOpKt.POWER_COEFFICIENT;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -39,10 +41,10 @@ public class DoNotBreakThisTeleOp extends LinearOpMode {
                 double v2 = r * Math.sin(robotAngle) - rightX;
                 double v3 = r * Math.sin(robotAngle) + rightX;
                 double v4 = r * Math.cos(robotAngle) - rightX;
-                leftFront.setPower(v1);
-                rightFront.setPower(v2);
-                leftRear.setPower(v3);
-                rightRear.setPower(v4);
+                leftFront.setPower(v1 / POWER_COEFFICIENT);
+                rightFront.setPower(v2 / POWER_COEFFICIENT);
+                leftRear.setPower(v3 / POWER_COEFFICIENT);
+                rightRear.setPower(v4 / POWER_COEFFICIENT);
             }
         }
     }
