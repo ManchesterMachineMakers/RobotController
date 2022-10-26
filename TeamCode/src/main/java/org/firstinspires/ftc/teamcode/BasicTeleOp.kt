@@ -13,6 +13,7 @@ public const val POWER_COEFFICIENT = 1.2
 class BasicTeleOp : LinearOpMode() {
     override fun runOpMode() {
         RobotConfig.initHardwareMaps(hardwareMap)
+        Arm.initHardware()
         RobotConfig.init()
         waitForStart()
         if(opModeIsActive()) {
