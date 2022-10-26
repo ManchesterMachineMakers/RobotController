@@ -9,6 +9,7 @@ object RobotConfig : BlocksOpModeCompanion() {
 
     fun initHardwareMaps(hardwareMap: HardwareMap) {
         CustomBlocksOpModeCompanion.setHardwareMap(DriveBase::class.java, hardwareMap)
+        CustomBlocksOpModeCompanion.setHardwareMap(Arm::class.java, hardwareMap)
     }
 
     fun fullRobot() {
