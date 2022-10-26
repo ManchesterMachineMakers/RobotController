@@ -9,7 +9,7 @@ abstract class CustomBlocksOpModeCompanion : BlocksOpModeCompanion() {
             thing.getField("hardwareMap").set(null, theHardwareMap)
 
             try {
-                thing.getMethod("init").invoke(null);
+                thing.getMethod("initHardware").invoke(null);
             } catch (_: NoSuchMethodException) {
                 // no initialization required
             }
