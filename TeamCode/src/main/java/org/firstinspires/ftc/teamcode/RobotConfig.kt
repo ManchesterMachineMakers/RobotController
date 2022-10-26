@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode
 
+import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion
 import org.firstinspires.ftc.robotcore.external.ExportToBlocks
@@ -7,9 +8,9 @@ import org.firstinspires.ftc.teamcode.util.CustomBlocksOpModeCompanion
 
 object RobotConfig : BlocksOpModeCompanion() {
 
-    fun initHardwareMaps(hardwareMap: HardwareMap) {
-        CustomBlocksOpModeCompanion.setHardwareMap(DriveBase::class.java, hardwareMap)
-        CustomBlocksOpModeCompanion.setHardwareMap(Arm::class.java, hardwareMap)
+    fun initHardwareMaps(hardwareMap: HardwareMap, gamepad1: Gamepad, gamepad2: Gamepad) {
+        CustomBlocksOpModeCompanion.setHardwareMap(DriveBase::class.java, hardwareMap, gamepad1, gamepad2)
+        CustomBlocksOpModeCompanion.setHardwareMap(Arm::class.java, hardwareMap, gamepad1, gamepad2)
     }
 
     fun fullRobot() {
