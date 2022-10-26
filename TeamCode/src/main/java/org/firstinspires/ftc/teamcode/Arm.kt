@@ -22,26 +22,26 @@ object Arm : CustomBlocksOpModeCompanion() {
         if(shortArm == null || longArm == null || rotationalBase == null) return
         val currentServoPos = shortArm!!.position;
         if (gamepad2.right_stick_y > 0 || gamepad2.right_stick_y < 0) {
-            longArm!!.power = gamepad2.right_stick_y / 4.0
+            longArm!!.power = gamepad2.right_stick_y / 40.0
         } else {
             if (gamepad2.right_stick_y == 0f) {
                 longArm!!.power = 0.0;
             }
         }
         if (gamepad2.left_stick_y > 0) {
-            shortArm!!.position = 0.005 + currentServoPos;
+            shortArm!!.position = 0.0025 + currentServoPos;
         }
         if (gamepad2.left_stick_y < 0) {
-            shortArm!!.position = -0.005 + currentServoPos;
+            shortArm!!.position = -0.0025 + currentServoPos;
         }
         if (gamepad2.left_stick_y == 0f) {
             shortArm!!.position = currentServoPos;
         }
 
         if (gamepad2.right_bumper) {
-            rotationalBase!!.position += 0.005
+            rotationalBase!!.position += 0.0005
         } else if (gamepad2.left_bumper) {
-            rotationalBase!!.position -= 0.005
+            rotationalBase!!.position -= 0.0005
         }
     }
 }
