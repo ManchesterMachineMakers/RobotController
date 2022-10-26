@@ -10,7 +10,7 @@ abstract class CustomBlocksOpModeCompanion : BlocksOpModeCompanion() {
 
             try {
                 thing.getMethod("initHardware").invoke(null);
-            } catch (_: NoSuchMethodException) {
+            } catch (_: Throwable) {
                 // no initialization required
             }
         }
