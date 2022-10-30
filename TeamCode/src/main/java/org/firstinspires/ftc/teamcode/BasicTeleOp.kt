@@ -17,6 +17,7 @@ class BasicTeleOp : LinearOpMode() {
         RobotConfig.init()
         waitForStart()
         if(opModeIsActive()) {
+            Arm.zero()
             while(opModeIsActive()) {
                 val r = hypot(-gamepad1.left_stick_x, -gamepad1.left_stick_y)
                 val robotAngle = atan2(

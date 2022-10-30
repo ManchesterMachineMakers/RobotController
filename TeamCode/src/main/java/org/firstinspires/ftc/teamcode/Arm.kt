@@ -13,7 +13,9 @@ object Arm : CustomBlocksOpModeCompanion() {
         shortArm = hardwareMap.servo.get("shortarm")
         rotationalBase = hardwareMap.servo.get("rotationalbase")
         longArm?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        //TODO: reconsider, since this moves during initialization?
+    }
+
+    fun zero() {
         shortArm?.position = 0.0
         rotationalBase?.position = 0.0
     }
