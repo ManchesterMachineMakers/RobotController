@@ -65,15 +65,18 @@ menu() {
         1) indeps; key; menu;;
         2) asdk_install_tools; key; menu;;
         3) asdkman; key; menu;;
-        4) page; adb uninstall com.qualcomm.ftcrobotcontroller; key; menu;;
+        4) page; "$(adb_path)" uninstall com.qualcomm.ftcrobotcontroller; key; menu;;
         5) build; key; menu;;
         6) install; key; menu;;
         7) adb reboot; menu;;
-        8) run; menu;;
+        8) run; key; menu;;
         9) asdk; menu;;
-        q) clear; exit 0;;
+        q) tput rmcup; exit 0;;
         *) build; key; menu;;
     esac
+}
+adb_path() {
+    echo $asdkloc/platform-tools/adb
 }
 indeps() {
     page
@@ -117,7 +120,7 @@ asdk_install_tools() {
     printf "\e[1;32mUnzipping... \e[0;32mDone\e[0m\n"
 }
 run() {
-    install && adb shell monkey -p com.qualcomm.ftcrobotcontroller 1 && adb logcat
+    install && "$(adb_path)" shell monkey -p com.qualcomm.ftcrobotcontroller 1 && "$(adb_path)" logcat
 }
 tput smcup
 page
