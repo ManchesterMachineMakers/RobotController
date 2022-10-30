@@ -12,7 +12,7 @@ object Arm : CustomBlocksOpModeCompanion() {
         longArm = hardwareMap.dcMotor.get("longarm")
         shortArm = hardwareMap.servo.get("shortarm")
         rotationalBase = hardwareMap.servo.get("rotationalbase")
-        longArm?!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        longArm?.mode = DcMotor.RunMode.RUN_USING_ENCODER
         longArm?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
     }
 
