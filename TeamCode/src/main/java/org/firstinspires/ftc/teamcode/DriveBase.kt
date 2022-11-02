@@ -10,8 +10,10 @@ import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion
 import org.firstinspires.ftc.robotcore.external.ExportToBlocks
 import org.firstinspires.ftc.teamcode.util.Conversions
 import org.firstinspires.ftc.teamcode.util.CustomBlocksOpModeCompanion
+import org.firstinspires.ftc.teamcode.util.pathfinder.Path
 import kotlin.math.asin
 import kotlin.math.cos
+import kotlin.math.hypot
 import kotlin.math.sin
 
 object DriveBase : CustomBlocksOpModeCompanion() {
@@ -648,4 +650,34 @@ object DriveBase : CustomBlocksOpModeCompanion() {
         return (fr - (rbp + fbp)) * motorEncoderEventsPerMM
     }
     //TODO: Get Isaac's encoder value for MM routine.
+
+    fun runPath(path: Path) {
+        for (segment in path) {
+            setRunMode(RunMode.STOP_AND_RESET_ENCODER)
+            setRunMode(RunMode.RUN_USING_ENCODER)
+            setTravelDirection(with(segment) {
+                if(x < 0 && y < 0) {
+                    TravelDirection.strafeLeftBackward
+                } else if(x < 0 && y > 0) {
+                    TravelDirection.strafeLeftForward
+                } else if(x > 0 && y < 0) {
+                    TravelDirection.strafeRightBackward
+                } else if(x > 0 && y > 0) {
+                    TravelDirection.strafeRightForward
+                } else if(x > 0) {
+                    TravelDirection.strafeRight
+                } else if(x < 0) {
+                    TravelDirection.strafeLeft
+                } else if(y > 0) {
+                    TravelDirection.forward
+                } else if(y < 0) {
+                    TravelDirection.reverse
+                } else {
+                    TravelDirection.base
+                }
+            })
+            setTargetPositions(hypot(segment.xTicks, segment.yTicks).toInt())
+            while(isBusy()) {}
+        }
+    }
 }

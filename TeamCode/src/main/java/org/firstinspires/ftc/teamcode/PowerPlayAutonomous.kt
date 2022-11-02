@@ -37,6 +37,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 import org.firstinspires.ftc.teamcode.PowerPlayAutonomous
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.ClassFactory
+import org.firstinspires.ftc.teamcode.util.pathfinder.Path
+import org.firstinspires.ftc.teamcode.util.pathfinder.Segment
+import org.firstinspires.ftc.teamcode.util.tfod.TimeoutObjectDetector
 
 /**
  * This 2022-2023 OpMode illustrates the basics of using the TensorFlow Object Detection API to
@@ -50,6 +53,18 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory
  */
 @TeleOp(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
 class PowerPlayAutonomous : LinearOpMode() {
+    val mmPerBlock = 609F
+    val path0 = Path(
+        Segment(-mmPerBlock, 0F),
+        Segment(0F, mmPerBlock)
+    )
+    val path1 = Path(
+        Segment(0F, mmPerBlock)
+    )
+    val path2 = Path(
+        Segment(mmPerBlock, 0F),
+        Segment(0F, mmPerBlock)
+    )
     /**
      * [.vuforia] is the variable we will use to store our instance of the Vuforia
      * localization engine.
@@ -61,7 +76,10 @@ class PowerPlayAutonomous : LinearOpMode() {
      * Detection engine.
      */
     private var tfod: TFObjectDetector? = null
+
     override fun runOpMode() {
+        RobotConfig.initHardwareMaps(hardwareMap, gamepad1, gamepad2)
+        RobotConfig.init()
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         initVuforia()
@@ -86,33 +104,23 @@ class PowerPlayAutonomous : LinearOpMode() {
         telemetry.update()
         waitForStart()
         if (opModeIsActive()) {
-            while (opModeIsActive()) {
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    val updatedRecognitions = tfod!!.updatedRecognitions
-                    if (updatedRecognitions != null) {
-                        telemetry.addData("# Objects Detected", updatedRecognitions.size)
-
-                        // step through the list of recognitions and display image position/size information for each one
-                        // Note: "Image number" refers to the randomized image orientation/number
-                        for (recognition in updatedRecognitions) {
-                            val col = ((recognition.left + recognition.right) / 2).toDouble()
-                            val row = ((recognition.top + recognition.bottom) / 2).toDouble()
-                            val width = Math.abs(recognition.right - recognition.left).toDouble()
-                            val height = Math.abs(recognition.top - recognition.bottom).toDouble()
-                            telemetry.addData("", " ")
-                            telemetry.addData(
-                                "Image",
-                                "%s (%.0f %% Conf.)",
-                                recognition.label,
-                                recognition.confidence * 100
-                            )
-                            telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col)
-                            telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height)
-                        }
-                        telemetry.update()
-                    }
+            val detector = TimeoutObjectDetector(tfod!!)
+            val detection = detector.detect(this)
+            when(detection?.side) {
+                0 -> {
+                    telemetry.addLine("Side 0 detected")
+                    DriveBase.runPath(path0)
+                }
+                1 -> {
+                    telemetry.addLine("Side 1 detected")
+                    DriveBase.runPath(path1)
+                }
+                2 -> {
+                    telemetry.addLine("Side 2 detected")
+                    DriveBase.runPath(path2)
+                }
+                else -> {
+                    telemetry.addLine("Nothing detected.")
                 }
             }
         }
@@ -163,7 +171,7 @@ class PowerPlayAutonomous : LinearOpMode() {
         private const val TFOD_MODEL_ASSET = "PowerPlay.tflite"
 
         // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
-        private val LABELS = arrayOf(
+        val LABELS = arrayOf(
             "1 Bolt",
             "2 Bulb",
             "3 Panel"
