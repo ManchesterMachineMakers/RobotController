@@ -25,7 +25,7 @@ object Arm : CustomBlocksOpModeCompanion() {
         if(shortArm == null || longArm == null || rotationalBase == null) return
         val currentServoPos = shortArm!!.position;
         if (gamepad2.right_stick_y > 0 || gamepad2.right_stick_y < 0) {
-            longArm!!.power = gamepad2.right_stick_y / 4.0
+            longArm!!.power = gamepad2.right_stick_y / 3.0
         } else {
             if (gamepad2.right_stick_y == 0f) {
                 longArm!!.power = 0.0;
