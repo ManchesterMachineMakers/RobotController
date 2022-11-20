@@ -12,7 +12,7 @@ class TimeoutObjectDetector(val tfod: TFObjectDetector) {
      */
     fun detect(self: LinearOpMode): Detection? {
         val start = System.currentTimeMillis()
-        while(tfod.recognitions.size == 0 && (System.currentTimeMillis() - 3000) < start);
+        while(tfod.recognitions.size == 0 && (System.currentTimeMillis() - 3000) < start && self.opModeIsActive());
         if(tfod.recognitions.size == 0) return null
         return Detection(
             RecognitionMatrix(tfod.recognitions[0]), // Recognition matrix
