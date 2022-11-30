@@ -8,9 +8,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class HalfServo extends LinearOpMode {
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
         Servo servo = hardwareMap.servo.get("initializeServo");
         waitForStart();
         servo.setPosition(0.5);
+        wait(1000);
     }
 }
