@@ -11,7 +11,19 @@ public class HalfServo extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Servo servo = hardwareMap.servo.get("initializeServo");
         waitForStart();
+        telemetry.addLine("Got here!");
+        telemetry.update();
+        servo.setPosition(0);
+        telemetry.addData("servo position", servo.getPosition());
+        telemetry.update();
+        sleep(1000);
+        servo.setPosition(1);
+        telemetry.addData("servo position", servo.getPosition());
+        telemetry.update();
+        sleep(1000);
         servo.setPosition(0.5);
-        Thread.sleep(1000);
+        telemetry.addData("servo position", servo.getPosition());
+        telemetry.update();
+        sleep(1000);
     }
 }
