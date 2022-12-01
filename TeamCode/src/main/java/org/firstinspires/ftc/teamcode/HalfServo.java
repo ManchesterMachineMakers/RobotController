@@ -12,6 +12,6 @@ public class HalfServo extends LinearOpMode {
         Servo servo = hardwareMap.servo.get("initializeServo");
         waitForStart();
         servo.setPosition(0.5);
-        wait(1000);
+        Thread.sleep(1000);
     }
 }
