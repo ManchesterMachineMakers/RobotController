@@ -3,11 +3,14 @@ package org.firstinspires.ftc.teamcode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.util.CustomBlocksOpModeCompanion
+import org.firstinspires.ftc.robotcore.external.ExportToBlocks
 
 object Arm : CustomBlocksOpModeCompanion() {
     var longArm: DcMotor? = null
     var shortArm: Servo? = null
     var rotationalBase: Servo? = null
+
+    @JvmStatic
     fun initHardware() {
         longArm = hardwareMap.dcMotor.get("longarm")
         shortArm = hardwareMap.servo.get("shortarm")
@@ -16,11 +19,13 @@ object Arm : CustomBlocksOpModeCompanion() {
         longArm?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
     }
 
+    @JvmStatic @ExportToBlocks
     fun zero() {
         shortArm?.position = 0.0
         rotationalBase?.position = 0.0
     }
 
+    @JvmStatic @ExportToBlocks
     fun controller() {
         if(shortArm == null || longArm == null || rotationalBase == null) return
         val currentServoPos = shortArm!!.position;

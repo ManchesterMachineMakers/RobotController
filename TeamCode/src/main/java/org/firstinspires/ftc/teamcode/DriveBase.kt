@@ -62,8 +62,8 @@ object DriveBase : CustomBlocksOpModeCompanion() {
     var inchwormRearMM = 144.0 // rear to pivot point
 
 
-    // https://www.gobilda.com/5202-series-yellow-jacket-planetary-gear-motor-26-9-1-ratio-223-rpm-3-3-5v-encoder/
-    var motorEncoderEventsPerRotation = 753.2
+    // https://www.gobilda.com/5203-series-yellow-jacket-planetary-gear-motor-19-2-1-ratio-24mm-length-8mm-rex-shaft-312-rpm-3-3-5v-encoder/
+    var motorEncoderEventsPerRotation = 537.7
     var motorEncoderEventsPerInch = motorRotationsPerInch * motorEncoderEventsPerRotation
     var motorEncoderEventsPerMM = motorRotationsPerMM * motorEncoderEventsPerRotation
 
