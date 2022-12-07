@@ -6,20 +6,30 @@ import com.qualcomm.robotcore.util.RobotLog
 
 @TeleOp(name = "Linear Slide Test")
 class LinearSlideTest : LinearOpMode() {
+    fun log(position: String) {
+        telemetry.addLine("Running to " + position)
+        telemetry.update()
+        RobotLog.i("Running to " + position)
+    }
     override fun runOpMode() {
         RobotConfig.initHardwareMaps(hardwareMap, gamepad1, gamepad2)
         RobotConfig.init()
         waitForStart();
         if(opModeIsActive()) {
-            telemetry.addLine("Running to top")
-            telemetry.update()
-            RobotLog.i("Running to top")
-            LinearSlide.goToTop()
+            log("base")
+            LinearSlide.goToBase()
             while(LinearSlide.isBusy());
-            telemetry.addLine("Running to bottom")
-            telemetry.update()
-            RobotLog.i("Running to bottom")
-            LinearSlide.goToBottom()
+            log("cone")
+            LinearSlide.goToCone()
+            while(LinearSlide.isBusy());
+            log("low")
+            LinearSlide.goToLow()
+            while(LinearSlide.isBusy());
+            log("mid")
+            LinearSlide.goToMid()
+            while(LinearSlide.isBusy());
+            log("base")
+            LinearSlide.goToBase()
             while(LinearSlide.isBusy());
         }
     }

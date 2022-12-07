@@ -11,7 +11,15 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
     var upperLimit: DigitalChannel? = null;
     var drive: DcMotor? = null;
     val ticksPerRevolution = 537.7;
-    val maxHeight: Int = (5 * ticksPerRevolution).roundToInt();
+    
+    fun Double.ticks(): Int {
+        return (this * ticksPerRevolution).roundToInt()
+    }
+
+    val base = 0.0.ticks()
+    val toCone = 0.5.ticks()
+    val low = 3.5.ticks()
+    val mid = 5.5.ticks()
 
     @JvmStatic
     fun initHardware() {
@@ -23,13 +31,23 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
     }
 
     @JvmStatic @ExportToBlocks
-    fun goToTop() {
-        drive?.targetPosition = maxHeight;
+    fun goToBase() {
+        drive?.targetPosition = base
     }
 
     @JvmStatic @ExportToBlocks
-    fun goToBottom() {
-        drive?.targetPosition = 0;
+    fun goToCone() {
+        drive?.targetPosition = toCone
+    }
+
+    @JvmStatic @ExportToBlocks
+    fun goToLow() {
+        drive?.targetPosition = low
+    }
+
+    @JvmStatic @ExportToBlocks
+    fun goToMid() {
+        drive?.targetPosition = mid
     }
 
     @JvmStatic @ExportToBlocks
