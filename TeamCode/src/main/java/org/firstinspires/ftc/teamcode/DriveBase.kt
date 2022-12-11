@@ -25,6 +25,8 @@ object DriveBase : CustomBlocksOpModeCompanion() {
         DriveBase.config = config
     }
 
+    override fun exists() = config != null && config?.motors?.all { hardwareMap.dcMotor.contains(it) } == true
+
     /**
      * Constants to represent drive speeds that are useful.  Set power values for each in initDriveSpeedConfiguration().
      */

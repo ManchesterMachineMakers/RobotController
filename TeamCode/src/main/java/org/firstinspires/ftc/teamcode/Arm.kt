@@ -10,6 +10,8 @@ object Arm : CustomBlocksOpModeCompanion() {
     var shortArm: Servo? = null
     var rotationalBase: Servo? = null
 
+    override fun exists() = hardwareMap.dcMotor.contains("longarm") && hardwareMap.servo.contains("shortarm") && hardwareMap.dcMotor.contains("rotationalbase")
+
     @JvmStatic
     fun initHardware() {
         longArm = hardwareMap.dcMotor.get("longarm")

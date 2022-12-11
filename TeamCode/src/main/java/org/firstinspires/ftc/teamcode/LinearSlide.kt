@@ -4,6 +4,8 @@ import org.firstinspires.ftc.teamcode.util.CustomBlocksOpModeCompanion
 import org.firstinspires.ftc.robotcore.external.ExportToBlocks
 import com.qualcomm.robotcore.hardware.DigitalChannel
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorEx
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import kotlin.math.roundToInt
 
 object LinearSlide : CustomBlocksOpModeCompanion() {
@@ -25,31 +27,48 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
     fun initHardware() {
         //TODO: set lower limit switch
         //TODO: set upper limit switch
-        drive = hardwareMap.dcMotor.get("slide_drive");
-        drive?.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER;
-        drive?.mode = DcMotor.RunMode.RUN_TO_POSITION;
+        drive = hardwareMap.dcMotor.get("slide_drive")
+        drive!!.direction = DcMotorSimple.Direction.REVERSE
+        drive!!.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
     }
+
+    override fun exists() = hardwareMap.dcMotor.contains("slide_drive")
 
     @JvmStatic @ExportToBlocks
     fun goToBase() {
-        drive?.targetPosition = base
+        drive!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        (drive as DcMotorEx).targetPositionTolerance = 0
+        drive!!.targetPosition = base
+        drive!!.mode = DcMotor.RunMode.RUN_TO_POSITION
     }
 
     @JvmStatic @ExportToBlocks
     fun goToCone() {
-        drive?.targetPosition = toCone
+        drive!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        (drive as DcMotorEx).targetPositionTolerance = 0
+        drive!!.targetPosition = toCone
+        drive!!.mode = DcMotor.RunMode.RUN_TO_POSITION
+        drive!!.power = 0.2
     }
 
     @JvmStatic @ExportToBlocks
     fun goToLow() {
-        drive?.targetPosition = low
+        drive!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        (drive as DcMotorEx).targetPositionTolerance = 0
+        drive!!.targetPosition = low
+        drive!!.mode = DcMotor.RunMode.RUN_TO_POSITION
+        drive!!.power = 0.2
     }
 
     @JvmStatic @ExportToBlocks
     fun goToMid() {
-        drive?.targetPosition = mid
+        drive!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        (drive as DcMotorEx).targetPositionTolerance = 0
+        drive!!.targetPosition = mid
+        drive!!.mode = DcMotor.RunMode.RUN_TO_POSITION
+        drive!!.power = 0.2
     }
 
     @JvmStatic @ExportToBlocks
-    fun isBusy() = drive?.isBusy ?: false;
+    fun isBusy() = drive!!.isBusy ?: false;
 }
