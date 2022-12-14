@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode
 
 import org.firstinspires.ftc.teamcode.util.CustomBlocksOpModeCompanion
+import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.robotcore.external.ExportToBlocks
 import com.qualcomm.robotcore.hardware.DigitalChannel
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -9,11 +10,13 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import kotlin.math.roundToInt
 
 object LinearSlide : CustomBlocksOpModeCompanion() {
-    var lowerLimit: DigitalChannel? = null;
-    var upperLimit: DigitalChannel? = null;
-    var drive: DcMotor? = null;
-    val ticksPerRevolution = 1425.1;
+    var lowerLimit: DigitalChannel? = null
+    var upperLimit: DigitalChannel? = null
+    var drive: DcMotor? = null
+    val ticksPerRevolution = 1425.1
     val motorPower = 0.4
+    val slowMotorPower = 0.2
+    private lateinit var gamepadManager: GamepadManager;
     
     fun Double.ticks(): Int {
         return (this * ticksPerRevolution).roundToInt()
@@ -23,6 +26,7 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
     val toCone = 0.5.ticks()
     val low = 3.5.ticks()
     val mid = 5.5.ticks()
+    val high = 8.0.ticks()
 
     @JvmStatic
     fun initHardware() {
@@ -31,45 +35,48 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
         drive = hardwareMap.dcMotor.get("slide_drive")
         drive!!.direction = DcMotorSimple.Direction.REVERSE
         drive!!.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+
+        gamepadManager = GamepadManager(gamepad2)
     }
 
     override fun exists() = hardwareMap.dcMotor.contains("slide_drive")
 
     @JvmStatic @ExportToBlocks
-    fun goToBase() {
+    fun goTo(ticks: Int) {
         drive!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
         (drive as DcMotorEx).targetPositionTolerance = 0
-        drive!!.targetPosition = base
+        drive!!.targetPosition = ticks
         drive!!.mode = DcMotor.RunMode.RUN_TO_POSITION
     }
 
-    @JvmStatic @ExportToBlocks
-    fun goToCone() {
-        drive!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        (drive as DcMotorEx).targetPositionTolerance = 0
-        drive!!.targetPosition = toCone
-        drive!!.mode = DcMotor.RunMode.RUN_TO_POSITION
-        drive!!.power = motorPower
-    }
-
-    @JvmStatic @ExportToBlocks
-    fun goToLow() {
-        drive!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        (drive as DcMotorEx).targetPositionTolerance = 0
-        drive!!.targetPosition = low
-        drive!!.mode = DcMotor.RunMode.RUN_TO_POSITION
-        drive!!.power = motorPower
-    }
-
-    @JvmStatic @ExportToBlocks
-    fun goToMid() {
-        drive!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        (drive as DcMotorEx).targetPositionTolerance = 0
-        drive!!.targetPosition = mid
-        drive!!.mode = DcMotor.RunMode.RUN_TO_POSITION
-        drive!!.power = motorPower
-    }
+    var power: Double
+        set(newPower) {
+            drive!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
+            drive!!.power = newPower
+        }
+        get() = drive!!.power
 
     @JvmStatic @ExportToBlocks
     fun isBusy() = drive!!.isBusy;
+
+    @JvmStatic @ExportToBlocks
+    fun controller() {
+        // dpad left - base
+        // dpad up - go up slowly
+        // dpad down - go down slowly
+        // a - cone
+        // x - low
+        // y - mid
+        // b - high
+        // TODO: use triggers/bumpers for manual control
+        gamepadManager.once("dpad_left") { goTo(base) }
+        gamepadManager.once("a") { goTo(toCone) }
+        gamepadManager.once("x") { goTo(low) }
+        gamepadManager.once("y") { goTo(mid) }
+        gamepadManager.once("b") { goTo(high) }
+        gamepadManager.once("left_bumper") { /* toggle claw */ }
+        gamepadManager.on("dpad_up") { power = slowMotorPower }
+        gamepadManager.on("dpad_down") { power = -slowMotorPower }
+        gamepadManager.off(listOf("dpad_up", "dpad_down")) { power = 0.0 }
+    }
 }

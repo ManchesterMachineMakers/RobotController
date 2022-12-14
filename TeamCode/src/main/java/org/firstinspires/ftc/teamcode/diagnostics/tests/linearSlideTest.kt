@@ -9,23 +9,27 @@ fun linearSlideTest(opMode: DiagnosticsOpMode) = describe<LinearSlide> { slides 
         while (slides.isBusy() && opMode.opModeIsActive());
     }
     it("runs to base") {
-        slides.goToBase()
+        slides.goTo(slides.base)
         wait()
     }
     it("runs to cone") {
-        slides.goToBase()
+        slides.goTo(slides.toCone)
         wait()
     }
     it("runs to low pole") {
-        slides.goToLow()
+        slides.goTo(slides.low)
         wait()
     }
     it("runs to medium pole") {
-        slides.goToMid()
+        slides.goTo(slides.mid)
+        wait()
+    }
+    it("runs to high pole") {
+        slides.goTo(slides.high)
         wait()
     }
     it("goes back to the bottom so we don't break it next time") {
-        slides.goToBase()
+        slides.goTo(slides.base)
         wait()
     }
 }
