@@ -12,7 +12,8 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
     var lowerLimit: DigitalChannel? = null;
     var upperLimit: DigitalChannel? = null;
     var drive: DcMotor? = null;
-    val ticksPerRevolution = 537.7;
+    val ticksPerRevolution = 1425.1;
+    val motorPower = 0.4
     
     fun Double.ticks(): Int {
         return (this * ticksPerRevolution).roundToInt()
@@ -48,7 +49,7 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
         (drive as DcMotorEx).targetPositionTolerance = 0
         drive!!.targetPosition = toCone
         drive!!.mode = DcMotor.RunMode.RUN_TO_POSITION
-        drive!!.power = 0.2
+        drive!!.power = motorPower
     }
 
     @JvmStatic @ExportToBlocks
@@ -57,7 +58,7 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
         (drive as DcMotorEx).targetPositionTolerance = 0
         drive!!.targetPosition = low
         drive!!.mode = DcMotor.RunMode.RUN_TO_POSITION
-        drive!!.power = 0.2
+        drive!!.power = motorPower
     }
 
     @JvmStatic @ExportToBlocks
@@ -66,9 +67,9 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
         (drive as DcMotorEx).targetPositionTolerance = 0
         drive!!.targetPosition = mid
         drive!!.mode = DcMotor.RunMode.RUN_TO_POSITION
-        drive!!.power = 0.2
+        drive!!.power = motorPower
     }
 
     @JvmStatic @ExportToBlocks
-    fun isBusy() = drive!!.isBusy ?: false;
+    fun isBusy() = drive!!.isBusy;
 }
