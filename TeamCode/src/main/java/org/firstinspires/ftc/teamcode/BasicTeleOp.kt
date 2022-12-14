@@ -18,7 +18,7 @@ class BasicTeleOp : LinearOpMode() {
         DriveBase.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER)
         waitForStart()
         if(opModeIsActive()) {
-            Arm.zero()
+            if(Arm.exists()) Arm.zero()
             while(opModeIsActive()) {
                 val r = hypot(gamepad1.left_stick_x, -gamepad1.left_stick_y);
                 val robotAngle = atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x) - Math.PI / 4;
@@ -30,7 +30,8 @@ class BasicTeleOp : LinearOpMode() {
 
                 DriveBase.go(doubleArrayOf(v1 / POWER_COEFFICIENT, v2 / POWER_COEFFICIENT, v3 / POWER_COEFFICIENT, v4 / POWER_COEFFICIENT))
 
-                Arm.controller()
+                if(Arm.exists()) Arm.controller()
+                if(LinearSlide.exists()) LinearSlide.controller()
             }
         }
     }
