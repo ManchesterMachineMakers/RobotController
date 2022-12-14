@@ -28,7 +28,7 @@ class BasicTeleOp : LinearOpMode() {
                 val v3 = r * sin(robotAngle) + rightX;
                 val v4 = r * cos(robotAngle) - rightX;
 
-                DriveBase.go(doubleArrayOf(-(v1 / POWER_COEFFICIENT), v2 / POWER_COEFFICIENT, -(v3 / POWER_COEFFICIENT), v4 / POWER_COEFFICIENT))
+                DriveBase.go(doubleArrayOf(v1 / POWER_COEFFICIENT, v2 / POWER_COEFFICIENT, v3 / POWER_COEFFICIENT, v4 / POWER_COEFFICIENT))
 
                 Arm.controller()
             }
