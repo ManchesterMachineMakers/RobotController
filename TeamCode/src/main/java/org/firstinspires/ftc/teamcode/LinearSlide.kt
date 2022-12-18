@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode
 import org.firstinspires.ftc.teamcode.util.CustomBlocksOpModeCompanion
 import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.robotcore.external.ExportToBlocks
+import org.firstinspires.ftc.robotcore.external.Telemetry
 import com.qualcomm.robotcore.hardware.DigitalChannel
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -16,6 +17,7 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
     val ticksPerRevolution = 1425.1
     val motorPower = 0.4
     val slowMotorPower = 0.2
+    var line: Telemetry.Item? = null
     private lateinit var gamepadManager: GamepadManager;
     
     fun Double.ticks(): Int {
@@ -69,6 +71,8 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
         // y - mid
         // b - high
         // TODO: use triggers/bumpers for manual control
+        line ?:= telemetry.addData("wasPressed", gamepadManager.wasPressed)
+        line?.setValue("wasPressed", gamepadManager.wasPressed)
         gamepadManager.once("dpad_left") { goTo(base) }
         gamepadManager.once("a") { goTo(toCone) }
         gamepadManager.once("x") { goTo(low) }
