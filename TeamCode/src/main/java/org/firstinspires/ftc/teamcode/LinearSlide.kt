@@ -71,7 +71,7 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
         // y - mid
         // b - high
         // TODO: use triggers/bumpers for manual control
-        line ?:= telemetry.addData("wasPressed", gamepadManager.wasPressed)
+        line = line ?: telemetry.addData("wasPressed", gamepadManager.wasPressed)
         line?.setValue("wasPressed", gamepadManager.wasPressed)
         gamepadManager.once("dpad_left") { goTo(base) }
         gamepadManager.once("a") { goTo(toCone) }
