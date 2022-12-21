@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
+import com.qualcomm.robotcore.util.RobotLog
 import kotlin.math.roundToInt
 
 object LinearSlide : CustomBlocksOpModeCompanion() {
@@ -17,7 +18,6 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
     val ticksPerRevolution = 1425.1
     val motorPower = 0.4
     val slowMotorPower = 0.2
-    var line: Telemetry.Item? = null
     private lateinit var gamepadManager: GamepadManager;
     
     fun Double.ticks(): Int {
@@ -25,9 +25,9 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
     }
 
     val base = 0.0.ticks()
-    val toCone = 0.5.ticks()
+    val toCone = 0.47.ticks()
     val low = 3.5.ticks()
-    val mid = 5.5.ticks()
+    val mid = 5.65.ticks()
     val high = 8.0.ticks()
 
     @JvmStatic
@@ -46,9 +46,10 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
     @JvmStatic @ExportToBlocks
     fun goTo(ticks: Int) {
         drive!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        (drive as DcMotorEx).targetPositionTolerance = 0
+        (drive as DcMotorEx).targetPositionTolerance = 1
         drive!!.targetPosition = ticks
         drive!!.mode = DcMotor.RunMode.RUN_TO_POSITION
+        drive!!.power = motorPower
     }
 
     var power: Double
@@ -71,8 +72,6 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
         // y - mid
         // b - high
         // TODO: use triggers/bumpers for manual control
-        line = line ?: telemetry.addData("wasPressed", gamepadManager.wasPressed)
-        line?.setValue("wasPressed", gamepadManager.wasPressed)
         gamepadManager.once("dpad_left") { goTo(base) }
         gamepadManager.once("a") { goTo(toCone) }
         gamepadManager.once("x") { goTo(low) }
