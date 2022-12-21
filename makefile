@@ -1,5 +1,5 @@
-.DEFAULT_TARGET := all
-all:
-	@./builder.sh build
-install:
-	@./builder.sh install
+.DEFAULT_TARGET := build
+build: TeamCode
+	./gradlew assembleDebug
+install: TeamCode
+	./gradlew installDebug
