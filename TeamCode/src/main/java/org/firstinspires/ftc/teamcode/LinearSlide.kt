@@ -1,23 +1,24 @@
 package org.firstinspires.ftc.teamcode
 
+import com.qualcomm.robotcore.hardware.*
 import org.firstinspires.ftc.teamcode.util.CustomBlocksOpModeCompanion
 import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.robotcore.external.ExportToBlocks
 import org.firstinspires.ftc.robotcore.external.Telemetry
-import com.qualcomm.robotcore.hardware.DigitalChannel
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorEx
-import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.util.RobotLog
+import org.firstinspires.ftc.teamcode.util.equalsTolerance
 import kotlin.math.roundToInt
 
 object LinearSlide : CustomBlocksOpModeCompanion() {
     var lowerLimit: DigitalChannel? = null
     var upperLimit: DigitalChannel? = null
     var drive: DcMotor? = null
+    var clawServo: Servo? = null
     val ticksPerRevolution = 1425.1
     val motorPower = 0.4
     val slowMotorPower = 0.2
+    val clawClosedPos = 0.336
+    val clawOpenPos = 0.239
     private lateinit var gamepadManager: GamepadManager;
     
     fun Double.ticks(): Int {
@@ -38,7 +39,23 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
         drive!!.direction = DcMotorSimple.Direction.REVERSE
         drive!!.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
 
+        clawServo = hardwareMap.servo.get("claw_servo")
+        openClaw()
+
         gamepadManager = GamepadManager(gamepad2)
+    }
+
+    fun openClaw() {
+        clawServo?.position = clawOpenPos
+    }
+
+    fun closeClaw() {
+        clawServo?.position = clawClosedPos
+    }
+
+    fun toggleClaw() {
+        if(clawServo?.position?.equalsTolerance(clawOpenPos, 0.05) == true) closeClaw()
+        else openClaw()
     }
 
     override fun exists() = hardwareMap.dcMotor.contains("slide_drive")
@@ -77,7 +94,7 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
         gamepadManager.once("x") { goTo(low) }
         gamepadManager.once("y") { goTo(mid) }
         gamepadManager.once("b") { goTo(high) }
-        gamepadManager.once("left_bumper") { /* toggle claw */ }
+        gamepadManager.once("left_bumper") { toggleClaw() }
         gamepadManager.on("dpad_up") { power = slowMotorPower }
         gamepadManager.on("dpad_down") { power = -slowMotorPower }
         gamepadManager.off(listOf("dpad_up", "dpad_down")) { power = 0.0 }
