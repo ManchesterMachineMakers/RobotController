@@ -24,7 +24,6 @@ abstract class DiagnosticsOpMode(
     @Throws(InterruptedException::class)
     override fun runOpMode() {
         RobotConfig.initHardwareMaps(hardwareMap, gamepad1, gamepad2)
-        RobotConfig.init()
         val runner = Runner(tests.map { it(this) }.toTypedArray(), RobotLogger())
         RobotLog.i("16221 Diagnostics Opmode: Initialization complete.")
         telemetry.addLine("Initialized.")

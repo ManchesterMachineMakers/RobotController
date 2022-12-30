@@ -10,8 +10,7 @@ object ArmClaw : CustomBlocksOpModeCompanion() {
     override fun exists()
         = hardwareMap.servo.contains("clawServo") && hardwareMap.servo.contains("wristServo")
 
-    @JvmStatic
-    fun initHardware() {
+    override fun initHardware() {
         clawServo = hardwareMap.servo.get("clawServo")
         wristServo = hardwareMap.servo.get("wristServo")
         wristServo.scaleRange(0.22, 0.4)

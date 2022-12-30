@@ -31,8 +31,7 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
     val mid = 5.65.ticks()
     val high = 8.0.ticks()
 
-    @JvmStatic
-    fun initHardware() {
+    override fun initHardware() {
         //TODO: set lower limit switch
         //TODO: set upper limit switch
         drive = hardwareMap.dcMotor.get("slide_drive")

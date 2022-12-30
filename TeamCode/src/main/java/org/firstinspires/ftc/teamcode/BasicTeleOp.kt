@@ -14,7 +14,6 @@ public const val POWER_COEFFICIENT = 1.2
 class BasicTeleOp : LinearOpMode() {
     override fun runOpMode() {
         RobotConfig.initHardwareMaps(hardwareMap, gamepad1, gamepad2)
-        RobotConfig.init()
         DriveBase.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER)
         DriveBase.setTravelDirection(DriveBase.TravelDirection.base)
         waitForStart()
