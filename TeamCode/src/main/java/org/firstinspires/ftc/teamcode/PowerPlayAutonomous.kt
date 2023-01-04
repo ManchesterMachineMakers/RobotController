@@ -79,7 +79,6 @@ class PowerPlayAutonomous : LinearOpMode() {
 
     override fun runOpMode() {
         RobotConfig.initHardwareMaps(hardwareMap, gamepad1, gamepad2)
-        RobotConfig.init()
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         initVuforia()

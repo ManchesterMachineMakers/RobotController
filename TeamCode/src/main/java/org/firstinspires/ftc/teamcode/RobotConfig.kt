@@ -17,14 +17,22 @@ object RobotConfig : BlocksOpModeCompanion() {
         for (subassembly in allSubassemblies()) {
             CustomBlocksOpModeCompanion.setHardwareMap(subassembly::class.java, hardwareMap, gamepad1, gamepad2)
         }
+        init()
+        for(subassembly in allSubassemblies()) {
+            try {
+                if(subassembly.exists()) subassembly.initHardware();
+            } catch (_: Throwable) {
+                // no initialization required
+            }
+        }
     }
 
     fun fullRobot() {
-        DriveBase.use(org.firstinspires.ftc.teamcode.util.drivebase.config.mecanum)
+        if(DriveBase.exists()) DriveBase.use(org.firstinspires.ftc.teamcode.util.drivebase.config.mecanum)
     }
 
     fun programmingBoard() {
-        DriveBase.use(org.firstinspires.ftc.teamcode.util.drivebase.config.programmingBoard)
+        if(DriveBase.exists()) DriveBase.use(org.firstinspires.ftc.teamcode.util.drivebase.config.programmingBoard)
     }
 
     @ExportToBlocks(

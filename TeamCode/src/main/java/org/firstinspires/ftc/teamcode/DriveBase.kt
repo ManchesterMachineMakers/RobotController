@@ -112,11 +112,7 @@ object DriveBase : CustomBlocksOpModeCompanion() {
      * Initialize all motors to run using encoders.
      * Set travel to forward and power to  0.
      */
-    @ExportToBlocks(
-        comment = "Initialize all motors to run using encoders. Set travel to forward and power to 0."
-    )
-    @JvmStatic
-    fun initHardware() {
+    override fun initHardware() {
 
         // Output all configuration information for the drive base.
         RobotLog.i("*******  Drive Base Configuration *******")
