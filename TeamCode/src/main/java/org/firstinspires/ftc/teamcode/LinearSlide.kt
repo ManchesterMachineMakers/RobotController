@@ -15,8 +15,8 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
     var drive: DcMotor? = null
     var clawServo: Servo? = null
     val ticksPerRevolution = 1425.1
-    val motorPower = 0.6
-    val slowMotorPower = 0.2
+    val motorPower = 0.8
+    val slowMotorPower = 0.4
     val clawClosedPos = 0.336
     val clawOpenPos = 0.239
     private lateinit var gamepadManager: GamepadManager;
