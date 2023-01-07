@@ -31,12 +31,15 @@ package org.firstinspires.ftc.teamcode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
+import org.firstinspires.ftc.robotcore.external.android.util.Size
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 import org.firstinspires.ftc.teamcode.PowerPlayAutonomous
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.ClassFactory
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl
 import org.firstinspires.ftc.teamcode.util.pathfinder.Path
 import org.firstinspires.ftc.teamcode.util.pathfinder.Segment
 import org.firstinspires.ftc.teamcode.util.tfod.TimeoutObjectDetector
@@ -130,6 +133,18 @@ class PowerPlayAutonomous : LinearOpMode() {
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters)
+        val cameraCalibration = vuforia?.cameraCalibration
+        if (cameraCalibration != null) {
+            // weirdly, recognitions are more accurate with less resolution on the camera.
+            val cameraSize = cameraCalibration.size
+            cameraCalibration.scaledTo(Size(cameraSize.width/2, cameraSize.height/2))
+        }
+        // focal length doesn't seem to make a big difference.
+        //val focusControl = vuforia?.camera?.getControl(FocusControl::class.java)
+        //if (focusControl != null) {
+        //    focusControl.focusLength = 11.3
+        //    RobotLog.i("Focus Length", 11.3)
+        //}
     }
 
     /**
