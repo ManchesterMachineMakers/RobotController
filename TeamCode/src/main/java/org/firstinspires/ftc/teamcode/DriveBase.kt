@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode
 import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior
@@ -674,7 +675,10 @@ object DriveBase : CustomBlocksOpModeCompanion() {
                     TravelDirection.base
                 }
             })
+            setPositionTolerance(1)
             setTargetPositions(hypot(segment.xTicks, segment.yTicks).toInt())
+            setRunMode(RunMode.RUN_TO_POSITION)
+            go(0.2)
             while(isBusy()) {}
         }
     }

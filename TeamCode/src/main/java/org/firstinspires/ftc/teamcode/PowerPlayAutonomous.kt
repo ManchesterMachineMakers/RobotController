@@ -53,18 +53,6 @@ import org.firstinspires.ftc.teamcode.util.tfod.TimeoutObjectDetector
  */
 @TeleOp(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
 class PowerPlayAutonomous : LinearOpMode() {
-    val mmPerBlock = 609F
-    val path0 = Path(
-        Segment(-mmPerBlock, 0F),
-        Segment(0F, mmPerBlock)
-    )
-    val path1 = Path(
-        Segment(0F, mmPerBlock)
-    )
-    val path2 = Path(
-        Segment(mmPerBlock, 0F),
-        Segment(0F, mmPerBlock)
-    )
     /**
      * [.vuforia] is the variable we will use to store our instance of the Vuforia
      * localization engine.
@@ -108,18 +96,22 @@ class PowerPlayAutonomous : LinearOpMode() {
             when(detection?.side) {
                 0 -> {
                     telemetry.addLine("Side 0 detected")
+                    telemetry.update()
                     DriveBase.runPath(path0)
                 }
                 1 -> {
                     telemetry.addLine("Side 1 detected")
+                    telemetry.update()
                     DriveBase.runPath(path1)
                 }
                 2 -> {
                     telemetry.addLine("Side 2 detected")
+                    telemetry.update()
                     DriveBase.runPath(path2)
                 }
                 else -> {
                     telemetry.addLine("Nothing detected.")
+                    telemetry.update()
                 }
             }
         }
@@ -189,5 +181,18 @@ class PowerPlayAutonomous : LinearOpMode() {
      * and paste it in to your code on the next line, between the double quotes.
      */
         private const val VUFORIA_KEY = "Afbp4I3/////AAABmcEn57recUnKv/3EHsAO+jkAFD02oVRghZ8yX5DjgOIvkxO1ipG/fb3GeprYO+Bp6AVbmvW7ts21c71ldDDS8caXYkWTGpFaJ0CyMMfqJQnUabNsH7/sQjh99KlSOi+dOo75AuLUjuLO3nIksEFYpQ3Q8lAGl0ihH3npeTmO9X9KOTV2NJTNKEXZ3mXxBa8xEs9ZYhQy/ppkpExORmc6R+FJYnyykaTaFaXwdKg/R9LZnPQcLwuDD0EnoYlj74qOwVsekUfKxttKMb+FtFlgYm8pmXI5jqQdyidpSHUQn08G1EvqZBN/iuHWCDVhXP2zFRWcQdTEGltwsg47w/IJuLzFvsz04HEqyBz2Xh9eAbAn"
+
+        val mmPerBlock = 609F
+        val path0 = Path(
+            Segment(-mmPerBlock, 0F),
+            Segment(0F, mmPerBlock)
+        )
+        val path1 = Path(
+            Segment(0F, mmPerBlock)
+        )
+        val path2 = Path(
+            Segment(mmPerBlock, 0F),
+            Segment(0F, mmPerBlock)
+        )
     }
 }

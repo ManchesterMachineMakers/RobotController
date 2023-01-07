@@ -28,11 +28,11 @@ object RobotConfig : BlocksOpModeCompanion() {
     }
 
     fun fullRobot() {
-        if(DriveBase.exists()) DriveBase.use(org.firstinspires.ftc.teamcode.util.drivebase.config.mecanum)
+        try { DriveBase.use(org.firstinspires.ftc.teamcode.util.drivebase.config.mecanum) } catch(_: Throwable) {}
     }
 
     fun programmingBoard() {
-        if(DriveBase.exists()) DriveBase.use(org.firstinspires.ftc.teamcode.util.drivebase.config.programmingBoard)
+        try { DriveBase.use(org.firstinspires.ftc.teamcode.util.drivebase.config.programmingBoard) } catch(_: Throwable) {}
     }
 
     @ExportToBlocks(

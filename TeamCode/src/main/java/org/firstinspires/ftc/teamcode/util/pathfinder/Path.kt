@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.util.pathfinder
 
+import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.teamcode.DriveBase
 
 /**
