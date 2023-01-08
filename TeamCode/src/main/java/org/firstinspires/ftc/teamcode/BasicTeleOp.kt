@@ -16,6 +16,8 @@ class BasicTeleOp : LinearOpMode() {
         RobotConfig.initHardwareMaps(hardwareMap, gamepad1, gamepad2)
         DriveBase.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER)
         DriveBase.setTravelDirection(DriveBase.TravelDirection.base)
+        telemetry.addLine("Connected hardware: ${RobotConfig.allConnected().map { it.javaClass.simpleName }.joinToString(", ")}")
+        telemetry.update()
         waitForStart()
         if(opModeIsActive()) {
             if(Arm.exists()) Arm.zero()

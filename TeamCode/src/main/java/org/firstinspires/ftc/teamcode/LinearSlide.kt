@@ -65,7 +65,7 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
         (drive as DcMotorEx).targetPositionTolerance = 1
         drive!!.targetPosition = ticks
         drive!!.mode = DcMotor.RunMode.RUN_TO_POSITION
-        drive!!.power = motorPower
+        drive!!.power = if (ticks < drive!!.currentPosition) slowMotorPower else motorPower // make it harder to break the slides going down
     }
 
     var power: Double
