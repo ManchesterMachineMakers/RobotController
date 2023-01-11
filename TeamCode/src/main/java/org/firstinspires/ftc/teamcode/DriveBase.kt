@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.ExportToBlocks
 import org.firstinspires.ftc.teamcode.util.Conversions
 import org.firstinspires.ftc.teamcode.util.CustomBlocksOpModeCompanion
 import org.firstinspires.ftc.teamcode.util.pathfinder.Path
+import org.firstinspires.ftc.teamcode.util.mecanumCoefficientsForDirection
 import kotlin.math.asin
 import kotlin.math.cos
 import kotlin.math.hypot
@@ -39,7 +40,9 @@ object DriveBase : CustomBlocksOpModeCompanion() {
      * A predefined set of travel directions. Set motor configurations for each direction in Configuration.init().
      */
     enum class TravelDirection {
-        base, forward, reverse, pivotLeft, pivotRight, strafeLeft, strafeLeftForward, strafeLeftBackward, strafeRight, strafeRightForward, strafeRightBackward, pitch
+        base, forward, reverse, pivotLeft, pivotRight, strafeLeft, strafeLeftForward, strafeLeftBackward, strafeRight, strafeRightForward, strafeRightBackward, 
+        @Deprecated("Newer drive bases do not support pitching")
+        pitch
     }
 
     class Configuration(motors: Array<String>, val config: HashMap<TravelDirection, Array<DcMotorSimple.Direction?>>) {
@@ -653,8 +656,7 @@ object DriveBase : CustomBlocksOpModeCompanion() {
     fun runPath(path: Path) {
         for (segment in path) {
             setRunMode(RunMode.STOP_AND_RESET_ENCODER)
-            setRunMode(RunMode.RUN_USING_ENCODER)
-            setTravelDirection(with(segment) {
+            val coefficients = mecanumCoefficientsForDirection(with(segment) {
                 if(x < 0 && y < 0) {
                     TravelDirection.strafeLeftBackward
                 } else if(x < 0 && y > 0) {
@@ -675,10 +677,7 @@ object DriveBase : CustomBlocksOpModeCompanion() {
                     TravelDirection.base
                 }
             })
-            setPositionTolerance(1)
-            setTargetPositions(hypot(segment.xTicks, segment.yTicks).toInt())
-            setRunMode(RunMode.RUN_TO_POSITION)
-            go(0.2)
+            go(0.2, coefficients.map { coefficient -> (coefficient * hypot(segment.xTicks, segment.yTicks)).toInt() } as IntArray, 1)
             while(isBusy()) {}
         }
     }
