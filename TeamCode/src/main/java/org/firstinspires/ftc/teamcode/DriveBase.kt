@@ -512,7 +512,7 @@ object DriveBase : CustomBlocksOpModeCompanion() {
         tolerance: Int
     ): Double {
         val driveConfiguration = getMotorConfigurations(travelDirection)!!
-        val wheelEncoderTicks = IntArray(driveConfiguration.size)
+        val wheelEncoderTicks = Array<Int>(driveConfiguration.size, { 0 })
         val motors = getMotors()!!
         for (i in motors.indices) {
             wheelEncoderTicks[i] =
@@ -528,7 +528,7 @@ object DriveBase : CustomBlocksOpModeCompanion() {
      * @param tolerance the tolerance to set on each motor
      */
     @ExportToBlocks(parameterLabels = ["Power", "Encoder Ticks", "Tolerance"]) @JvmStatic
-    fun go(power: Double, encoderTicks: IntArray, tolerance: Int): Double {
+    fun go(power: Double, encoderTicks: Array<Int>, tolerance: Int): Double {
         val currentPositions = getEncoderPositions()
         RobotLog.i("Current Positions when driving ticks: $currentPositions")
         RobotLog.i("Power: $power Encoder Ticks: $encoderTicks")
@@ -677,7 +677,7 @@ object DriveBase : CustomBlocksOpModeCompanion() {
                     TravelDirection.base
                 }
             })
-            go(0.2, coefficients.map { coefficient -> (coefficient * hypot(segment.xTicks, segment.yTicks)).toInt() } as IntArray, 1)
+            go(0.2, coefficients.map { coefficient -> (coefficient * hypot(segment.xTicks, segment.yTicks)).toInt() }.toTypedArray(), 1)
             while(isBusy()) {}
         }
     }
