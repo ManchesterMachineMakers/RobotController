@@ -14,4 +14,7 @@ data class Segment(val x: Float, val y: Float) {
 
 class Path(private vararg val segments: Segment) : Iterable<Segment> {
     override fun iterator() = segments.iterator()
+    companion object {
+        val mmPerBlock = 609F
+    }
 }

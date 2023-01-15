@@ -9,18 +9,16 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion
 import org.firstinspires.ftc.robotcore.external.ExportToBlocks
-import org.firstinspires.ftc.teamcode.util.Conversions
-import org.firstinspires.ftc.teamcode.util.CustomBlocksOpModeCompanion
+import org.firstinspires.ftc.teamcode.util.*
 import org.firstinspires.ftc.teamcode.util.pathfinder.Path
-import org.firstinspires.ftc.teamcode.util.mecanumCoefficientsForDirection
-import kotlin.math.asin
-import kotlin.math.cos
-import kotlin.math.hypot
-import kotlin.math.sin
+import org.firstinspires.ftc.teamcode.util.pathfinder.Path.Companion.mmPerBlock
+import org.firstinspires.ftc.teamcode.util.pathfinder.Segment
+import kotlin.math.*
 
 object DriveBase : CustomBlocksOpModeCompanion() {
 
     private var config: Configuration? = null
+    private lateinit var gamepadManager: GamepadManager
 
     @JvmStatic
     fun use(config: Configuration) {
@@ -74,6 +72,22 @@ object DriveBase : CustomBlocksOpModeCompanion() {
     var motorEncoderEventsPerMM = motorRotationsPerMM * motorEncoderEventsPerRotation
 
     var maxPower = 1.0 // range of 0 to 1
+
+    private var shouldCancelPath = false
+    private var isRunningPath = false
+    private var pendingPaths = mutableListOf<Path>()
+
+    fun cancelPath() {
+        shouldCancelPath = true
+        pendingPaths.clear()
+    }
+
+    fun runPendingPaths() {
+        for (path in pendingPaths) {
+            pendingPaths.remove(path)
+            runPath(path)
+        }
+    }
     /**
      * Returns the defined array of directions for motors, as set in the initMotorConfigurations method.
      * @param travelDirection which direction the bot should travel
@@ -140,6 +154,8 @@ object DriveBase : CustomBlocksOpModeCompanion() {
 
         // set motor power to 0.
         stop()
+
+        gamepadManager = GamepadManager(gamepad1)
     }
 
     /**
@@ -654,6 +670,7 @@ object DriveBase : CustomBlocksOpModeCompanion() {
     //TODO: Get Isaac's encoder value for MM routine.
 
     fun runPath(path: Path) {
+        isRunningPath = true
         for (segment in path) {
             setRunMode(RunMode.STOP_AND_RESET_ENCODER)
             val coefficients = mecanumCoefficientsForDirection(with(segment) {
@@ -678,7 +695,41 @@ object DriveBase : CustomBlocksOpModeCompanion() {
                 }
             })
             go(0.2, coefficients.map { coefficient -> (coefficient * hypot(segment.xTicks, segment.yTicks)).toInt() }.toTypedArray(), 1)
-            while(isBusy()) {}
+            while(isBusy() && !shouldCancelPath) {}
+            shouldCancelPath = false
+            setRunMode(RunMode.RUN_WITHOUT_ENCODER)
+            go(0.0)
+            isRunningPath = false
+        }
+    }
+
+    fun controller() {
+        val r = hypot(gamepad1.left_stick_x, -gamepad1.left_stick_y);
+        val robotAngle = atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x) - Math.PI / 4;
+        val rightX = gamepad1.right_stick_x;
+        val v1 = r * cos(robotAngle) + rightX;
+        val v2 = r * sin(robotAngle) - rightX;
+        val v3 = r * sin(robotAngle) + rightX;
+        val v4 = r * cos(robotAngle) - rightX;
+        if(!isRunningPath || !(v1.equalsTolerance(0.0, 0.1) && v2.equalsTolerance(0.0, 0.1) && v3.equalsTolerance(0.0, 0.1) && v4.equalsTolerance(0.0, 0.1))) {
+            cancelPath()
+            go(doubleArrayOf(v1 / POWER_COEFFICIENT, v2 / POWER_COEFFICIENT, v3 / POWER_COEFFICIENT, v4 / POWER_COEFFICIENT))
+        }
+
+        gamepadManager.once("dpad_up") {
+            pendingPaths.add(Path(Segment(0F, mmPerBlock)))
+        }
+        gamepadManager.once("dpad_down") {
+            pendingPaths.add(Path(Segment(0F, -mmPerBlock)))
+        }
+        gamepadManager.once("dpad_left") {
+            pendingPaths.add(Path(Segment(-mmPerBlock, 0F)))
+        }
+        gamepadManager.once("dpad_right") {
+            pendingPaths.add(Path(Segment(mmPerBlock, 0F)))
+        }
+        gamepadManager.once("x") {
+            runPendingPaths()
         }
     }
 }
