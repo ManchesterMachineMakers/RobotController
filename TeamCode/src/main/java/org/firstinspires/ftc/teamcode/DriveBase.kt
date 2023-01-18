@@ -711,8 +711,10 @@ object DriveBase : CustomBlocksOpModeCompanion() {
         val v2 = r * sin(robotAngle) - rightX;
         val v3 = r * sin(robotAngle) + rightX;
         val v4 = r * cos(robotAngle) - rightX;
-        if(!isRunningPath || !(v1.equalsTolerance(0.0, 0.1) && v2.equalsTolerance(0.0, 0.1) && v3.equalsTolerance(0.0, 0.1) && v4.equalsTolerance(0.0, 0.1))) {
+        if(!(v1.equalsTolerance(0.0, 0.1) && v2.equalsTolerance(0.0, 0.1) && v3.equalsTolerance(0.0, 0.1) && v4.equalsTolerance(0.0, 0.1))) {
             cancelPath()
+        }
+        if(!isRunningPath) {
             go(doubleArrayOf(v1 / POWER_COEFFICIENT, v2 / POWER_COEFFICIENT, v3 / POWER_COEFFICIENT, v4 / POWER_COEFFICIENT))
         }
 
