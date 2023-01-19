@@ -10,8 +10,9 @@ import org.firstinspires.ftc.teamcode.util.equalsTolerance
 import kotlin.math.roundToInt
 
 object LinearSlide : CustomBlocksOpModeCompanion() {
-    var lowerLimit: DigitalChannel? = null
-    var upperLimit: DigitalChannel? = null
+    // lateinit var lowerLimit: DigitalChannel
+    // lateinit var upperLimit: DigitalChannel
+    // lateinit var touchSensor: TouchSensor
     var drive: DcMotor? = null
     var clawServo: Servo? = null
     val ticksPerRevolution = 1425.1
@@ -32,8 +33,9 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
     val high = 8.0.ticks()
 
     override fun initHardware() {
-        //TODO: set lower limit switch
-        //TODO: set upper limit switch
+        // lowerLimit = hardwareMap.digitalChannel.get("")
+        // upperLimit = hardwareMap.digitalChannel.get("")
+        // touchSensor = hardwareMap.touchSensor.get("")
         drive = hardwareMap.dcMotor.get("slide_drive")
         drive!!.direction = DcMotorSimple.Direction.REVERSE
         drive!!.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -61,6 +63,7 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
 
     @JvmStatic @ExportToBlocks
     fun goTo(ticks: Int) {
+        // if ((ticks < drive!!.currentPosition && lowerLimit.state) || (ticks > drive!!.currentPosition && upperLimit.state)) return;
         drive!!.mode = DcMotor.RunMode.RUN_USING_ENCODER
         (drive as DcMotorEx).targetPositionTolerance = 1
         drive!!.targetPosition = ticks
@@ -97,5 +100,7 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
         gamepadManager.on("dpad_up") { power = slowMotorPower }
         gamepadManager.on("dpad_down") { power = -slowMotorPower }
         gamepadManager.off(listOf("dpad_up", "dpad_down")) { power = 0.0 }
+        // if((upperLimit.state && power > 0) || (lowerLimit.state && power < 0)) power = 0.0
+        // if(touchSensor.isPressed && drive!!.targetPosition < drive!!.currentPosition) drive!!.targetPosition = drive!!.currentPosition;
     }
 }
