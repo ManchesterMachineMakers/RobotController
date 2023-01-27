@@ -14,6 +14,7 @@ public const val POWER_COEFFICIENT = 1.2
 class BasicTeleOp : LinearOpMode() {
     override fun runOpMode() {
         RobotConfig.initHardwareMaps(hardwareMap, gamepad1, gamepad2)
+        if(LinearSlide.exists()) LinearSlide.initHardware()
         DriveBase.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER)
         DriveBase.setTravelDirection(DriveBase.TravelDirection.base)
         telemetry.addLine("Connected hardware: ${RobotConfig.allConnected().map { it.javaClass.simpleName }.joinToString(", ")}")
