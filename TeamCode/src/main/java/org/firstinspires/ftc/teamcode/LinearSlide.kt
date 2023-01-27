@@ -100,7 +100,7 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
         gamepadManager.on("dpad_up") { power = slowMotorPower }
         gamepadManager.on("dpad_down") { power = -slowMotorPower }
         gamepadManager.off(listOf("dpad_up", "dpad_down")) { power = 0.0 }
-        telemetry.addLine("Upper limit: $upperMagnetic.state, lower limit: $upperBump.state")
+        telemetry.addLine("Upper magnetic: $upperMagnetic.state, upper bump: $upperBump.state")
         // if((upperLimit.state && power > 0) || (lowerLimit.state && power < 0)) power = 0.0
         if(touchSensor.isPressed && drive!!.targetPosition < drive!!.currentPosition) drive!!.targetPosition = drive!!.currentPosition;
     }
