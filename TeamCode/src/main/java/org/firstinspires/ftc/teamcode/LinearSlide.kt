@@ -13,6 +13,7 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
     lateinit var upperMagnetic: DigitalChannel
     lateinit var upperBump: DigitalChannel
     lateinit var touchSensor: TouchSensor
+    var limitStatus: Telemetry.Item? = null
     var drive: DcMotor? = null
     var clawServo: Servo? = null
     val ticksPerRevolution = 1425.1
@@ -100,7 +101,9 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
         gamepadManager.on("dpad_up") { power = slowMotorPower }
         gamepadManager.on("dpad_down") { power = -slowMotorPower }
         gamepadManager.off(listOf("dpad_up", "dpad_down")) { power = 0.0 }
-        telemetry.addLine("Upper magnetic: $upperMagnetic.state, upper bump: $upperBump.state")
+
+        if(limitStatus == null) limitStatus = telemetry.addData("Limit Status", { -> "Upper magnetic: $upperMagnetic.state, upper bump: $upperBump.state" }) 
+        telemetry.update()
         // if((upperLimit.state && power > 0) || (lowerLimit.state && power < 0)) power = 0.0
         if(touchSensor.isPressed && drive!!.targetPosition < drive!!.currentPosition) drive!!.targetPosition = drive!!.currentPosition;
     }
