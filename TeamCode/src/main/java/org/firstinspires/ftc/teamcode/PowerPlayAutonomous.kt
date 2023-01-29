@@ -28,18 +28,13 @@
  */
 package org.firstinspires.ftc.teamcode
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import com.qualcomm.robotcore.eventloop.opmode.Disabled
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 import org.firstinspires.ftc.robotcore.external.android.util.Size
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition
-import org.firstinspires.ftc.teamcode.PowerPlayAutonomous
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.robotcore.external.ClassFactory
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl
 import org.firstinspires.ftc.teamcode.util.pathfinder.Path
 import org.firstinspires.ftc.teamcode.util.pathfinder.Segment
 import org.firstinspires.ftc.teamcode.util.tfod.TimeoutObjectDetector
@@ -54,7 +49,7 @@ import org.firstinspires.ftc.teamcode.util.tfod.TimeoutObjectDetector
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@TeleOp(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
+@Autonomous(name = "Power Play Autonomous - Driving Only", group = "Autonomous", preselectTeleOp = "Basic TeleOp")
 class PowerPlayAutonomous : LinearOpMode() {
     /**
      * [.vuforia] is the variable we will use to store our instance of the Vuforia
