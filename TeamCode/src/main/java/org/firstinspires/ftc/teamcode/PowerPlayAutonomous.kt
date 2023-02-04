@@ -65,6 +65,7 @@ class PowerPlayAutonomous : LinearOpMode() {
 
     override fun runOpMode() {
         RobotConfig.initHardwareMaps(this)
+        Blinkin.autonomousDefault()
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         initVuforia()
@@ -89,8 +90,10 @@ class PowerPlayAutonomous : LinearOpMode() {
         telemetry.update()
         waitForStart()
         if (opModeIsActive()) {
+            Blinkin.detecting()
             val detector = TimeoutObjectDetector(tfod!!)
             val detection = detector.detect(this)
+            Blinkin.autonomousAction()
             when(detection?.side) {
                 0 -> {
                     telemetry.addLine("Side 0 detected")
