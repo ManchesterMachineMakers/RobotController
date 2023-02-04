@@ -73,7 +73,7 @@ class Blinkin : CustomBlocksOpModeCompanion() {
      */
     fun alertThenReset() {
         try {
-            Thread.sleep(alertLengthMilliseconds);
+            linearOpMode.sleep(alertLengthMilliseconds)
         } catch (ex: InterruptedException) {
             // do nothing, just move on.
         }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion
@@ -13,9 +14,9 @@ object RobotConfig : BlocksOpModeCompanion() {
 
     fun allConnected() = allSubassemblies().filter { it.exists() }.toTypedArray()
 
-    fun initHardwareMaps(hardwareMap: HardwareMap, gamepad1: Gamepad, gamepad2: Gamepad) {
+    fun initHardwareMaps(opMode: LinearOpMode) {
         for (subassembly in allSubassemblies()) {
-            CustomBlocksOpModeCompanion.setHardwareMap(subassembly::class.java, hardwareMap, gamepad1, gamepad2)
+            CustomBlocksOpModeCompanion.initProperties(subassembly::class.java, opMode)
         }
         init()
         for(subassembly in allSubassemblies()) {
