@@ -17,7 +17,10 @@ import kotlin.reflect.KFunction1
 
 abstract class DiagnosticsOpMode(
         vararg val tests: KFunction1<DiagnosticsOpMode, Pair<Class<out Any>, (Array<Subject>, Runner) -> Test>> = arrayOf(
-                ::linearSlideTest
+                ::linearSlideTest,
+                ::pathfindingTest,
+                ::blinkinTest,
+                ::diagnosticTest
         )
 ) : LinearOpMode() {
     open fun provides(): Array<Subject> = RobotConfig.allConnected().map { it }.toTypedArray()

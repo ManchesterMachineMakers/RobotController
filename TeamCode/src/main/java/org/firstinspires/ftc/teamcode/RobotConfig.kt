@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.util.CustomBlocksOpModeCompanion
 
 object RobotConfig : BlocksOpModeCompanion() {
 
-    fun allSubassemblies() = arrayOf(DriveBase, Arm, LinearSlide)
+    fun allSubassemblies() = arrayOf(DriveBase, Arm, LinearSlide, Blinkin)
 
     fun allConnected() = allSubassemblies().filter { it.exists() }.toTypedArray()
 
