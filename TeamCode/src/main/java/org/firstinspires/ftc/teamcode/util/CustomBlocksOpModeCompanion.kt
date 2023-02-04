@@ -13,13 +13,13 @@ abstract class CustomBlocksOpModeCompanion : BlocksOpModeCompanion(), Subject {
 
     open fun initHardware() {}
     companion object {
-        fun <T : CustomBlocksOpModeCompanion> initProperties(thing: Class<T>, opMode: LinearOpMode) {
-            thing.getField("hardwareMap").set(null, opMode.hardwareMap)
-            thing.getField("gamepad1").set(null, opMode.gamepad1)
-            thing.getField("gamepad2").set(null, opMode.gamepad2)
-            thing.getField("opMode").set(null, opMode)
-            thing.getField("linearOpMode").set(null, opMode)
-            thing.getField("telemetry").set(null, opMode.telemetry)
+        fun <T : CustomBlocksOpModeCompanion> initProperties(thing: T, opMode: LinearOpMode) {
+            thing::class.java.getField("gamepad1")    .set(thing, opMode.gamepad1)
+            thing::class.java.getField("hardwareMap") .set(thing, opMode.hardwareMap)
+            thing::class.java.getField("gamepad2")    .set(thing, opMode.gamepad2)
+            thing::class.java.getField("opMode")      .set(thing, opMode)
+            thing::class.java.getField("linearOpMode").set(thing, opMode)
+            thing::class.java.getField("telemetry")   .set(thing, opMode.telemetry)
         }
     }
 }

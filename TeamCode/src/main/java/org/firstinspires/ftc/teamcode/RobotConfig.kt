@@ -16,7 +16,7 @@ object RobotConfig : BlocksOpModeCompanion() {
 
     fun initHardwareMaps(opMode: LinearOpMode) {
         for (subassembly in allSubassemblies()) {
-            CustomBlocksOpModeCompanion.initProperties(subassembly::class.java, opMode)
+            CustomBlocksOpModeCompanion.initProperties(subassembly, opMode)
         }
         init()
         for(subassembly in allSubassemblies()) {
