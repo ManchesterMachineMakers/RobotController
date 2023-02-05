@@ -169,7 +169,7 @@ class PowerPlayAutonomous : LinearOpMode() {
      * has been downloaded to the Robot Controller's SD FLASH memory, it must to be loaded using loadModelFromFile()
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
-        private const val TFOD_MODEL_ASSET = "Sleeve.tflite"
+        private const val TFOD_MODEL_ASSET = "SleeveMoreTraining.tflite"
 
         // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
         val LABELS = arrayOf(
@@ -201,14 +201,14 @@ class PowerPlayAutonomous : LinearOpMode() {
         val mmPerBlock = 609F
         val path0 = Path(
             Segment(-mmPerBlock, 0F),
-            Segment(0F, mmPerBlock)
+            Segment(0F, 1.5F * mmPerBlock)
         )
         val path1 = Path(
-            Segment(0F, mmPerBlock)
+            Segment(0F, 1.5F * mmPerBlock)
         )
         val path2 = Path(
             Segment(mmPerBlock, 0F),
-            Segment(0F, mmPerBlock)
+            Segment(0F, 1.5F * mmPerBlock)
         )
     }
 }
