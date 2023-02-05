@@ -5,7 +5,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 import org.firstinspires.ftc.teamcode.PowerPlayAutonomous
 
 class TimeoutObjectDetector(val tfod: TFObjectDetector) {
-    data class Detection(val recognition: RecognitionMatrix, val side: Int)
+    data class Detection(val recognition: RecognitionMatrix, val side: String)
 
     /**
      * Wait until either 3 seconds have elapsed or a recognition is found, then return that recognition or null.
@@ -16,7 +16,7 @@ class TimeoutObjectDetector(val tfod: TFObjectDetector) {
         if(tfod.recognitions.size == 0) return null
         return Detection(
             RecognitionMatrix(tfod.recognitions[0]), // Recognition matrix
-            PowerPlayAutonomous.LABELS.indexOf(tfod.recognitions[0].label) // Side number
+            tfod.recognitions[0].label // Side
         )
     }
 }

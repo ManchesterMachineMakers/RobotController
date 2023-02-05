@@ -10,10 +10,10 @@ import org.firstinspires.ftc.teamcode.util.equalsTolerance
 import kotlin.math.roundToInt
 
 object LinearSlide : CustomBlocksOpModeCompanion() {
-    lateinit var upperMagnetic: DigitalChannel
-    lateinit var upperBump: DigitalChannel
-    lateinit var touchSensor: TouchSensor
-    var limitStatus: Telemetry.Item? = null
+    // lateinit var upperMagnetic: DigitalChannel
+    // lateinit var upperBump: DigitalChannel
+    // lateinit var touchSensor: TouchSensor
+    // var limitStatus: Telemetry.Item? = null
     var drive: DcMotor? = null
     var clawServo: Servo? = null
     val ticksPerRevolution = 1425.1
@@ -34,9 +34,9 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
     val high = 8.0.ticks()
 
     override fun initHardware() {
-        upperMagnetic = hardwareMap.digitalChannel.get("upperMagnetic")
-        upperBump = hardwareMap.digitalChannel.get("upperBump")
-        touchSensor = hardwareMap.touchSensor.get("slideTouch")
+        // upperMagnetic = hardwareMap.digitalChannel.get("upperMagnetic")
+        // upperBump = hardwareMap.digitalChannel.get("upperBump")
+        // touchSensor = hardwareMap.touchSensor.get("slideTouch")
         drive = hardwareMap.dcMotor.get("slide_drive")
         drive!!.direction = DcMotorSimple.Direction.REVERSE
         drive!!.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -102,9 +102,9 @@ object LinearSlide : CustomBlocksOpModeCompanion() {
         gamepadManager.on("dpad_down") { power = -slowMotorPower }
         gamepadManager.off(listOf("dpad_up", "dpad_down")) { power = 0.0 }
 
-        if(limitStatus == null) limitStatus = telemetry.addData("Limit Status", { -> "Upper magnetic: $upperMagnetic.state, upper bump: $upperBump.state" }) 
-        telemetry.update()
+        // if(limitStatus == null) limitStatus = telemetry.addData("Limit Status", { -> "Upper magnetic: $upperMagnetic.state, upper bump: $upperBump.state" }) 
+        // telemetry.update()
         // if((upperLimit.state && power > 0) || (lowerLimit.state && power < 0)) power = 0.0
-        if(touchSensor.isPressed && drive!!.targetPosition < drive!!.currentPosition) drive!!.targetPosition = drive!!.currentPosition;
+        // if(touchSensor.isPressed && drive!!.targetPosition < drive!!.currentPosition) drive!!.targetPosition = drive!!.currentPosition;
     }
 }
