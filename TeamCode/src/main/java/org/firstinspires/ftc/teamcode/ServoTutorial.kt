@@ -1,9 +1,43 @@
 package org.firstinspires.ftc.teamcode
 
-import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 
+
+class Car(val motor: DcMotor) {
+    fun forward() {
+        motor.power = .5
+    }
+
+    fun backward() {
+        motor.power =-.5
+    }
+    fun stop() {
+        motor.power = 0
+    }
+}
+
+@TeleOp(name = "Motor Tutorial")
+class MotorTutorial : LinearOpMode() {
+    override fun runOpMode() {
+        val motor = hardwareMap.dcMotor.get("left_front")
+        val go = Car(motor)
+        waitForStart()
+        if(opModeIsActive()) {
+            go.forward()
+            sleep (2000)
+            go.backward()
+            sleep (2000)
+            go.stop()
+
+        }
+    }
+
+
+}
+
+/* 
 class Refrigerator(val servo: Servo) {
     fun openDoor() {
         servo.position = 1.0;
@@ -28,3 +62,5 @@ class ServoTutorial : LinearOpMode() {
         }
     }
 }
+
+*/
