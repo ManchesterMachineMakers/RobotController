@@ -18,6 +18,7 @@ class BasicTeleOp : LinearOpMode() {
         DriveBase.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER)
         DriveBase.setTravelDirection(DriveBase.TravelDirection.base)
         telemetry.addLine("Connected hardware: ${RobotConfig.allConnected().map { it.javaClass.simpleName }.joinToString(", ")}")
+        telemetry.addLine("Ready to start.")
         telemetry.update()
         waitForStart()
         if(opModeIsActive()) {
