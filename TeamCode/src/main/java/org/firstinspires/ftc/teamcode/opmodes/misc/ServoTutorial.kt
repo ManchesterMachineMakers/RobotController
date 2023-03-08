@@ -7,14 +7,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 
 class Car(val motor: DcMotor) {
     fun forward() {
-        motor.power = .5
+        motor.power =  .5
     }
 
     fun backward() {
-        motor.power =-.5
+        motor.power = -.5
     }
     fun stop() {
-        motor.power = 0
+        motor.power = 0.0
     }
 }
 
