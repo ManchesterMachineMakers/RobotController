@@ -3,8 +3,8 @@ with import <nixpkgs> {};
 stdenv.mkDerivation {
     name = "csb";
     buildInputs = [
-        openjdk18-bootstrap
+        zulu
         kotlin
-        kotlin-language-server
+        adoptopenjdk-hotspot-bin
     ];
 }
