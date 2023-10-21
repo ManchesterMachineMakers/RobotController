@@ -2,7 +2,7 @@ name: Android CI
 
 on:
   push:
-    branches: [ season/power-play ]
+    branches: [ season/centerstage ]
   workflow_dispatch:
     inputs:
       tagName:
