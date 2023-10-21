@@ -104,3 +104,5 @@ matchlogs
 
 # Match logs
 Match-*.txt
+
+.settings/
