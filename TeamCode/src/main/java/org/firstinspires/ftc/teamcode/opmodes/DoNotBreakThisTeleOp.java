@@ -20,12 +20,7 @@ public class DoNotBreakThisTeleOp extends LinearOpMode {
                 motors) {
             motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }
-        for (DcMotor motor : new DcMotor[]{leftFront, leftRear}) {
-            motor.setDirection(DcMotorSimple.Direction.REVERSE); // compensate for left motors
-        }
-        for (DcMotor motor : new DcMotor[]{rightFront, rightRear}) {
-            motor.setDirection(DcMotorSimple.Direction.FORWARD); // right motors are normal
+            motor.setDirection(DcMotorSimple.Direction.FORWARD);
         }
 
         waitForStart();
