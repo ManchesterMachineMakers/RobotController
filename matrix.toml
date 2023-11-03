@@ -1,16 +1,15 @@
-configPath = "TeamCode/src/main/java/org/firstinspires/ftc/teamcode/RobotConfig.kt"
+configPath = "dummy.txt"
 
 move = [
     { from = "TeamCode/build/outputs/apk/$(target)/TeamCode-$(target).apk", to = "TeamCode-$(target)-$(config).apk" },
 ]
 
 [configRegex]
-find = "fun init() { .* }"
-replace = "fun init() { $(config) }"
+find = ""
+replace = ""
 
 [configurations]
-programmingBoard = "programmingBoard()"
-fullRobot = "fullRobot()"
+default = ""
 
 [targets]
 debug = ["./gradlew", "assembleDebug"]
