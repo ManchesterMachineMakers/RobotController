@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode
 
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.contracts.Controllable
 import org.firstinspires.ftc.teamcode.subassemblies.Arm // Imports Arm subassembly
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase // Imports DriveBase subassembly
 import org.manchestermachinemakers.easyop.Inject // Imports Inject
 import org.manchestermachinemakers.easyop.Linear // Imports Linear
+
+@TeleOp(name = "Basic TeleOp")
 
 // BasicTeleOp function which inherits from linear
 class BasicTeleOp: Linear() {
