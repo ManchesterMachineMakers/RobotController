@@ -55,6 +55,24 @@ public class ArmTeleOp extends LinearOpMode {
 
     // servo.
 
+    /* NOTES: WE DID LOTS OF CODE TODAY 11/17/2023
+        - Zach - blocks - Arm position from stow to front horizontal
+        - got the motor to hold position by allowing power to remain after run to position
+        - Miles - full Arm teleop
+        - use the Adafruit sensor on the arm to detect desired 0 position
+        - desired 0 position is horizontal, arm pointing backward, just up from stow position
+        - first automation TODO: automatically position the arm and wrist to pick up from floor.
+            - can do that with static values for now, until Adafruit
+            - install Adafruit and average the values to get a consistent position
+        - servo ranges are good
+        - may need to shorten the arm by a couple of in order to fit within 18" box
+
+     */
+    public static final double
+            WRIST_ANGLE_FOR_FLOOR = 0.38,
+            ARM_POSITION_FOR_FLOOR = 0,
+            WRIST_ANGLE_FOR_BACKDROP = 0.54;
+
     public ElapsedTime loopTime = new ElapsedTime();
 
     /**
@@ -97,7 +115,7 @@ public class ArmTeleOp extends LinearOpMode {
         leftRelease.setDirection(Servo.Direction.FORWARD);
         rightRelease.scaleRange(0.6, 0.825); // 7/40 radians
         rightRelease.setDirection(Servo.Direction.REVERSE);
-        wrist.scaleRange(0.3, 0.7); // 14/45 radians
+        wrist.scaleRange(0.25, 0.78); // 14/45 radians
         wrist.setDirection(Servo.Direction.FORWARD);
 
         // Declare once, rather than every opLoop
@@ -129,7 +147,7 @@ public class ArmTeleOp extends LinearOpMode {
                 leftRear.setPower(v3 / 1.2);
                 rightRear.setPower(v4 / 1.2);
 
-                wristPosition += gamepad2.right_stick_y / 10;
+                wristPosition += gamepad2.right_stick_y / 25;
                 if (wristPosition < 0) {
                     wristPosition = 0;
                 } else if (wristPosition > 1) {
@@ -194,7 +212,8 @@ public class ArmTeleOp extends LinearOpMode {
                 telemetry.addData("Debug Info", "");
                 telemetry.addData("Loop time (nanoseconds)", loopTime.nanoseconds());
                 telemetry.addData("Button was pressed", buttonWasPressed);
-                telemetry.addData("Arm positon", arm.getCurrentPosition());
+                telemetry.addData("Arm position", arm.getCurrentPosition());
+                telemetry.addData("Wrist position", wrist.getPosition());
                 telemetry.addLine();
                 // Assists driver:
                 telemetry.addData("Current pixel layer", pixelStack);
