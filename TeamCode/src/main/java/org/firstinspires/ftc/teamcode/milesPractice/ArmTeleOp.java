@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
@@ -44,15 +45,31 @@ public class ArmTeleOp extends LinearOpMode {
             H = 287.75,
             R = 336;
 
+    // Configuration:
     // Amount to increment when using left or right d-pad. Allows for easier configuring
     public static final int
             PIXEL_LARGE_INCREMENT = 4,
             PIXEL_UPPER_LIMIT = 7;
 
+    public static final double ARM_SPEED = 0.2;
+
+    // servo.
+
     public ElapsedTime loopTime = new ElapsedTime();
+
+    /**
+     * E encoder position -> radians R
+     * radians -> encoder position?
+     * on button press X, save current E as zero (E0)
+     * calculate current R using E and E0
+     * calculate target E using target R and E0
+     * encoder resolution is XX.X PPR (pulses per revolution)
+     * target R (in radians) * (1 rev / 2PI radians) * (XX.X pulse / rev) = target E (in encoder value pulses)
+     */
 
     @Override
     public void runOpMode() {
+
         // Initialize motors
         DcMotor leftFront = hardwareMap.dcMotor.get("left_front"),
                 rightFront = hardwareMap.dcMotor.get("right_front"),
@@ -75,14 +92,16 @@ public class ArmTeleOp extends LinearOpMode {
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // Configure left and right release servos
-        leftRelease.scaleRange(0.175, 0.4);
+        // Configure servos
+        leftRelease.scaleRange(0.175, 0.4); // 7/40 radians
         leftRelease.setDirection(Servo.Direction.FORWARD);
-        rightRelease.scaleRange(0.6, 0.825);
+        rightRelease.scaleRange(0.6, 0.825); // 7/40 radians
         rightRelease.setDirection(Servo.Direction.REVERSE);
+        wrist.scaleRange(0.3, 0.7); // 14/45 radians
+        wrist.setDirection(Servo.Direction.FORWARD);
 
         // Declare once, rather than every opLoop
-        double r, robotAngle, v1, v2, v3, v4;
+        double r, robotAngle, v1, v2, v3, v4, wristPosition = 0;
         float rightX;
         int pixelStack = -1;
         boolean buttonWasPressed = false;
@@ -110,6 +129,8 @@ public class ArmTeleOp extends LinearOpMode {
                 leftRear.setPower(v3 / 1.2);
                 rightRear.setPower(v4 / 1.2);
 
+                arm.setPower(gamepad2.left_stick_y / 5); // TEMPORARY
+
                 // Pixel release mechanism (brush)
                 if (gamepad2.left_bumper) { // Open
                     leftRelease.setPosition(1);
@@ -127,7 +148,7 @@ public class ArmTeleOp extends LinearOpMode {
                     rightReleaseStatus = "closed";
                 }
 
-                // Arm and wrist control
+                // Counter:
                 if (gamepad2.dpad_up && !buttonWasPressed) {
                     pixelStack++;
                 } else if (gamepad2.dpad_down && !buttonWasPressed) {
@@ -145,7 +166,22 @@ public class ArmTeleOp extends LinearOpMode {
                     pixelStack = -1;
                 }
 
+                // Write motor code here:
+                /** MAKE SURE TO LIMIT MOTOR MOVEMENT */
+                /**
+                 * E encoder position -> radians R
+                 * radians -> encoder position?
+                 * on button press X, save current E as zero (E0)
+                 * calculate current R using E and E0
+                 * calculate target E using target R and E0
+                 * encoder resolution is XX.X PPR (pulses per revolution)
+                 * target R (in radians) * (1 rev / 2PI radians) * (XX.X pulse / rev) = target E (in encoder value pulses)
+                 */
+
+
                 buttonWasPressed = gamepad2.dpad_up || gamepad2.dpad_down || gamepad2.dpad_left || gamepad2.dpad_right;
+
+                // Telemetry:
                 // Used for easier debugging of code:
                 telemetry.addData("Debug Info", "");
                 telemetry.addData("Loop time (nanoseconds)", loopTime.nanoseconds());
@@ -168,8 +204,17 @@ public class ArmTeleOp extends LinearOpMode {
         motor.setDirection(direction);
     }
 
+    void motorToPosition(DcMotor motor, int targetPosition) {
+        motor.setTargetPosition(targetPosition);
+        motor.setPower(1);
+    }
+
     // See math: https://drive.google.com/file/d/1ADeKl-3EPOc8nBHZwGThREwBQAEdIAJ9/view
-    public double[] getArmAndWristPosition(int n) { // n = layer of hexes we're going up to, starting at 0
+    /**
+     * @param {int} n layer of hexes we're going up to, starting at 0
+     * returns an array of the target arm position (radians) and target servo position (%range?)
+     */
+    public double[] getArmAndWristPosition(int n) {
         double targetServoPos;
         double targetArmPos;
 
