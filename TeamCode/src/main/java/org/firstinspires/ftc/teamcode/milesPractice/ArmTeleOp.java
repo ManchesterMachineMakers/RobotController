@@ -129,6 +129,13 @@ public class ArmTeleOp extends LinearOpMode {
                 leftRear.setPower(v3 / 1.2);
                 rightRear.setPower(v4 / 1.2);
 
+                wristPosition += gamepad2.right_stick_y / 10;
+                if (wristPosition < 0) {
+                    wristPosition = 0;
+                } else if (wristPosition > 1) {
+                    wristPosition = 1;
+                }
+
                 arm.setPower(gamepad2.left_stick_y / 5); // TEMPORARY
 
                 // Pixel release mechanism (brush)
