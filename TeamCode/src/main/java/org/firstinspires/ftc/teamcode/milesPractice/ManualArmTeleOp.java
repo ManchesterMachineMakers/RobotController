@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
@@ -36,7 +37,6 @@ public class ManualArmTeleOp extends LinearOpMode {
 
     // Timer
     public ElapsedTime loopTime = new ElapsedTime();
-    public static final double ARM_SPEED = 0.2;
 
     @Override
     public void runOpMode() {
@@ -74,7 +74,7 @@ public class ManualArmTeleOp extends LinearOpMode {
         // Declare once, rather than every opLoop
         double r, robotAngle, v1, v2, v3, v4, wristPosition;
         float rightX;
-        int pixelStack = -1;
+        int pixelStack = -1, latestArmPosition = 0;
         boolean buttonWasPressed = false;
 
         String  leftReleaseStatus = "unknown",
@@ -84,8 +84,7 @@ public class ManualArmTeleOp extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                // Keep track of time spent in each loop for debugging
-                loopTime.reset();
+                loopTime.reset(); // Keep track of time spent in each loop for debugging
 
                 // Drive base control (Power Curve)
                 r = Math.hypot(gamepad1.left_stick_x, -gamepad1.left_stick_y);
@@ -101,14 +100,22 @@ public class ManualArmTeleOp extends LinearOpMode {
                 rightRear.setPower(v4 / 1.2);
 
                 // Wrist control
-                wristPosition = wrist.getPosition() + gamepad2.right_stick_y;
+                wristPosition = wrist.getPosition();
+                wristPosition += gamepad2.right_stick_y / 25;
                 if (wristPosition < 0) {
                     wristPosition = 0;
                 } else if (wristPosition > 1) {
                     wristPosition = 1;
                 }
-                arm.setPower(gamepad2.left_stick_y * ARM_SPEED); //  Arm power to the reciprocal of gamepad y
+                if (gamepad2.left_stick_y != 0.0) {
+                    arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    arm.setPower(gamepad2.left_stick_y / 5);
+                    latestArmPosition = arm.getCurrentPosition();
+                } else {
+                    brake(arm, latestArmPosition);
+                }
 
+                // Wrist control that works
                 if (!buttonWasPressed) {
                     if (gamepad2.dpad_up) {
                         wristPosition += 0.05;
@@ -121,7 +128,6 @@ public class ManualArmTeleOp extends LinearOpMode {
                     }
                 }
                 wrist.setPosition(wristPosition);
-
 
                 // Pixel release mechanism (brush)
                 // Left
@@ -141,21 +147,17 @@ public class ManualArmTeleOp extends LinearOpMode {
                     rightReleaseStatus = "closed";
                 }
 
-
-
-                if (gamepad2.b) {
-                    arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                } else {
-                    arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                }
-
+                // For detecting when a button is pressed.
                 buttonWasPressed = gamepad2.dpad_up || gamepad2.dpad_down || gamepad2.dpad_left || gamepad2.dpad_right;
 
                 // Telemetry:
                 // Used for easier debugging of code:
                 telemetry.addData("Debug Info", "");
                 telemetry.addData("Loop time (nanoseconds)", loopTime.nanoseconds());
+                telemetry.addData("Arm mode", arm.getMode());
+                telemetry.addData("Arm target position", arm.getTargetPosition());
                 telemetry.addData("Arm position", arm.getCurrentPosition());
+                telemetry.addData("Arm position discrepancy", Math.abs(arm.getCurrentPosition() - arm.getTargetPosition()));
                 telemetry.addData("Wrist position", wrist.getPosition());
                 telemetry.addLine();
                 // Assists driver:
@@ -172,5 +174,11 @@ public class ManualArmTeleOp extends LinearOpMode {
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setDirection(direction);
+    }
+
+    // Makes a motor actually brake (ZeroPowerBehavior doesn't give enough power)
+    void brake(DcMotor motor, int latestPosition) {
+        motor.setTargetPosition(latestPosition);
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 }
