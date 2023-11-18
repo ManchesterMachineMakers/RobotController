@@ -127,6 +127,12 @@ public class ManualArmTeleOp extends LinearOpMode {
                     rightReleaseStatus = "closed";
                 }
 
+                if (gamepad2.b) {
+                    arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                } else {
+                    arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                }
+
                 // Telemetry:
                 // Used for easier debugging of code:
                 telemetry.addData("Debug Info", "");
