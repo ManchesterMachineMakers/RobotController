@@ -36,7 +36,7 @@ public class ManualArmTeleOp extends LinearOpMode {
 
     // Timer
     public ElapsedTime loopTime = new ElapsedTime();
-    public static final double ARM_POWER = 0.2;
+    public static final double ARM_SPEED = 0.2;
 
     @Override
     public void runOpMode() {
@@ -107,7 +107,7 @@ public class ManualArmTeleOp extends LinearOpMode {
                 } else if (wristPosition > 1) {
                     wristPosition = 1;
                 }
-                arm.setPower(Math.pow(ARM_POWER, (1 / gamepad2.left_stick_y))); //  Arm power to the reciprocal of gamepad y
+                arm.setPower(gamepad2.left_stick_y * ARM_SPEED); //  Arm power to the reciprocal of gamepad y
 
                 if (!buttonWasPressed) {
                     if (gamepad2.dpad_up) {
