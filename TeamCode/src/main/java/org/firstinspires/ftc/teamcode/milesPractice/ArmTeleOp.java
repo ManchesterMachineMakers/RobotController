@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
@@ -57,7 +56,7 @@ public class ArmTeleOp extends LinearOpMode {
             ARM_STOW_POSITION = 100; // TODO: find encoder value for this
 
     public static final double
-            ARM_SPEED = 0.2,
+            ARM_POWER = 0.2,
             WRIST_ANGLE_FOR_FLOOR = 0.38,
             WRIST_STOW_POSITION = 1,
             ENCODER_RESOLUTION = 2786.2;
@@ -128,6 +127,10 @@ public class ArmTeleOp extends LinearOpMode {
                 leftRear.setPower(v3 / 1.2);
                 rightRear.setPower(v4 / 1.2);
 
+                // Arm movement
+                arm.setPower(Math.pow(ARM_POWER, (1 / gamepad2.left_stick_y))); //  Arm power to the reciprocal of gamepad y
+
+
                 // Pixel release mechanism (brush)
                 if (gamepad2.left_bumper) { // Open
                     leftRelease.setPosition(1);
@@ -162,20 +165,20 @@ public class ArmTeleOp extends LinearOpMode {
                 } else if (pixelStack < -1) {
                     pixelStack = -1;
                 }
-
-                // Finds positioning for the arm and wrist servo so it lines up with the easel
-                if (!armIsStowed) {
-                    if (pixelStack != -1) {
-                        targetArmPosition = (int) (getArmAndWristPosition(pixelStack)[0] * ENCODER_RESOLUTION); // convert radians to encoder pulses
-                        targetWristPosition = getArmAndWristPosition(pixelStack)[1] * 0.53 * (7 / 9); // convert radians to servo range
-                    } else {
-                        targetArmPosition = ARM_POSITION_FOR_FLOOR;
-                    }
-                }
-
-                arm.setTargetPosition(targetArmPosition);
-                arm.setPower(ARM_SPEED);
-                wrist.setPosition(targetWristPosition);
+//
+//                // Finds positioning for the arm and wrist servo so it lines up with the easel
+//                if (!armIsStowed) {
+//                    if (pixelStack != -1) {
+//                        targetArmPosition = (int) (getArmAndWristPosition(pixelStack)[0] * ENCODER_RESOLUTION); // convert radians to encoder pulses
+//                        targetWristPosition = getArmAndWristPosition(pixelStack)[1] * 0.53 * (7 / 9); // convert radians to servo range
+//                    } else {
+//                        targetArmPosition = ARM_POSITION_FOR_FLOOR;
+//                    }
+//                }
+//
+//                arm.setTargetPosition(targetArmPosition);
+//                arm.setPower(ARM_SPEED);
+//                wrist.setPosition(targetWristPosition);
 
                 // Reset encoders:
                 if (gamepad2.b) {
@@ -225,13 +228,7 @@ public class ArmTeleOp extends LinearOpMode {
 
     // Some Isaac wizzadry
     // See math: https://drive.google.com/file/d/1ADeKl-3EPOc8nBHZwGThREwBQAEdIAJ9/view
-    public double[] getArmAndWristPosition(int n) {
-        double targetServoPos; // Alpha
-        double targetArmPos; // Beta
-
-        targetArmPos = Math.asin(((D1 + n * D2 - L3) * Math.sin(THETA) + L2 * Math.cos(THETA) - H) / R);
-        targetServoPos = 90 + THETA - GAMMA - targetArmPos;
-
-        return new double[]{targetArmPos, targetServoPos};
-    }
+//    double findServoPosition(int armPosition) {
+//
+//    }
 }
