@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.milesPractice;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
@@ -55,8 +56,6 @@ public class ArmTeleOp extends LinearOpMode {
             ARM_POSITION_FOR_FLOOR = 0, // TODO: find encoder value for this
             ARM_STOW_POSITION = 100; // TODO: find encoder value for this
 
-    public static final DcMotor.RunMode ARM_RUN_MODE = DcMotor.RunMode.RUN_TO_POSITION; // mode to run arm in, RUN_TO_POSITION for semi-auto, RUN_USING_ENCODER for manual
-
     public static final double
             ARM_SPEED = 0.2,
             WRIST_ANGLE_FOR_FLOOR = 0.38,
@@ -69,11 +68,11 @@ public class ArmTeleOp extends LinearOpMode {
     public void runOpMode() {
 
         // Initialize motors
-        DcMotor leftFront = hardwareMap.dcMotor.get("left_front"),
-                rightFront = hardwareMap.dcMotor.get("right_front"),
-                leftRear = hardwareMap.dcMotor.get("left_rear"),
-                rightRear = hardwareMap.dcMotor.get("right_rear"),
-                arm = hardwareMap.dcMotor.get("arm");
+        DcMotorEx leftFront = (DcMotorEx) hardwareMap.dcMotor.get("left_front"),
+                rightFront = (DcMotorEx) hardwareMap.dcMotor.get("right_front"),
+                leftRear = (DcMotorEx) hardwareMap.dcMotor.get("left_rear"),
+                rightRear = (DcMotorEx) hardwareMap.dcMotor.get("right_rear"),
+                arm = (DcMotorEx) hardwareMap.dcMotor.get("arm");
 
         // Initialize servos
         Servo   wrist = hardwareMap.servo.get("wrist"), // Four-bar-linkage
@@ -87,8 +86,9 @@ public class ArmTeleOp extends LinearOpMode {
         configDriveMotor(rightRear, DcMotorSimple.Direction.REVERSE);
 
         // Configure arm
-        arm.setMode(ARM_RUN_MODE);
+        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm.setTargetPositionTolerance(50);
 
         // Configure servos
         leftRelease.scaleRange(0.175, 0.4); // 22.5% of 280 degree range
@@ -181,7 +181,7 @@ public class ArmTeleOp extends LinearOpMode {
                 if (gamepad2.b) {
                     arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 } else {
-                    arm.setMode(ARM_RUN_MODE);
+                    arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 }
 
                 // Stow arm:
@@ -204,6 +204,8 @@ public class ArmTeleOp extends LinearOpMode {
                 telemetry.addData("Button was pressed", buttonWasPressed);
                 telemetry.addData("Arm position", arm.getCurrentPosition());
                 telemetry.addData("Wrist position", wrist.getPosition());
+                telemetry.addData("Target arm position", targetArmPosition);
+                telemetry.addData("Target wrist position", targetWristPosition);
                 telemetry.addLine();
                 // Assists driver:
                 telemetry.addData("Current pixel layer", pixelStack);
