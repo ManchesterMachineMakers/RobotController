@@ -36,6 +36,7 @@ public class ManualArmTeleOp extends LinearOpMode {
 
     // Timer
     public ElapsedTime loopTime = new ElapsedTime();
+    public static final double ARM_POWER = 0.2;
 
     @Override
     public void runOpMode() {
@@ -74,6 +75,7 @@ public class ManualArmTeleOp extends LinearOpMode {
         double r, robotAngle, v1, v2, v3, v4, wristPosition;
         float rightX;
         int pixelStack = -1;
+        boolean buttonWasPressed = false;
 
         String  leftReleaseStatus = "unknown",
                 rightReleaseStatus = "unknown";
@@ -99,15 +101,27 @@ public class ManualArmTeleOp extends LinearOpMode {
                 rightRear.setPower(v4 / 1.2);
 
                 // Wrist control
-                wristPosition = wrist.getPosition();
-                wristPosition += gamepad2.right_stick_y / 25;
+                wristPosition = wrist.getPosition() + gamepad2.right_stick_y;
                 if (wristPosition < 0) {
                     wristPosition = 0;
                 } else if (wristPosition > 1) {
                     wristPosition = 1;
                 }
+                arm.setPower(Math.pow(ARM_POWER, (1 / gamepad2.left_stick_y))); //  Arm power to the reciprocal of gamepad y
+
+                if (!buttonWasPressed) {
+                    if (gamepad2.dpad_up) {
+                        wristPosition += 0.05;
+                    } else if (gamepad2.dpad_down) {
+                        wristPosition -= 0.05;
+                    } else if (gamepad2.dpad_left) {
+                        wristPosition -= 0.2;
+                    } else if (gamepad2.dpad_right) {
+                        wristPosition += 0.2;
+                    }
+                }
                 wrist.setPosition(wristPosition);
-                arm.setPower(gamepad2.left_stick_y / 5);
+
 
                 // Pixel release mechanism (brush)
                 // Left
@@ -127,11 +141,15 @@ public class ManualArmTeleOp extends LinearOpMode {
                     rightReleaseStatus = "closed";
                 }
 
+
+
                 if (gamepad2.b) {
                     arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 } else {
                     arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 }
+
+                buttonWasPressed = gamepad2.dpad_up || gamepad2.dpad_down || gamepad2.dpad_left || gamepad2.dpad_right;
 
                 // Telemetry:
                 // Used for easier debugging of code:
