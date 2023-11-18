@@ -184,7 +184,7 @@ public class ArmTeleOp extends LinearOpMode {
                 if (gamepad2.b) {
                     arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 } else {
-                    arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 }
 
                 // Stow arm:
