@@ -5,19 +5,19 @@ import com.qualcomm.robotcore.hardware.Gamepad
 class GamepadManager(val gamepad: Gamepad) {
     var wasPressed = mutableSetOf<String>()
     private fun getButton(name: String) = Gamepad::class.java.getDeclaredField(name).getBoolean(gamepad)
-    fun on(button: String, closure: () -> Unit) {
+    fun on(button: String, closure: () -> Void) {
         if(getButton(button)) {
             wasPressed.add(button)
             closure()
         }
     }
-    fun off(buttons: Collection<String>, closure: () -> Unit) {
+    fun off(buttons: Array<String>, closure: () -> Void) {
         if(wasPressed.any { buttons.contains(it) } && !buttons.any { getButton(it) }) {
             wasPressed.removeAll(buttons)
             closure()
         }
     }
-    fun once(button: String, closure: () -> Unit) {
+    fun once(button: String, closure: () -> Void) {
         if(getButton(button)) {
             if(!wasPressed.contains(button)) {
                 closure()
