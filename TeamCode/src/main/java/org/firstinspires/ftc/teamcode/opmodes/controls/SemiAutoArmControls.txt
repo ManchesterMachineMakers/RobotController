@@ -1,0 +1,14 @@
+Two modes: floor, and easel
+
+Arm will move, and wrist will stay level with specified mode
+
+When switch on intake is pressed, arm (and/or drive base) will stop moving for some time, either waiting half a seconds
+before allowing movement, locking movement forward, or requiring a button to be pressed before using
+again.
+
+TODO:
+    Figure out math to keep intake level, either by asking isaac or figuring it out myself
+    Implement mode changing
+    Implement auto-stop
+    Automatically unstow in initialization phase
+    Make robot auto-hook (for winching)
