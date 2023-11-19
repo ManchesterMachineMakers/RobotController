@@ -1,55 +1,30 @@
-package org.firstinspires.ftc.teamcode.milesPractice;
+package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-/*
-Controls:
-    Gamepad 1:
-        Left Stick:
-            Forward: moves robot forward
-            Backward: moves robot backward
-            Left: strafe right (note: needs to be inverted)
-            Right: strafe left (note: needs to be inverted)
-        Right Stick:
-            Left: turn robot counter-clockwise
-            Right: turn robot clockwise
-    Gamepad 2:
-        Left Bumper: open left release
-        Left Trigger: close left release
-        Right Bumper: open right release
-        Right Trigger: close left release
-        D-Pad:
-            Up: increment pixel layer by one
-            Down: decrement pixel layer by one
-            Right: increment pixel layer by specified amount (5)
-            Left: decrement pixel layer by specified amount (5)
-            B: reset encoder
- */
-
-@TeleOp(name = "Manual Arm TeleOp")
+@TeleOp(name = "OLD Manual Arm TeleOp")
 public class ManualArmTeleOp extends LinearOpMode {
 
-    // Timer
-    public ElapsedTime loopTime = new ElapsedTime();
+    // Timer, good for debugging
+    private ElapsedTime loopTime = new ElapsedTime();
 
     @Override
     public void runOpMode() {
+        DcMotorEx
+                leftFront = (DcMotorEx) hardwareMap.dcMotor.get("left_front"),
+                rightFront = (DcMotorEx) hardwareMap.dcMotor.get("right_front"),
+                leftRear = (DcMotorEx) hardwareMap.dcMotor.get("left_rear"),
+                rightRear = (DcMotorEx) hardwareMap.dcMotor.get("right_rear"),
+                arm = (DcMotorEx) hardwareMap.dcMotor.get("arm");
 
-        // Initialize motors
-        DcMotor leftFront = hardwareMap.dcMotor.get("left_front"),
-                rightFront = hardwareMap.dcMotor.get("right_front"),
-                leftRear = hardwareMap.dcMotor.get("left_rear"),
-                rightRear = hardwareMap.dcMotor.get("right_rear"),
-                arm = hardwareMap.dcMotor.get("arm");
-
-        // Initialize servos
-        Servo   wrist = hardwareMap.servo.get("wrist"), // Four-bar-linkage
+        Servo
+                wrist = hardwareMap.servo.get("wrist"), // Four-bar-linkage
                 leftRelease = hardwareMap.servo.get("left_release"),
                 rightRelease = hardwareMap.servo.get("right_release"); // NOTE: getPosition() does not work on this servo
 
@@ -109,7 +84,7 @@ public class ManualArmTeleOp extends LinearOpMode {
                 }
                 if (gamepad2.left_stick_y != 0.0) {
                     arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    arm.setPower(gamepad2.left_stick_y / 5);
+                    arm.setPower(-gamepad2.left_stick_y / 5);
                     latestArmPosition = arm.getCurrentPosition();
                 } else {
                     brake(arm, latestArmPosition);
@@ -118,13 +93,13 @@ public class ManualArmTeleOp extends LinearOpMode {
                 // Wrist control that works
                 if (!buttonWasPressed) {
                     if (gamepad2.dpad_up) {
-                        wristPosition += 0.05;
-                    } else if (gamepad2.dpad_down) {
                         wristPosition -= 0.05;
+                    } else if (gamepad2.dpad_down) {
+                        wristPosition += 0.05;
                     } else if (gamepad2.dpad_left) {
-                        wristPosition -= 0.2;
-                    } else if (gamepad2.dpad_right) {
                         wristPosition += 0.2;
+                    } else if (gamepad2.dpad_right) {
+                        wristPosition -= 0.2;
                     }
                 }
                 wrist.setPosition(wristPosition);
@@ -157,7 +132,7 @@ public class ManualArmTeleOp extends LinearOpMode {
                 telemetry.addData("Arm mode", arm.getMode());
                 telemetry.addData("Arm target position", arm.getTargetPosition());
                 telemetry.addData("Arm position", arm.getCurrentPosition());
-                telemetry.addData("Arm position discrepancy", Math.abs(arm.getCurrentPosition() - arm.getTargetPosition()));
+                telemetry.addData("Arm position discrepancy", arm.getCurrentPosition() - arm.getTargetPosition())   ;
                 telemetry.addData("Wrist position", wrist.getPosition());
                 telemetry.addLine();
                 // Assists driver:
@@ -170,14 +145,14 @@ public class ManualArmTeleOp extends LinearOpMode {
     }
 
     // Configures a DcMotor for driving
-    void configDriveMotor(DcMotor motor, DcMotorSimple.Direction direction) {
+    private void configDriveMotor(DcMotor motor, DcMotorSimple.Direction direction) {
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setDirection(direction);
     }
 
     // Makes a motor actually brake (ZeroPowerBehavior doesn't give enough power)
-    void brake(DcMotor motor, int latestPosition) {
+    private void brake(DcMotorEx motor, int latestPosition) {
         motor.setTargetPosition(latestPosition);
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }

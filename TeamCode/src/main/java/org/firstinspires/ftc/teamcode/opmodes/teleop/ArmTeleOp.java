@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.milesPractice;
+package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -33,11 +33,11 @@ Controls:
         X: stow arm
  */
 
-@TeleOp(name = "Semi-Auto Arm TeleOp")
+@TeleOp(name = "OLD Semi-Auto Arm TeleOp")
 public class ArmTeleOp extends LinearOpMode {
 
     // Math constants for getWristAndArmPositions(), better to declare once than every time it is called
-    public static final double
+    private static final double
             THETA = Math.PI / 3,
             GAMMA = Math.atan(0.0565371024735),
             D1 = 220,
@@ -47,15 +47,17 @@ public class ArmTeleOp extends LinearOpMode {
             H = 287.75,
             R = 336;
 
+    public static int latestArmPosition = 0;
+
     // Configuration:
     // Amount to increment when using left or right d-pad. Allows for easier configuring
-    public static final int
+    private static final int
             PIXEL_LARGE_INCREMENT = 4,
             PIXEL_UPPER_LIMIT = 7,
             ARM_POSITION_FOR_FLOOR = 0, // TODO: find encoder value for this
             ARM_STOW_POSITION = 100; // TODO: find encoder value for this
 
-    public static final double
+    private static final double
             ARM_POWER = 0.2,
             WRIST_ANGLE_FOR_FLOOR = 0.38,
             WRIST_STOW_POSITION = 1,
@@ -87,7 +89,7 @@ public class ArmTeleOp extends LinearOpMode {
         // Configure arm
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        arm.setTargetPositionTolerance(50);
+//        arm.setTargetPositionTolerance(50);
 
         // Configure servos
         leftRelease.scaleRange(0.175, 0.4); // 22.5% of 280 degree range
@@ -95,13 +97,13 @@ public class ArmTeleOp extends LinearOpMode {
         rightRelease.scaleRange(0.6, 0.825); // 22.5% of 280 degree range
         rightRelease.setDirection(Servo.Direction.REVERSE);
         wrist.scaleRange(0.25, 0.78); // 53% of 280 degree range
-        wrist.setDirection(Servo.Direction.FORWARD);
+        wrist.setDirection(Servo.Direction.REVERSE);
 
         // Declare once, rather than every opLoop
         double  r, robotAngle, v1, v2, v3, v4,
                 targetWristPosition = wrist.getPosition();
         float rightX;
-        int pixelStack = -1, targetArmPosition = 0, i = 0;
+        int pixelStack = -1, i = 0;
         boolean buttonWasPressed = false, armIsStowed = false;
 
         String  leftReleaseStatus = "unknown",
@@ -110,6 +112,10 @@ public class ArmTeleOp extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
+            wrist.setPosition(0);
+            sleep(1000);
+            wrist.setPosition(1);
+            sleep(1000);
             while (opModeIsActive()) {
                 // Keep track of time spent in each loop, good for debugging
                 loopTime.reset();
@@ -128,8 +134,17 @@ public class ArmTeleOp extends LinearOpMode {
                 rightRear.setPower(v4 / 1.2);
 
                 // Arm movement
-                arm.setPower(Math.pow(ARM_POWER, (1 / gamepad2.left_stick_y))); //  Arm power to the reciprocal of gamepad y
+                if (gamepad2.left_stick_y != 0.0) {
+                    arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    arm.setPower(-gamepad2.left_stick_y / 5);
+                    latestArmPosition = arm.getCurrentPosition();
+                } else {
+                    brake(arm);
+                }
 
+                // Wrist movement
+                targetWristPosition = findWristPosition(arm.getCurrentPosition());
+                wrist.setPosition(targetWristPosition);
 
                 // Pixel release mechanism (brush)
                 if (gamepad2.left_bumper) { // Open
@@ -148,43 +163,16 @@ public class ArmTeleOp extends LinearOpMode {
                     rightReleaseStatus = "closed";
                 }
 
-                // Counter for pixel layer. Uses d-pad
-                if (gamepad2.dpad_up && !buttonWasPressed) {
-                    pixelStack++;
-                } else if (gamepad2.dpad_down && !buttonWasPressed) {
-                    pixelStack--;
-                } else if (gamepad2.dpad_right && !buttonWasPressed) {
-                pixelStack += PIXEL_LARGE_INCREMENT;
-                } else if (gamepad2.dpad_left && !buttonWasPressed) {
-                    pixelStack -= PIXEL_LARGE_INCREMENT;
-                }
-
                 // Makes sure pixel stack cannot go above 7 or below -1
                 if (pixelStack > PIXEL_UPPER_LIMIT) {
                     pixelStack = PIXEL_UPPER_LIMIT;
                 } else if (pixelStack < -1) {
                     pixelStack = -1;
                 }
-//
-//                // Finds positioning for the arm and wrist servo so it lines up with the easel
-//                if (!armIsStowed) {
-//                    if (pixelStack != -1) {
-//                        targetArmPosition = (int) (getArmAndWristPosition(pixelStack)[0] * ENCODER_RESOLUTION); // convert radians to encoder pulses
-//                        targetWristPosition = getArmAndWristPosition(pixelStack)[1] * 0.53 * (7 / 9); // convert radians to servo range
-//                    } else {
-//                        targetArmPosition = ARM_POSITION_FOR_FLOOR;
-//                    }
-//                }
-//
-//                arm.setTargetPosition(targetArmPosition);
-//                arm.setPower(ARM_SPEED);
-//                wrist.setPosition(targetWristPosition);
 
                 // Reset encoders:
                 if (gamepad2.b) {
                     arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                } else {
-                    arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 }
 
                 // Stow arm:
@@ -193,7 +181,7 @@ public class ArmTeleOp extends LinearOpMode {
                         armIsStowed = false;
                     } else {
                         armIsStowed = true;
-                        arm.setTargetPosition(ARM_STOW_POSITION);
+//                        arm.setTargetPosition(ARM_STOW_POSITION);
                         wrist.setPosition(WRIST_STOW_POSITION);
                     }
                 }
@@ -204,10 +192,13 @@ public class ArmTeleOp extends LinearOpMode {
                 // Used for easier debugging of code:
                 telemetry.addData("Debug Info", "");
                 telemetry.addData("Loop time (milliseconds)", loopTime.milliseconds());
-                telemetry.addData("Button was pressed", buttonWasPressed);
+//                telemetry.addData("Button was pressed", buttonWasPressed);
+                telemetry.addData("Arm mode", arm.getMode());
                 telemetry.addData("Arm position", arm.getCurrentPosition());
+                telemetry.addData("Target arm position", arm.getTargetPosition());
+                telemetry.addData("Latest arm position", latestArmPosition);
+                telemetry.addData("Arm position discrepency", arm.getCurrentPosition() - arm.getTargetPosition());
                 telemetry.addData("Wrist position", wrist.getPosition());
-                telemetry.addData("Target arm position", targetArmPosition);
                 telemetry.addData("Target wrist position", targetWristPosition);
                 telemetry.addLine();
                 // Assists driver:
@@ -220,15 +211,28 @@ public class ArmTeleOp extends LinearOpMode {
     }
 
     // Configures a DcMotor for driving
-    void configDriveMotor(DcMotor motor, DcMotorSimple.Direction direction) {
+    private void configDriveMotor(DcMotor motor, DcMotorSimple.Direction direction) {
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setDirection(direction);
     }
 
-    // Some Isaac wizzadry
-    // See math: https://drive.google.com/file/d/1ADeKl-3EPOc8nBHZwGThREwBQAEdIAJ9/view
-//    double findServoPosition(int armPosition) {
-//
-//    }
+    private void brake(DcMotorEx arm) {
+        arm.setPower(0.2);
+        arm.setTargetPosition(latestArmPosition);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+//     See math: https://drive.google.com/file/d/1ADeKl-3EPOc8nBHZwGThREwBQAEdIAJ9/view
+    private double findWristPosition(int armPosition) {
+        // THETA is the angle of wrist (goal)
+        // GAMMA is the angle of
+        double armPositionInRadians = armPosition / ENCODER_RESOLUTION * (2 * Math.PI);
+        double servoPositionInRadians = Math.PI/2.0 + THETA - GAMMA - armPositionInRadians; // replaced 90 with PI/2 (one quarter of rotation)
+        double targetServoPosition = servoPositionInRadians * 0.53 * (7.0/9.0);
+        telemetry.addData("Target servo position", targetServoPosition);
+        telemetry.addData("Input encoder value", armPosition);
+        return targetServoPosition;
+    }
+
 }
