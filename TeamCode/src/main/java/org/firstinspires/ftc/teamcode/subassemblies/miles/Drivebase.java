@@ -22,30 +22,30 @@ public class Drivebase {
     public double r, robotAngle, v1, v2, v3, v4;
     public float rightX;
 
-    public HardwareMap _HardwareMap;
-    public Gamepad _Gamepad;
-    public Telemetry _Telemetry;
+    public HardwareMap _hardwareMap;
+    public Gamepad _gamepad;
+    public Telemetry _telemetry;
 
     public void init() {
-        leftFront = _HardwareMap.get(DcMotorEx.class, "left_front");
-        rightFront = _HardwareMap.get(DcMotorEx.class, "right_front");
-        leftRear = _HardwareMap.get(DcMotorEx.class, "left_rear");
-        rightRear = _HardwareMap.get(DcMotorEx.class, "right_rear");
+        leftFront = _hardwareMap.get(DcMotorEx.class, "left_front");
+        rightFront = _hardwareMap.get(DcMotorEx.class, "right_front");
+        leftRear = _hardwareMap.get(DcMotorEx.class, "left_rear");
+        rightRear = _hardwareMap.get(DcMotorEx.class, "right_rear");
 
         configMotor(leftFront, DcMotorSimple.Direction.REVERSE);
         configMotor(rightFront, DcMotorSimple.Direction.FORWARD);
         configMotor(leftRear, DcMotorSimple.Direction.FORWARD);
         configMotor(rightRear, DcMotorSimple.Direction.REVERSE);
 
-        _Telemetry.addData(">", "Drive Base Ready.");
+        _telemetry.addData(">", "Drive Base Ready.");
     }
 
     public void loop() {
         loopTime.reset();
 
-        r = Math.hypot(_Gamepad.left_stick_x, -_Gamepad.left_stick_y);
-        robotAngle = Math.atan2(-_Gamepad.left_stick_y, -_Gamepad.left_stick_x) - Math.PI / 4;
-        rightX = _Gamepad.right_stick_x;
+        r = Math.hypot(_gamepad.left_stick_x, -_gamepad.left_stick_y);
+        robotAngle = Math.atan2(-_gamepad.left_stick_y, -_gamepad.left_stick_x) - Math.PI / 4;
+        rightX = _gamepad.right_stick_x;
         v1 = r * Math.cos(robotAngle) + rightX;
         v2 = r * Math.sin(robotAngle) - rightX;
         v3 = r * Math.sin(robotAngle) + rightX;
@@ -64,8 +64,8 @@ public class Drivebase {
     }
 
     public void telemetry() {
-        _Telemetry.addData("Drive Base", "");
-        _Telemetry.addData("loop time (milliseconds)", loopTime.milliseconds());
-        _Telemetry.addLine();
+        _telemetry.addData("Drive Base", "");
+        _telemetry.addData("loop time (milliseconds)", loopTime.milliseconds());
+        _telemetry.addLine();
     }
 }

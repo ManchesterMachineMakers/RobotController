@@ -7,8 +7,10 @@ before allowing movement, locking movement forward, or requiring a button to be 
 again.
 
 TODO:
+    Automatically unstow in initialization phase
+    Make robot auto-hook (for winching)
+
+DONE:
     Figure out math to keep intake level, either by asking isaac or figuring it out myself
     Implement mode changing
     Implement auto-stop
-    Automatically unstow in initialization phase
-    Make robot auto-hook (for winching)

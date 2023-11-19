@@ -3,10 +3,11 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.subassemblies.miles.Drivebase;
 import org.firstinspires.ftc.teamcode.subassemblies.miles.ManualArm;
 
-@TeleOp(name = "Manual Arm TeleOp")
+@TeleOp(name = "Manual Arm TeleOp", group = "arm")
 public class ManualTeleOp extends OpMode {
 
     Drivebase drivebase = new Drivebase();
@@ -15,13 +16,13 @@ public class ManualTeleOp extends OpMode {
     @Override
     public void init() {
 
-        drivebase._Gamepad = gamepad1;
-        drivebase._Telemetry = telemetry;
-        drivebase._HardwareMap = hardwareMap;
+        drivebase._gamepad = gamepad1;
+        drivebase._telemetry = telemetry;
+        drivebase._hardwareMap = hardwareMap;
 
-        manualArm._Gamepad = gamepad2;
-        manualArm._Telemetry = telemetry;
-        manualArm._HardwareMap = hardwareMap;
+        manualArm._gamepad = gamepad2;
+        manualArm._telemetry = telemetry;
+        manualArm._hardwareMap = hardwareMap;
 
         drivebase.init();
         manualArm.init();
@@ -29,6 +30,13 @@ public class ManualTeleOp extends OpMode {
 
     @Override
     public void loop() {
+
+        // overcurrent protection
+        if (manualArm.needsStop) {
+            requestOpModeStop();
+        } else if (manualArm.arm.getCurrent(CurrentUnit.AMPS) > 10) {
+            terminateOpModeNow();
+        }
 
         drivebase.loop();
         manualArm.loop();
