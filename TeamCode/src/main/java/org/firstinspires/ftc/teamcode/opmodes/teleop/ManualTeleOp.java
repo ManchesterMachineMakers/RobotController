@@ -7,23 +7,28 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.subassemblies.miles.Drivebase;
 import org.firstinspires.ftc.teamcode.subassemblies.miles.ManualArm;
 
+// Comments courtesy of ChatGPT
 @TeleOp(name = "Manual Arm TeleOp", group = "arm")
 public class ManualTeleOp extends OpMode {
 
+    // Initializing robot subassemblies
     Drivebase drivebase = new Drivebase();
     ManualArm manualArm = new ManualArm();
 
     @Override
     public void init() {
 
+        // Setting up references for Drivebase
         drivebase._gamepad = gamepad1;
         drivebase._telemetry = telemetry;
         drivebase._hardwareMap = hardwareMap;
 
+        // Setting up references for ManualArm
         manualArm._gamepad = gamepad2;
         manualArm._telemetry = telemetry;
         manualArm._hardwareMap = hardwareMap;
 
+        // Initializing subassemblies
         drivebase.init();
         manualArm.init();
     }
@@ -31,16 +36,19 @@ public class ManualTeleOp extends OpMode {
     @Override
     public void loop() {
 
-        // overcurrent protection
+        // Safety check: Stops the robot if ManualArm requests it
         if (manualArm.needsStop) {
             requestOpModeStop();
         } else if (manualArm.arm.getCurrent(CurrentUnit.AMPS) > 10) {
+            // Emergency stop if arm current exceeds 10 Amps
             terminateOpModeNow();
         }
 
+        // Main loop functions for Drivebase and ManualArm
         drivebase.loop();
         manualArm.loop();
 
+        // Telemetry updates for monitoring
         drivebase.telemetry();
         manualArm.telemetry();
     }

@@ -11,22 +11,26 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
+// Comments courtesy of ChatGPT
 public class ManualArm {
 
+    // Constants for arm control
     public static final double ARM_SPEED = 0.5;
     public static final double ARM_OVERCURRENT_THRESHOLD = 5;
 
+    // References to gamepad, telemetry, and hardware map
     public Gamepad _gamepad;
     public Telemetry _telemetry;
     public HardwareMap _hardwareMap;
     public ElapsedTime loopTime = new ElapsedTime();
 
+    // Motor and servo instances for the manual arm
     public DcMotorEx arm;
-
     public Servo leftRelease;
     public Servo rightRelease;
     public Servo wrist;
 
+    // Variables for tracking arm and wrist positions, release statuses, and button states
     public String leftReleaseStatus;
     public String rightReleaseStatus;
     public int latestArmPosition;
@@ -34,6 +38,7 @@ public class ManualArm {
     public boolean buttonWasPressed;
     public boolean needsStop;
 
+    // Initializes the manual arm subassembly
     public void init() {
 
         arm = _hardwareMap.get(DcMotorEx.class, "arm");
@@ -41,26 +46,32 @@ public class ManualArm {
         rightRelease = _hardwareMap.get(Servo.class, "right_release");
         wrist = _hardwareMap.get(Servo.class, "wrist");
 
+        // Configuring arm motor
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         arm.setDirection(DcMotorSimple.Direction.FORWARD);
         arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         arm.setCurrentAlert(ARM_OVERCURRENT_THRESHOLD, CurrentUnit.AMPS);
 
-        leftRelease.scaleRange(0.175, 0.4); // 7/40 radians
+        // Configuring servos with appropriate ranges and directions
+        leftRelease.scaleRange(0.175, 0.4); // 22.5% of 300 degree range
         leftRelease.setDirection(Servo.Direction.FORWARD);
-        rightRelease.scaleRange(0.6, 0.825); // 7/40 radians
+
+        rightRelease.scaleRange(0.6, 0.825); // 22.5% of 300 degree range
         rightRelease.setDirection(Servo.Direction.REVERSE);
-        wrist.scaleRange(0.25, 0.78); // 14/45 radians
+
+        wrist.scaleRange(0.25, 0.78); // // 53% of 300 degree range
         wrist.setDirection(Servo.Direction.FORWARD);
 
+        // Initializing variables
         leftReleaseStatus = "unknown";
         rightReleaseStatus = "unknown";
         latestArmPosition = 0;
         buttonWasPressed = false;
 
-        _telemetry.addData(">","Arm Subassembly Ready.");
+        _telemetry.addData(">", "Arm Subassembly Ready.");
     }
 
+    // Main loop for controlling the manual arm
     public void loop() {
         loopTime.reset(); // Keep track of time spent in each loop for debugging
 
@@ -82,7 +93,7 @@ public class ManualArm {
             brakeArm();
         }
 
-        // Wrist control that works
+        // Wrist control with buttons
         if (!buttonWasPressed) {
             if (_gamepad.dpad_up) {
                 wristPosition -= 0.05;
@@ -122,13 +133,14 @@ public class ManualArm {
         buttonWasPressed = _gamepad.dpad_up || _gamepad.dpad_down || _gamepad.dpad_left || _gamepad.dpad_right;
     }
 
+    // Displays relevant telemetry information
     public void telemetry() {
         _telemetry.addData("Manual Arm", "");
         _telemetry.addData("loop time (nanoseconds)", loopTime.nanoseconds());
         _telemetry.addData("arm mode", arm.getMode());
         _telemetry.addData("arm target position", arm.getTargetPosition());
         _telemetry.addData("arm position", arm.getCurrentPosition());
-        _telemetry.addData("arm position discrepancy", arm.getCurrentPosition() - arm.getTargetPosition())   ;
+        _telemetry.addData("arm position discrepancy", arm.getCurrentPosition() - arm.getTargetPosition());
         _telemetry.addData("wrist position", wrist.getPosition());
         _telemetry.addData("left release position", leftReleaseStatus);
         _telemetry.addData("right release position", rightReleaseStatus);
@@ -136,11 +148,13 @@ public class ManualArm {
         _telemetry.addLine();
     }
 
+    // Brakes the arm motor to maintain position
     private void brakeArm() {
         arm.setTargetPosition(latestArmPosition);
         arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
+    // Checks and handles overcurrent conditions for the arm motor
     private void protectArmIfOverCurrent() {
         if (arm.isOverCurrent()) {
             if (arm.getCurrent(CurrentUnit.AMPS) > ARM_OVERCURRENT_THRESHOLD * 1.4) {
