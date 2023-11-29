@@ -12,6 +12,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 // Comments courtesy of ChatGPT
 public class Drivebase {
 
+    // References to hardware map, gamepad, and telemetry
+    public HardwareMap hardwareMap;
+    public Gamepad gamepad;
+    public Telemetry telemetry;
+
     // Timer for tracking loop execution time
     public ElapsedTime loopTime = new ElapsedTime();
 
@@ -22,41 +27,38 @@ public class Drivebase {
             leftRear,
             rightRear;
 
-    // Variables for robot motion calculations
-    public double r, robotAngle, v1, v2, v3, v4;
-    public float rightX;
-
-    // References to hardware map, gamepad, and telemetry
-    public HardwareMap _hardwareMap;
-    public Gamepad _gamepad;
-    public Telemetry _telemetry;
+    // MAKE SURE TO DECLARE WITH VALUE
+    public String currentStatus = "unknown";
+    public double runTime = 0;
 
     // Initializes the drivebase motors and sets their configurations
     public void init() {
-        leftFront = _hardwareMap.get(DcMotorEx.class, "left_front");
-        rightFront = _hardwareMap.get(DcMotorEx.class, "right_front");
-        leftRear = _hardwareMap.get(DcMotorEx.class, "left_rear");
-        rightRear = _hardwareMap.get(DcMotorEx.class, "right_rear");
+
+        leftFront = hardwareMap.get(DcMotorEx.class, "left_front");
+        rightFront = hardwareMap.get(DcMotorEx.class, "right_front");
+        leftRear = hardwareMap.get(DcMotorEx.class, "left_rear");
+        rightRear = hardwareMap.get(DcMotorEx.class, "right_rear");
 
         configMotor(leftFront, DcMotorSimple.Direction.REVERSE);
         configMotor(rightFront, DcMotorSimple.Direction.FORWARD);
         configMotor(leftRear, DcMotorSimple.Direction.FORWARD);
         configMotor(rightRear, DcMotorSimple.Direction.REVERSE);
 
-        _telemetry.addData(">", "Drive Base Ready.");
+        telemetry.addData(">", "Drive Base Ready.");
     }
 
     // Main loop for controlling robot motion based on gamepad input
     public void loop() {
         loopTime.reset();
 
-        r = Math.hypot(_gamepad.left_stick_x, -_gamepad.left_stick_y);
-        robotAngle = Math.atan2(-_gamepad.left_stick_y, -_gamepad.left_stick_x) - Math.PI / 4;
-        rightX = _gamepad.right_stick_x;
-        v1 = r * Math.cos(robotAngle) + rightX;
-        v2 = r * Math.sin(robotAngle) - rightX;
-        v3 = r * Math.sin(robotAngle) + rightX;
-        v4 = r * Math.cos(robotAngle) - rightX;
+        // Variables for robot motion calculations
+        double r = Math.hypot(gamepad.left_stick_x, -gamepad.left_stick_y);
+        double robotAngle = Math.atan2(-gamepad.left_stick_y, -gamepad.left_stick_x) - Math.PI / 4;
+        float rightX = gamepad.right_stick_x;
+        double v1 = r * Math.cos(robotAngle) + rightX;
+        double v2 = r * Math.sin(robotAngle) - rightX;
+        double v3 = r * Math.sin(robotAngle) + rightX;
+        double v4 = r * Math.cos(robotAngle) - rightX;
         leftFront.setPower(v1 / 1.2);
         rightFront.setPower(v2 / 1.2);
         leftRear.setPower(v3 / 1.2);
@@ -72,8 +74,10 @@ public class Drivebase {
 
     // Displays relevant telemetry information
     public void telemetry() {
-        _telemetry.addData("Drive Base", "");
-        _telemetry.addData("loop time (milliseconds)", loopTime.milliseconds());
-        _telemetry.addLine();
+        telemetry.addData("Drive Base", "");
+        telemetry.addData("status", currentStatus);
+        telemetry.addData("run time", runTime);
+        telemetry.addData("loop time (milliseconds)", loopTime.milliseconds());
+        telemetry.addLine();
     }
 }

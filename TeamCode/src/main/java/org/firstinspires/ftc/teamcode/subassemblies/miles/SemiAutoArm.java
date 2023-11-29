@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subassemblies.miles;
 
+import java.lang.*;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,9 +17,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 public class SemiAutoArm {
 
     // References to gamepad, telemetry, and hardware map
-    public Gamepad _gamepad;
-    public Telemetry _telemetry;
-    public HardwareMap _hardwareMap;
+    public Gamepad gamepad;
+    public Telemetry telemetry;
+    public HardwareMap hardwareMap;
 
     // Constants for arm control
     private static final double ARM_ENCODER_RESOLUTION = 2786.2; // in pulses per rotation
@@ -36,9 +38,9 @@ public class SemiAutoArm {
 
     // Motor and servo instances for the semi-auto arm
     public DcMotorEx arm;
-    public Servo leftRelease;
-    public Servo rightRelease;
-    public Servo wrist;
+    private Servo leftRelease;
+    private Servo rightRelease;
+    private Servo wrist;
 
     // Variables for tracking arm position, wrist angle, and release statuses
     private int latestArmPosition = ARM_HORIZONTAL_POSITION;
@@ -47,15 +49,18 @@ public class SemiAutoArm {
     private String rightReleaseStatus;
     private String wristAlignment;
     private boolean isDriverArmMovementLocked = false;
+
     public boolean needsStop = false;
+    public String currentStatus = "unknown";
+    public double runTime = 0;
 
     // Initializes the semi-auto arm subassembly
     public void init() {
 
-        arm = _hardwareMap.get(DcMotorEx.class, "arm");
-        leftRelease = _hardwareMap.get(Servo.class, "left_release");
-        rightRelease = _hardwareMap.get(Servo.class, "right_release");
-        wrist = _hardwareMap.get(Servo.class, "wrist");
+        arm = hardwareMap.get(DcMotorEx.class, "arm");
+        leftRelease = hardwareMap.get(Servo.class, "left_release");
+        rightRelease = hardwareMap.get(Servo.class, "right_release");
+        wrist = hardwareMap.get(Servo.class, "wrist");
 
         // Configuring arm motor
         arm.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -76,9 +81,9 @@ public class SemiAutoArm {
         leftReleaseStatus = "unknown";
         rightReleaseStatus = "unknown";
         wristAlignment = "easel";
-        theta = 60;
+        theta = 60; // 60 for easel, 120 for floor
 
-        _telemetry.addData(">", "Semi-Auto Arm Ready.");
+        telemetry.addData(">", "Semi-Auto Arm Ready.");
     }
 
     // Main loop for controlling the semi-auto arm
@@ -90,9 +95,9 @@ public class SemiAutoArm {
 
         // Arm movement
         if (!isDriverArmMovementLocked) {
-            if (_gamepad.left_stick_y != 0) {
+            if (gamepad.left_stick_y != 0) {
                 arm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-                arm.setPower(_gamepad.left_stick_y * ARM_POWER);
+                arm.setPower(gamepad.left_stick_y * ARM_POWER);
                 latestArmPosition = arm.getCurrentPosition();
             } else {
                 brakeArm();
@@ -102,43 +107,45 @@ public class SemiAutoArm {
         // Wrist movement
         wrist.setPosition(findWristPosition());
 
-        // Intake
-        if (_gamepad.left_bumper) {
+        // Intake servo movement
+        if (gamepad.left_bumper) {
             leftRelease.setPosition(1);
             leftReleaseStatus = "open";
-        } else if (_gamepad.left_trigger > 0.2) {
+        } else if (gamepad.left_trigger > 0.2) {
             leftRelease.setPosition(0);
             leftReleaseStatus = "closed";
         }
-        if (_gamepad.right_bumper) {
+        if (gamepad.right_bumper) {
             rightRelease.setPosition(1);
             rightReleaseStatus = "open";
-        } else if (_gamepad.right_trigger > 0.2) {
+        } else if (gamepad.right_trigger > 0.2) {
             rightRelease.setPosition(0);
             rightReleaseStatus = "closed";
         }
 
         // Reset arm position
-        if (_gamepad.b) {
+        if (gamepad.b) {
             arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
         // Wrist alignment
-        if (_gamepad.a) {
+        if (gamepad.a) {
             theta = 120;
             wristAlignment = "floor";
-        } else if (_gamepad.y) {
+        } else if (gamepad.y) {
             theta = 60;
             wristAlignment = "easel";
         }
+
         // Hook onto bar for winching
-        if (_gamepad.x) {
+        if (gamepad.x) {
             isDriverArmMovementLocked = true;
             wrist.setPosition(WRIST_WINCH_POSITION);
             arm.setTargetPosition(ARM_WINCH_POSITION);
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
-        if (_gamepad.left_stick_button) {
+        // Manually unlock driver movement
+        if (gamepad.left_stick_button) {
             isDriverArmMovementLocked = false;
         }
     }
@@ -147,21 +154,20 @@ public class SemiAutoArm {
     public void telemetry() {
 
         // Telemetry updates
-        _telemetry.addData("Semi-Automatic Arm", "");
-        _telemetry.addData("loop time (milliseconds)", loopTime.milliseconds());
-        _telemetry.addData("is arm busy", arm.isBusy());
-        _telemetry.addData("arm mode", arm.getMode());
-        _telemetry.addData("arm position", arm.getCurrentPosition());
-        _telemetry.addData("arm target position", arm.getTargetPosition());
-        _telemetry.addData("arm position discrepancy", arm.getCurrentPosition() - arm.getTargetPosition());
-        _telemetry.addData("wrist position", wrist.getPosition());
-        _telemetry.addData("wrist alignment", wristAlignment);
-        _telemetry.addData("left release status", leftReleaseStatus);
-        _telemetry.addData("right release status", rightReleaseStatus);
-        _telemetry.addData("arm motor current (amps)", arm.getCurrent(CurrentUnit.AMPS));
-        _telemetry.addData("is arm over current", arm.isOverCurrent());
-        _telemetry.addData("is arm driver arm movement locked", isDriverArmMovementLocked);
-        _telemetry.addLine();
+        telemetry.addData("Semi-Automatic Arm", "");
+        telemetry.addData("status", currentStatus);
+        telemetry.addData("run time", runTime);
+        telemetry.addData("loop time (milliseconds)", loopTime.milliseconds());
+        telemetry.addData("arm mode", arm.getMode());
+        telemetry.addData("arm position", arm.getCurrentPosition());
+        telemetry.addData("arm target position", arm.getTargetPosition());
+        telemetry.addData("arm position discrepancy", arm.getCurrentPosition() - arm.getTargetPosition());
+        telemetry.addData("wrist alignment", wristAlignment);
+        telemetry.addData("left release status", leftReleaseStatus);
+        telemetry.addData("right release status", rightReleaseStatus);
+        telemetry.addData("arm motor current (amps)", arm.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("is arm driver arm movement locked", isDriverArmMovementLocked);
+        telemetry.addLine();
     }
 
     // Calculates the wrist position based on arm angle and theta
@@ -179,6 +185,7 @@ public class SemiAutoArm {
 
     // Checks and handles overcurrent conditions for the arm motor
     private void ifOvercurrentProtectArm() {
+
         if (arm.isOverCurrent()) {
             if (arm.getCurrent(CurrentUnit.AMPS) > ARM_OVERCURRENT_THRESHOLD * 1.4) {
                 needsStop = true; // Request stop of the OpMode, controlled in SemiAutoTeleOp.java

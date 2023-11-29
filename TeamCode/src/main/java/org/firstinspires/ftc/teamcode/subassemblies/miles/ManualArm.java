@@ -19,9 +19,9 @@ public class ManualArm {
     public static final double ARM_OVERCURRENT_THRESHOLD = 5;
 
     // References to gamepad, telemetry, and hardware map
-    public Gamepad _gamepad;
-    public Telemetry _telemetry;
-    public HardwareMap _hardwareMap;
+    public Gamepad gamepad;
+    public Telemetry telemetry;
+    public HardwareMap hardwareMap;
     public ElapsedTime loopTime = new ElapsedTime();
 
     // Motor and servo instances for the manual arm
@@ -41,10 +41,10 @@ public class ManualArm {
     // Initializes the manual arm subassembly
     public void init() {
 
-        arm = _hardwareMap.get(DcMotorEx.class, "arm");
-        leftRelease = _hardwareMap.get(Servo.class, "left_release");
-        rightRelease = _hardwareMap.get(Servo.class, "right_release");
-        wrist = _hardwareMap.get(Servo.class, "wrist");
+        arm = hardwareMap.get(DcMotorEx.class, "arm");
+        leftRelease = hardwareMap.get(Servo.class, "left_release");
+        rightRelease = hardwareMap.get(Servo.class, "right_release");
+        wrist = hardwareMap.get(Servo.class, "wrist");
 
         // Configuring arm motor
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -68,7 +68,7 @@ public class ManualArm {
         latestArmPosition = 0;
         buttonWasPressed = false;
 
-        _telemetry.addData(">", "Arm Subassembly Ready.");
+        telemetry.addData(">", "Arm Subassembly Ready.");
     }
 
     // Main loop for controlling the manual arm
@@ -79,15 +79,15 @@ public class ManualArm {
 
         // Wrist control
         wristPosition = wrist.getPosition();
-        wristPosition += _gamepad.right_stick_y / 25;
+        wristPosition += gamepad.right_stick_y / 25;
         if (wristPosition < 0) {
             wristPosition = 0;
         } else if (wristPosition > 1) {
             wristPosition = 1;
         }
-        if (_gamepad.left_stick_y != 0.0) {
+        if (gamepad.left_stick_y != 0.0) {
             arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            arm.setPower(-_gamepad.left_stick_y * ARM_SPEED);
+            arm.setPower(-gamepad.left_stick_y * ARM_SPEED);
             latestArmPosition = arm.getCurrentPosition();
         } else {
             brakeArm();
@@ -95,57 +95,57 @@ public class ManualArm {
 
         // Wrist control with buttons
         if (!buttonWasPressed) {
-            if (_gamepad.dpad_up) {
+            if (gamepad.dpad_up) {
                 wristPosition -= 0.05;
-            } else if (_gamepad.dpad_down) {
+            } else if (gamepad.dpad_down) {
                 wristPosition += 0.05;
-            } else if (_gamepad.dpad_left) {
+            } else if (gamepad.dpad_left) {
                 wristPosition += 0.2;
-            } else if (_gamepad.dpad_right) {
+            } else if (gamepad.dpad_right) {
                 wristPosition -= 0.2;
             }
         }
         wrist.setPosition(wristPosition);
 
-        if (_gamepad.b) {
+        if (gamepad.b) {
             arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
 
         // Pixel release mechanism (brush)
         // Left
-        if (_gamepad.left_bumper) { // Open
+        if (gamepad.left_bumper) { // Open
             leftRelease.setPosition(1);
             leftReleaseStatus = "open";
-        } else if (_gamepad.left_trigger > 0.2) { // Close
+        } else if (gamepad.left_trigger > 0.2) { // Close
             leftRelease.setPosition(0);
             leftReleaseStatus = "closed";
         }
         // Right
-        if (_gamepad.right_bumper) { // Open
+        if (gamepad.right_bumper) { // Open
             rightRelease.setPosition(1);
             rightReleaseStatus = "open";
-        } else if (_gamepad.right_trigger > 0.2) { // Close
+        } else if (gamepad.right_trigger > 0.2) { // Close
             rightRelease.setPosition(0);
             rightReleaseStatus = "closed";
         }
 
         // For detecting when a button is pressed.
-        buttonWasPressed = _gamepad.dpad_up || _gamepad.dpad_down || _gamepad.dpad_left || _gamepad.dpad_right;
+        buttonWasPressed = gamepad.dpad_up || gamepad.dpad_down || gamepad.dpad_left || gamepad.dpad_right;
     }
 
     // Displays relevant telemetry information
     public void telemetry() {
-        _telemetry.addData("Manual Arm", "");
-        _telemetry.addData("loop time (nanoseconds)", loopTime.nanoseconds());
-        _telemetry.addData("arm mode", arm.getMode());
-        _telemetry.addData("arm target position", arm.getTargetPosition());
-        _telemetry.addData("arm position", arm.getCurrentPosition());
-        _telemetry.addData("arm position discrepancy", arm.getCurrentPosition() - arm.getTargetPosition());
-        _telemetry.addData("wrist position", wrist.getPosition());
-        _telemetry.addData("left release position", leftReleaseStatus);
-        _telemetry.addData("right release position", rightReleaseStatus);
-        _telemetry.addData("arm current (amps)", arm.getCurrent(CurrentUnit.AMPS));
-        _telemetry.addLine();
+        telemetry.addData("Manual Arm", "");
+        telemetry.addData("loop time (nanoseconds)", loopTime.nanoseconds());
+        telemetry.addData("arm mode", arm.getMode());
+        telemetry.addData("arm target position", arm.getTargetPosition());
+        telemetry.addData("arm position", arm.getCurrentPosition());
+        telemetry.addData("arm position discrepancy", arm.getCurrentPosition() - arm.getTargetPosition());
+        telemetry.addData("wrist position", wrist.getPosition());
+        telemetry.addData("left release position", leftReleaseStatus);
+        telemetry.addData("right release position", rightReleaseStatus);
+        telemetry.addData("arm current (amps)", arm.getCurrent(CurrentUnit.AMPS));
+        telemetry.addLine();
     }
 
     // Brakes the arm motor to maintain position

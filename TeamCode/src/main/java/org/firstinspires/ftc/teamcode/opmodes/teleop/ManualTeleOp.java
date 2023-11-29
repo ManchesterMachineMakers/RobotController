@@ -19,14 +19,14 @@ public class ManualTeleOp extends OpMode {
     public void init() {
 
         // Setting up references for Drivebase
-        drivebase._gamepad = gamepad1;
-        drivebase._telemetry = telemetry;
-        drivebase._hardwareMap = hardwareMap;
+        drivebase.gamepad = gamepad1;
+        drivebase.telemetry = telemetry;
+        drivebase.hardwareMap = hardwareMap;
 
         // Setting up references for ManualArm
-        manualArm._gamepad = gamepad2;
-        manualArm._telemetry = telemetry;
-        manualArm._hardwareMap = hardwareMap;
+        manualArm.gamepad = gamepad2;
+        manualArm.telemetry = telemetry;
+        manualArm.hardwareMap = hardwareMap;
 
         // Initializing subassemblies
         drivebase.init();

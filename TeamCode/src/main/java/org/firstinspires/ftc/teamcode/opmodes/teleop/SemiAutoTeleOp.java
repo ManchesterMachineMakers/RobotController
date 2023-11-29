@@ -17,24 +17,38 @@ public class SemiAutoTeleOp extends OpMode {
 
     @Override
     public void init() {
+        // Update statuses
+        drivebase.currentStatus = "initializing";
+        semiAutoArm.currentStatus = "initializing";
 
         // Setting up references for Drivebase
-        drivebase._gamepad = gamepad1;
-        drivebase._telemetry = telemetry;
-        drivebase._hardwareMap = hardwareMap;
+        drivebase.gamepad = gamepad1;
+        drivebase.telemetry = telemetry;
+        drivebase.hardwareMap = hardwareMap;
 
         // Setting up references for SemiAutoArm
-        semiAutoArm._gamepad = gamepad2;
-        semiAutoArm._telemetry = telemetry;
-        semiAutoArm._hardwareMap = hardwareMap;
+        semiAutoArm.gamepad = gamepad2;
+        semiAutoArm.telemetry = telemetry;
+        semiAutoArm.hardwareMap = hardwareMap;
 
         // Initializing subassemblies
         drivebase.init();
         semiAutoArm.init();
+
+        // Update telemetry
+        drivebase.telemetry();
+        semiAutoArm.telemetry();
     }
 
     @Override
     public void loop() {
+        // Update statuses
+        drivebase.currentStatus = "looping";
+        semiAutoArm.currentStatus = "looping";
+
+        // Update run time
+        drivebase.runTime = time;
+        semiAutoArm.runTime = time;
 
         // Safety check: Stops the robot if SemiAutoArm requests it
         if (semiAutoArm.needsStop) {
