@@ -39,7 +39,7 @@ public class ManualTeleOp extends OpMode {
         // Safety check: Stops the robot if ManualArm requests it
         if (manualArm.needsStop) {
             requestOpModeStop();
-        } else if (manualArm.arm.getCurrent(CurrentUnit.AMPS) > 10) {
+        } else if (manualArm.arm.getCurrent(CurrentUnit.AMPS) > 8) {
             // Emergency stop if arm current exceeds 10 Amps
             terminateOpModeNow();
         }

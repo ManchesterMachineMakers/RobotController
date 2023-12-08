@@ -15,14 +15,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 public class ManualArm {
 
     // Constants for arm control
-    public static final double ARM_SPEED = 0.5;
-    public static final double ARM_OVERCURRENT_THRESHOLD = 5;
+    private static final double ARM_SPEED = 0.5;
+    private static final double ARM_OVERCURRENT_THRESHOLD = 4;
 
     // References to gamepad, telemetry, and hardware map
     public Gamepad gamepad;
     public Telemetry telemetry;
     public HardwareMap hardwareMap;
-    public ElapsedTime loopTime = new ElapsedTime();
+    private final ElapsedTime loopTime = new ElapsedTime();
 
     // Motor and servo instances for the manual arm
     public DcMotorEx arm;
@@ -31,15 +31,17 @@ public class ManualArm {
     public Servo wrist;
 
     // Variables for tracking arm and wrist positions, release statuses, and button states
-    public String leftReleaseStatus;
-    public String rightReleaseStatus;
-    public int latestArmPosition;
-    public double wristPosition;
-    public boolean buttonWasPressed;
+    private String leftReleaseStatus;
+    private String rightReleaseStatus;
+    private int latestArmPosition;
+    private double wristPosition;
+    private boolean buttonWasPressed;
     public boolean needsStop;
 
     // Initializes the manual arm subassembly
     public void init() {
+
+        wristPosition = wrist.getPosition();
 
         arm = hardwareMap.get(DcMotorEx.class, "arm");
         leftRelease = hardwareMap.get(Servo.class, "left_release");
@@ -65,7 +67,7 @@ public class ManualArm {
         // Initializing variables
         leftReleaseStatus = "unknown";
         rightReleaseStatus = "unknown";
-        latestArmPosition = 0;
+        latestArmPosition = arm.getCurrentPosition();
         buttonWasPressed = false;
 
         telemetry.addData(">", "Arm Subassembly Ready.");
@@ -90,7 +92,9 @@ public class ManualArm {
             arm.setPower(-gamepad.left_stick_y * ARM_SPEED);
             latestArmPosition = arm.getCurrentPosition();
         } else {
-            brakeArm();
+            // brake
+            arm.setTargetPosition(latestArmPosition);
+            arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
         // Wrist control with buttons
@@ -148,11 +152,6 @@ public class ManualArm {
         telemetry.addLine();
     }
 
-    // Brakes the arm motor to maintain position
-    private void brakeArm() {
-        arm.setTargetPosition(latestArmPosition);
-        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    }
 
     // Checks and handles overcurrent conditions for the arm motor
     private void protectArmIfOverCurrent() {
