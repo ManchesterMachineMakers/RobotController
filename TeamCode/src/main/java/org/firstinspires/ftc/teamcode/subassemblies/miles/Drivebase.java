@@ -76,8 +76,8 @@ public class Drivebase {
     public void telemetry() {
         telemetry.addData("Drive Base", "");
         telemetry.addData("status", currentStatus);
-        telemetry.addData("run time", runTime);
-        telemetry.addData("loop time (milliseconds)", loopTime.milliseconds());
+        telemetry.addData("run time", (int) runTime);
+        telemetry.addData("loop time (milliseconds)", (int) loopTime.milliseconds());
         telemetry.addLine();
     }
 }
