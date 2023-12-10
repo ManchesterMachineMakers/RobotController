@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subassemblies.miles.semiAuto;
 
 import java.lang.*;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -13,11 +14,19 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.manchestermachinemakers.easyop.Device;
+import org.manchestermachinemakers.easyop.Subassembly;
 
 // Comments courtesy of ChatGPT
-public class CtSemiAutoArm {
+public class CtSemiAutoArm implements Subassembly {
 
-    // References to gamepad, telemetry, and hardware map
+    public OpMode opMode;
+
+    // constructor method
+    public CtSemiAutoArm(OpMode opMode) {
+        this.opMode = opMode;
+    }
+
     public Gamepad gamepad;
     public Telemetry telemetry;
     public HardwareMap hardwareMap;
@@ -44,31 +53,27 @@ public class CtSemiAutoArm {
     public ElapsedTime loopTime = new ElapsedTime();
 
     // Motor and servo instances for the semi-auto arm
-    public DcMotorEx arm;
-    private Servo leftRelease;
-    private Servo rightRelease;
-    private Servo wrist;
+    @Device("arm") public DcMotorEx arm;
+    @Device("wrist") public Servo wrist;
+    @Device("left_release") public Servo leftRelease;
+    @Device("right_release") public Servo rightRelease;
 
     // Variables for tracking arm position, wrist angle, and release statuses
     private int latestArmPosition = ARM_HORIZONTAL_POSITION;
-    private double theta;
-    private String leftReleaseStatus;
-    private String rightReleaseStatus;
-    private String wristAlignment;
-    private boolean isDriverArmMovementLocked = false;
+    private double theta = 60;
+    private String wristAlignment = "easel";
 
-    public boolean needsStop = false;
     public String currentStatus = "unknown";
     public double runTime = 0;
 
     // Initializes the semi-auto arm subassembly
     public void init() {
-        PIDFCoefficients armPIDF = new PIDFCoefficients(ARM_P, ARM_I, ARM_D, ARM_F);
 
-        arm = hardwareMap.get(DcMotorEx.class, "arm");
-        leftRelease = hardwareMap.get(Servo.class, "left_release");
-        rightRelease = hardwareMap.get(Servo.class, "right_release");
-        wrist = hardwareMap.get(Servo.class, "wrist");
+        gamepad = opMode.gamepad2;
+        telemetry = opMode.telemetry;
+        hardwareMap = opMode.hardwareMap;
+
+        PIDFCoefficients armPIDF = new PIDFCoefficients(ARM_P, ARM_I, ARM_D, ARM_F);
 
         // Configuring arm motor
         arm.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -86,12 +91,6 @@ public class CtSemiAutoArm {
         wrist.scaleRange(0.25, 0.78); // 53% of 300-degree range
         wrist.setDirection(Servo.Direction.FORWARD);
 
-        // Initializing variables
-        leftReleaseStatus = "unknown";
-        rightReleaseStatus = "unknown";
-        wristAlignment = "easel";
-        theta = 60; // 60 for easel, 120 for floor
-
         telemetry.addData(">", "Semi-Auto Arm Ready.");
     }
 
@@ -100,10 +99,8 @@ public class CtSemiAutoArm {
 
         loopTime.reset();
 
-        ifOvercurrentProtectArm();
-
         // Arm movement
-        if (!isDriverArmMovementLocked) {
+        if (!arm.isOverCurrent()) {
             if (gamepad.left_stick_y != 0) {
                 arm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
                 arm.setVelocity(gamepad.left_stick_y * ARM_ENCODER_RESOLUTION * ARM_SPEED);
@@ -119,17 +116,13 @@ public class CtSemiAutoArm {
         // Intake servo movement
         if (gamepad.left_bumper) {
             leftRelease.setPosition(1);
-            leftReleaseStatus = "open";
         } else if (gamepad.left_trigger > 0.2) {
             leftRelease.setPosition(0);
-            leftReleaseStatus = "closed";
         }
         if (gamepad.right_bumper) {
             rightRelease.setPosition(1);
-            rightReleaseStatus = "open";
         } else if (gamepad.right_trigger > 0.2) {
             rightRelease.setPosition(0);
-            rightReleaseStatus = "closed";
         }
 
         // Reset arm position
@@ -147,15 +140,9 @@ public class CtSemiAutoArm {
 
         // Hook onto bar for winching
         if (gamepad.x) {
-            isDriverArmMovementLocked = true;
             wrist.setPosition(WRIST_WINCH_POSITION);
             arm.setTargetPosition(ARM_WINCH_POSITION);
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        }
-
-        // Manually unlock driver movement
-        if (gamepad.left_stick_button) {
-            isDriverArmMovementLocked = false;
         }
     }
 
@@ -168,14 +155,9 @@ public class CtSemiAutoArm {
         telemetry.addData("run time", (int) runTime);
         telemetry.addData("loop time (milliseconds)", (int) loopTime.milliseconds());
         telemetry.addData("arm mode", arm.getMode());
-        telemetry.addData("arm position", arm.getCurrentPosition());
-        telemetry.addData("arm target position", arm.getTargetPosition());
-        telemetry.addData("arm position discrepancy", arm.getCurrentPosition() - arm.getTargetPosition());
+        telemetry.addData("arm velocity", arm.getVelocity());
         telemetry.addData("wrist alignment", wristAlignment);
-        telemetry.addData("$leftR", leftReleaseStatus);
-        telemetry.addData("right release status", rightReleaseStatus);
         telemetry.addData("arm motor current (amps)", arm.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("is arm driver arm movement locked", isDriverArmMovementLocked);
         telemetry.addLine();
     }
 
@@ -193,20 +175,18 @@ public class CtSemiAutoArm {
     }
 
     // Checks and handles overcurrent conditions for the arm motor
-    private void ifOvercurrentProtectArm() {
+    public void overcurrentProtection() {
 
         if (arm.isOverCurrent()) {
-            telemetry.addData("\033[31WARNING", "arm motor is overcurrent, reduce load or the arm may break");
+
+            telemetry.addData("WARNING", "arm motor is overcurrent, reduce load or the arm may break");
 
             if (arm.getCurrent(CurrentUnit.AMPS) > ARM_OVERCURRENT_THRESHOLD * 1.4) {
-                needsStop = true; // Request stop of the OpMode, controlled in SemiAutoTeleOp.java
+                opMode.requestOpModeStop();
             } else {
-                isDriverArmMovementLocked = true;
                 arm.setTargetPosition(0);
                 arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
-        } else {
-            isDriverArmMovementLocked = false;
         }
     }
 }

@@ -3,29 +3,31 @@ package org.firstinspires.ftc.teamcode.subassemblies.miles.semiAuto;
 import java.lang.*;
 import java.util.*;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-
+import org.manchestermachinemakers.easyop.Device;
+import org.manchestermachinemakers.easyop.Subassembly;
 
 // Comments courtesy of ChatGPT
-public class IncSemiAutoArm {
+public class IncSemiAutoArm implements Subassembly {
 
-    // References to gamepad, telemetry, and hardware map
-    public Gamepad gamepad;
-    public Telemetry telemetry;
-    public HardwareMap hardwareMap;
+    public OpMode opMode;
+
+    public IncSemiAutoArm(OpMode opMode) { this.opMode = opMode; }
+
+    private Telemetry telemetry;
+    private Gamepad gamepad;
 
     // Constants for arm control
     private static final double ARM_ENCODER_RESOLUTION = 2786.2; // in pulses per rotation
-    private static final double ARM_SPEED = 0.4;
     private static final double ARM_OVERCURRENT_THRESHOLD = 4;
     private static final int ARM_LARGE_INCREMENT = 4;
     private static final int ARM_INCREMENT_UPPER_LIMIT = 7;
@@ -47,10 +49,10 @@ public class IncSemiAutoArm {
     public ElapsedTime loopTime = new ElapsedTime();
 
     // Motor and servo instances for the semi-auto arm
-    public DcMotorEx arm;
-    private Servo leftRelease;
-    private Servo rightRelease;
-    private Servo wrist;
+    @Device("arm") private DcMotorEx arm;
+    @Device("left_release") private Servo leftRelease;
+    @Device("right_release") private Servo rightRelease;
+    @Device("wrist") private Servo wrist;
 
     // Variables for tracking arm position, wrist angle, and release statuses
     private double theta = 60; // 60 for easel, 120 for floor
@@ -58,17 +60,14 @@ public class IncSemiAutoArm {
     private int pixelLayer = 0;
     private boolean dpadWasUsed = false;
 
-    public boolean needsStop = false;
     public String currentStatus = "unknown";
     public double runTime = 0;
 
     // Initializes the semi-auto arm subassembly
     public void init() {
 
-        arm = hardwareMap.get(DcMotorEx.class, "arm");
-        leftRelease = hardwareMap.get(Servo.class, "left_release");
-        rightRelease = hardwareMap.get(Servo.class, "right_release");
-        wrist = hardwareMap.get(Servo.class, "wrist");
+        telemetry = opMode.telemetry;
+        gamepad = opMode.gamepad2;
 
         // Configuring arm motor
         arm.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -99,8 +98,6 @@ public class IncSemiAutoArm {
     public void loop() {
 
         loopTime.reset();
-
-        ifOvercurrentProtectArm();
 
         arm.setTargetPosition(getTargetArmAndWristPositions().getKey());
         wrist.setPosition(getTargetArmAndWristPositions().getValue());
@@ -178,6 +175,21 @@ public class IncSemiAutoArm {
         telemetry.addLine();
     }
 
+    // Checks and handles overcurrent conditions for the arm motor
+    public void overcurrentProtection() {
+
+        if (arm.isOverCurrent()) {
+            telemetry.addData("WARNING", "arm motor is overcurrent, reduce load or the arm may break");
+
+            if (arm.getCurrent(CurrentUnit.AMPS) > ARM_OVERCURRENT_THRESHOLD * 1.4) {
+                opMode.requestOpModeStop();
+            } else {
+                arm.setTargetPosition(0);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
+        }
+    }
+
     // See math: https://drive.google.com/file/d/1ADeKl-3EPOc8nBHZwGThREwBQAEdIAJ9/view
     // pixelStack == n
     private Map.Entry<Integer, Double> getTargetArmAndWristPositions() {
@@ -202,18 +214,4 @@ public class IncSemiAutoArm {
         return new AbstractMap.SimpleEntry<>(targetArmPosition, targetWristPosition);
     }
 
-    // Checks and handles overcurrent conditions for the arm motor
-    private void ifOvercurrentProtectArm() {
-
-        if (arm.isOverCurrent()) {
-            telemetry.addData("WARNING", "arm motor is overcurrent, reduce load or the arm may break");
-
-            if (arm.getCurrent(CurrentUnit.AMPS) > ARM_OVERCURRENT_THRESHOLD * 1.4) {
-                needsStop = true; // Request stop of the OpMode, controlled in SemiAutoTeleOp.java
-            } else {
-                arm.setTargetPosition(0);
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
-        }
-    }
 }

@@ -1,36 +1,25 @@
 // Package and imports
 package org.firstinspires.ftc.teamcode.opmodes.teleop.semiAutoArms;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.subassemblies.miles.Drivebase;
 import org.firstinspires.ftc.teamcode.subassemblies.miles.semiAuto.CtSemiAutoArm;
+import org.manchestermachinemakers.easyop.Linear;
 
 // Comments courtesy of ChatGPT
 @TeleOp(name = "Semi-Auto Ct Arm TeleOp", group = "arm")
-public class CtSemiAutoTeleOp extends OpMode {
+public class CtSemiAutoTeleOp extends Linear {
 
     // Initializing robot subassemblies
-    Drivebase drivebase = new Drivebase();
-    CtSemiAutoArm semiAutoArm = new CtSemiAutoArm();
+    Drivebase drivebase = new Drivebase(this);
+    CtSemiAutoArm semiAutoArm = new CtSemiAutoArm(this);
 
     @Override
-    public void init() {
+    public void opInit() {
         // Update statuses
         drivebase.currentStatus = "initializing";
         semiAutoArm.currentStatus = "initializing";
-
-        // Setting up references for Drivebase
-        drivebase.gamepad = gamepad1;
-        drivebase.telemetry = telemetry;
-        drivebase.hardwareMap = hardwareMap;
-
-        // Setting up references for SemiAutoArm
-        semiAutoArm.gamepad = gamepad2;
-        semiAutoArm.telemetry = telemetry;
-        semiAutoArm.hardwareMap = hardwareMap;
 
         // Initializing subassemblies
         drivebase.init();
@@ -42,7 +31,7 @@ public class CtSemiAutoTeleOp extends OpMode {
     }
 
     @Override
-    public void loop() {
+    public void opLoop() {
         // Update statuses
         drivebase.currentStatus = "looping";
         semiAutoArm.currentStatus = "looping";
@@ -51,13 +40,8 @@ public class CtSemiAutoTeleOp extends OpMode {
         drivebase.runTime = time;
         semiAutoArm.runTime = time;
 
-        // Safety check: Stops the robot if SemiAutoArm requests it
-        if (semiAutoArm.needsStop) {
-            requestOpModeStop();
-        } else if (semiAutoArm.arm.getCurrent(CurrentUnit.AMPS) > 10) {
-            // Emergency stop if arm current exceeds 10 Amps
-            terminateOpModeNow();
-        }
+        // Protect the arm if it's overcurrent (make it not hurt itself)
+        semiAutoArm.overcurrentProtection();
 
         // Main loop functions for Drivebase and SemiAutoArm
         drivebase.loop();

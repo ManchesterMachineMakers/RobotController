@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop.semiAutoArms;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.subassemblies.miles.Drivebase;
 import org.firstinspires.ftc.teamcode.subassemblies.miles.semiAuto.IncSemiAutoArm;
 
@@ -12,24 +11,15 @@ import org.firstinspires.ftc.teamcode.subassemblies.miles.semiAuto.IncSemiAutoAr
 public class IncSemiAutoTeleOp extends OpMode {
 
     // Initializing robot subassemblies
-    Drivebase drivebase = new Drivebase();
-    IncSemiAutoArm incSemiAutoArm = new IncSemiAutoArm();
+    Drivebase drivebase = new Drivebase(this);
+    IncSemiAutoArm incSemiAutoArm = new IncSemiAutoArm(this);
 
     @Override
     public void init() {
+
         // Update statuses
         drivebase.currentStatus = "initializing";
         incSemiAutoArm.currentStatus = "initializing";
-
-        // Setting up references for Drivebase
-        drivebase.gamepad = gamepad1;
-        drivebase.telemetry = telemetry;
-        drivebase.hardwareMap = hardwareMap;
-
-        // Setting up references for SemiAutoArm
-        incSemiAutoArm.gamepad = gamepad2;
-        incSemiAutoArm.telemetry = telemetry;
-        incSemiAutoArm.hardwareMap = hardwareMap;
 
         // Initializing subassemblies
         drivebase.init();
@@ -50,13 +40,8 @@ public class IncSemiAutoTeleOp extends OpMode {
         drivebase.runTime = time;
         incSemiAutoArm.runTime = time;
 
-        // Safety check: Stops the robot if SemiAutoArm requests it
-        if (incSemiAutoArm.needsStop) {
-            requestOpModeStop();
-        } else if (incSemiAutoArm.arm.getCurrent(CurrentUnit.AMPS) > 10) {
-            // Emergency stop if arm current exceeds 10 Amps
-            terminateOpModeNow();
-        }
+        // Protect arm from hurting itself
+        incSemiAutoArm.overcurrentProtection();
 
         // Main loop functions for Drivebase and SemiAutoArm
         drivebase.loop();
