@@ -5,30 +5,13 @@ import java.util.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.manchestermachinemakers.easyop.Device;
-import org.manchestermachinemakers.easyop.Subassembly;
+import org.firstinspires.ftc.teamcode.subassemblies.miles.BasicArm;
 
 // Comments courtesy of ChatGPT
-public class IncSemiAutoArm implements Subassembly {
+public class IncSemiAutoArm extends BasicArm {
 
-    public OpMode opMode;
-
-    public IncSemiAutoArm(OpMode opMode) { this.opMode = opMode; }
-
-    private Telemetry telemetry;
-    private Gamepad gamepad;
-
-    // Constants for arm control
-    private static final double ARM_ENCODER_RESOLUTION = 2786.2; // in pulses per rotation
-    private static final double ARM_OVERCURRENT_THRESHOLD = 4;
     private static final int ARM_LARGE_INCREMENT = 4;
     private static final int ARM_INCREMENT_UPPER_LIMIT = 7;
 
@@ -36,66 +19,23 @@ public class IncSemiAutoArm implements Subassembly {
     private static final int ARM_WINCH_POSITION = 0; // TODO: get value for this
     private static final double WRIST_WINCH_POSITION = 0; // TODO: get value for this
 
-    // Math constants for getWristAndArmPosition()
-    private static final double
-            GAMMA = Math.atan(16.0 / 283.0) * (180 / Math.PI),
-            D1 = 220,
-            D2 = 88.9,
-            L2 = 67.88,
-            L3 = 59.5,
-            H = 287.75,
-            R = 336;
+    // Math constants
+    private static final double GAMMA = Math.atan(16.0 / 283.0) * (180 / Math.PI);
+    private static final double D1 = 220;
+    private static final double D2 = 88.9;
+    private static final double L2 = 67.88;
+    private static final double L3 = 59.5;
+    private static final double H = 287.75;
+    private static final double R = 336;
 
-    public ElapsedTime loopTime = new ElapsedTime();
-
-    // Motor and servo instances for the semi-auto arm
-    @Device("arm") private DcMotorEx arm;
-    @Device("left_release") private Servo leftRelease;
-    @Device("right_release") private Servo rightRelease;
-    @Device("wrist") private Servo wrist;
-
-    // Variables for tracking arm position, wrist angle, and release statuses
     private double theta = 60; // 60 for easel, 120 for floor
     private String wristAlignment;
     private int pixelLayer = 0;
-    private boolean dpadWasUsed = false;
 
-    public String currentStatus = "unknown";
-    public double runTime = 0;
-
-    // Initializes the semi-auto arm subassembly
-    public void init() {
-
-        telemetry = opMode.telemetry;
-        gamepad = opMode.gamepad2;
-
-        // Configuring arm motor
-        arm.setDirection(DcMotorSimple.Direction.REVERSE);
-        arm.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        arm.setCurrentAlert(ARM_OVERCURRENT_THRESHOLD, CurrentUnit.AMPS); // Threshold for current usage alert
-
-        // Configuring servos with appropriate ranges and directions
-        leftRelease.scaleRange(0.15, 0.40); // 22.5% of 300-degree range
-        leftRelease.setDirection(Servo.Direction.FORWARD);
-
-        rightRelease.scaleRange(0.6, 1); // 22.5% of 300-degree range
-        rightRelease.setDirection(Servo.Direction.REVERSE);
-
-        wrist.scaleRange(0.25, 0.78); // 53% of 300-degree range
-        wrist.setDirection(Servo.Direction.FORWARD);
-
-        // Initializing variables
-        wristAlignment = "easel";
-
-
-        telemetry.addData("getArmAndWristPosition().first", getTargetArmAndWristPositions().getKey());
-        telemetry.addData("getArmAndWristPosition().second", getTargetArmAndWristPositions().getValue());
-
-        telemetry.addData(">", "Semi-Auto Arm Ready.");
-    }
+    public IncSemiAutoArm(OpMode opMode) { super(opMode); } // constructor
 
     // Main loop for controlling the semi-auto arm
-    public void loop() {
+    @Override public void loop() {
 
         loopTime.reset();
 
@@ -115,13 +55,13 @@ public class IncSemiAutoArm implements Subassembly {
         }
 
         // Incrementer
-        if (gamepad.dpad_up && !dpadWasUsed) {
+        if (gamepad.dpad_up && !buttonWasPressed) {
             pixelLayer++;
-        } else if (gamepad.dpad_down && !dpadWasUsed) {
+        } else if (gamepad.dpad_down && !buttonWasPressed) {
             pixelLayer = -1;
-        } else if (gamepad.dpad_right && !dpadWasUsed) {
+        } else if (gamepad.dpad_right && !buttonWasPressed) {
             pixelLayer += ARM_LARGE_INCREMENT;
-        } else if (gamepad.dpad_left && !dpadWasUsed) {
+        } else if (gamepad.dpad_left && !buttonWasPressed) {
             pixelLayer -= ARM_LARGE_INCREMENT;
         }
         // pixelLayer must stay between -1 and 7
@@ -154,16 +94,16 @@ public class IncSemiAutoArm implements Subassembly {
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
-        dpadWasUsed = gamepad.dpad_up || gamepad.dpad_down || gamepad.dpad_left || gamepad.dpad_right;
+        buttonWasPressed = gamepad.dpad_up || gamepad.dpad_down || gamepad.dpad_left || gamepad.dpad_right;
     }
 
     // Displays relevant telemetry information
-    public void telemetry() {
+    @Override public void telemetry() {
 
         // Telemetry updates
         telemetry.addData("Semi-Automatic Arm", "");
         telemetry.addData("status", currentStatus);
-        telemetry.addData("run time", (int) runTime);
+        telemetry.addData("run time", (int) opMode.getRuntime());
         telemetry.addData("loop time (milliseconds)", (int) loopTime.milliseconds());
         telemetry.addData("arm mode", arm.getMode());
         telemetry.addData("arm position", arm.getCurrentPosition());
@@ -173,21 +113,6 @@ public class IncSemiAutoArm implements Subassembly {
         telemetry.addData("wrist alignment", wristAlignment);
         telemetry.addData("arm motor current (amps)", arm.getCurrent(CurrentUnit.AMPS));
         telemetry.addLine();
-    }
-
-    // Checks and handles overcurrent conditions for the arm motor
-    public void overcurrentProtection() {
-
-        if (arm.isOverCurrent()) {
-            telemetry.addData("WARNING", "arm motor is overcurrent, reduce load or the arm may break");
-
-            if (arm.getCurrent(CurrentUnit.AMPS) > ARM_OVERCURRENT_THRESHOLD * 1.4) {
-                opMode.requestOpModeStop();
-            } else {
-                arm.setTargetPosition(0);
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            }
-        }
     }
 
     // See math: https://drive.google.com/file/d/1ADeKl-3EPOc8nBHZwGThREwBQAEdIAJ9/view
@@ -209,7 +134,7 @@ public class IncSemiAutoArm implements Subassembly {
         } else { // easel
             beta = theta - GAMMA - alpha;
         }
-        int targetArmPosition = (int) (alpha / 360 * ARM_ENCODER_RESOLUTION); // from degrees to encoder ticks
+        int targetArmPosition = (int) (alpha / 360 * ARM_ENCODER_RES); // from degrees to encoder ticks
         double targetWristPosition = beta * 0.53 * 300 / 360; // from degrees to the servo's range (53% of 300 degrees)
         return new AbstractMap.SimpleEntry<>(targetArmPosition, targetWristPosition);
     }

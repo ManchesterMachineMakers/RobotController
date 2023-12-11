@@ -8,10 +8,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.manchestermachinemakers.easyop.Device;
-import org.manchestermachinemakers.easyop.Linear;
+import org.manchestermachinemakers.easyop.Subassembly;
 
 // Comments courtesy of ChatGPT
-public class Drivebase extends Linear {
+public class Drivebase implements Subassembly {
 
     private final OpMode opMode;
 
@@ -34,7 +34,7 @@ public class Drivebase extends Linear {
     public double runTime = 0;
 
     // Initializes the drivebase motors and sets their configurations
-    @Override public void opInit() {
+    public void init() {
         gamepad = opMode.gamepad1;
         telemetry = opMode.telemetry;
 
@@ -50,7 +50,7 @@ public class Drivebase extends Linear {
     }
 
     // Main loop for controlling robot motion based on gamepad input
-    @Override public void opLoop() {
+    public void loop() {
         currentStatus = "looping";
         loopTime.reset();
 
