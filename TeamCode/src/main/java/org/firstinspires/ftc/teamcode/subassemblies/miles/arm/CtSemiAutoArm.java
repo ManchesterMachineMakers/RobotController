@@ -1,17 +1,16 @@
-package org.firstinspires.ftc.teamcode.subassemblies.miles.semiAuto;
-
-import java.lang.*;
+package org.firstinspires.ftc.teamcode.subassemblies.miles.arm;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.subassemblies.miles.BasicArm;
+import org.firstinspires.ftc.teamcode.util.BaseArm;
 
-// Comments courtesy of ChatGPT
-public class CtSemiAutoArm extends BasicArm {
+/**
+ * Semi-automatic arm subassembly for controlling arm and wrist movements.
+ */
+public class CtSemiAutoArm extends BaseArm {
 
     // Position presets
     private static final int ARM_HORIZONTAL_POSITION = 1550; // encoder ticks (PPR)
@@ -23,10 +22,15 @@ public class CtSemiAutoArm extends BasicArm {
     private double theta = 60; // degrees
     private String wristAlignment = "easel";
 
-    public CtSemiAutoArm(OpMode opMode) { super(opMode); }
+    public CtSemiAutoArm(OpMode opMode) {
+        super(opMode);
+    }
 
-    // Main loop for controlling the semi-auto arm
-    @Override public void loop() {
+    /**
+     * Main loop for controlling the semi-auto arm.
+     */
+    @Override
+    public void loop() {
 
         loopTime.reset();
 
@@ -64,16 +68,20 @@ public class CtSemiAutoArm extends BasicArm {
             arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
-        controlIntakeServos();
+        handlePixelDroppers();
+        handleOvercurrentProtection();
     }
 
-    // Displays relevant telemetry information
-    @Override public void telemetry() {
+    /**
+     * Displays relevant telemetry information.
+     */
+    @Override
+    public void telemetry() {
 
         // Telemetry updates
         telemetry.addData("Semi-Automatic Arm", "");
         telemetry.addData("status", currentStatus);
-        telemetry.addData("run time", (int) opMode.getRuntime());
+        telemetry.addData("run time (seconds)", (int) opMode.getRuntime());
         telemetry.addData("loop time (milliseconds)", (int) loopTime.milliseconds());
         telemetry.addData("arm mode", arm.getMode());
         telemetry.addData("arm velocity", arm.getVelocity());
@@ -82,7 +90,11 @@ public class CtSemiAutoArm extends BasicArm {
         telemetry.addLine();
     }
 
-    // Calculates the wrist position based on arm angle and theta
+    /**
+     * Calculates the wrist position based on arm angle and theta.
+     *
+     * @return The calculated wrist position.
+     */
     private double findWristPosition() {
         double armAngle = 360 * arm.getCurrentPosition() / ARM_ENCODER_RES;
         double servoAngle = 90 + theta - GAMMA - armAngle;

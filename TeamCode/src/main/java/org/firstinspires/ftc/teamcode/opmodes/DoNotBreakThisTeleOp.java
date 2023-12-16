@@ -8,13 +8,15 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @TeleOp(name = "Do Not Break This TeleOp")
 public class DoNotBreakThisTeleOp extends LinearOpMode {
 
+    
+
     @Override
     public void runOpMode() {
         // Initialize all motors
-        DcMotor leftFront  = hardwareMap.dcMotor.get("left_front"),
-                rightFront = hardwareMap.dcMotor.get("right_front"),
-                leftRear   = hardwareMap.dcMotor.get("left_rear"),
-                rightRear  = hardwareMap.dcMotor.get("right_rear");
+        DcMotor leftFront  = hardwareMap.dcMotor.get("left_front");
+        DcMotor rightFront = hardwareMap.dcMotor.get("right_front");
+        DcMotor leftRear   = hardwareMap.dcMotor.get("left_rear");
+        DcMotor rightRear  = hardwareMap.dcMotor.get("right_rear");
 
         // Yes, the code is repetitive, but it has better readability and is less work
         configMotor(leftFront,  DcMotorSimple.Direction.REVERSE);

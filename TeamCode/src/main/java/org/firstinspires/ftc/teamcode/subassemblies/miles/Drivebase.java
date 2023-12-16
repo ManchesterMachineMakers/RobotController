@@ -10,14 +10,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.manchestermachinemakers.easyop.Device;
 import org.manchestermachinemakers.easyop.Subassembly;
 
-// Comments courtesy of ChatGPT
+/**
+ * Drivebase class representing the robot's drivetrain.
+ */
 public class Drivebase implements Subassembly {
 
+    // OpMode-related variables
     private final OpMode opMode;
-
-    public Drivebase(OpMode opMode) { this.opMode = opMode; }
-
-    // References to hardware map, gamepad, and telemetry
     private Gamepad gamepad;
     private Telemetry telemetry;
 
@@ -30,16 +29,26 @@ public class Drivebase implements Subassembly {
     @Device("left_rear") public DcMotor leftRear;
     @Device("right_rear") public DcMotor rightRear;
 
-    public String currentStatus = "unknown";
-    public double runTime = 0;
+    // Current status of the drivebase
+    private String currentStatus = "unknown";
 
-    // Initializes the drivebase motors and sets their configurations
+    // Constructor
+    public Drivebase(OpMode opMode) {
+        this.opMode = opMode;
+        this.gamepad = opMode.gamepad1;
+        this.telemetry = opMode.telemetry;
+    }
+
+    /**
+     * Initializes the drivebase motors and sets their configurations.
+     */
     public void init() {
         gamepad = opMode.gamepad1;
         telemetry = opMode.telemetry;
 
         currentStatus = "initializing";
 
+        // Configure each motor
         configMotor(leftFront, DcMotorSimple.Direction.REVERSE);
         configMotor(rightFront, DcMotorSimple.Direction.FORWARD);
         configMotor(leftRear, DcMotorSimple.Direction.FORWARD);
@@ -49,7 +58,9 @@ public class Drivebase implements Subassembly {
         telemetry.addData(">", "Drive Base Ready.");
     }
 
-    // Main loop for controlling robot motion based on gamepad input
+    /**
+     * Main loop for controlling robot motion based on gamepad input.
+     */
     public void loop() {
         currentStatus = "looping";
         loopTime.reset();
@@ -59,31 +70,39 @@ public class Drivebase implements Subassembly {
         double robotAngle = Math.atan2(-gamepad.left_stick_y, -gamepad.left_stick_x) - Math.PI / 4;
         float rightX = gamepad.right_stick_x;
 
+        // Calculate power for each motor
         double v1 = r * Math.cos(robotAngle) + rightX;
         double v2 = r * Math.sin(robotAngle) - rightX;
         double v3 = r * Math.sin(robotAngle) + rightX;
         double v4 = r * Math.cos(robotAngle) - rightX;
 
+        // Set power to each motor, divided by a factor for adjustment
         leftFront.setPower(v1 / 1.2);
         rightFront.setPower(v2 / 1.2);
         leftRear.setPower(v3 / 1.2);
         rightRear.setPower(v4 / 1.2);
     }
 
-    // Displays relevant telemetry information
+    /**
+     * Displays relevant telemetry information.
+     */
     public void telemetry() {
         telemetry.addData("Drive Base", "");
         telemetry.addData("status", currentStatus);
-        telemetry.addData("run time", (int) runTime);
+        telemetry.addData("run time (seconds)", (int) opMode.getRuntime());
         telemetry.addData("loop time (milliseconds)", (int) loopTime.milliseconds());
         telemetry.addLine();
     }
 
-    // Configures a motor with specified settings
+    public void setCurrentStatus(String status) { currentStatus = status; }
+    public String getCurrentStatus() { return currentStatus; }
+
+    /**
+     * Configures a motor with specified settings.
+     */
     private void configMotor(DcMotor motor, DcMotorSimple.Direction direction) {
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setDirection(direction);
     }
-
 }

@@ -1,12 +1,11 @@
-package org.firstinspires.ftc.teamcode.opmodes.teleop.semiAutoArms;
+package org.firstinspires.ftc.teamcode.opmodes.teleop.armTeleOps;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subassemblies.miles.Drivebase;
-import org.firstinspires.ftc.teamcode.subassemblies.miles.semiAuto.IncSemiAutoArm;
+import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.IncSemiAutoArm;
 
-// Comments courtesy of ChatGPT
 @TeleOp(name = "Semi-Auto Inc Arm TeleOp", group = "arm")
 public class IncSemiAutoTeleOp extends OpMode {
 
@@ -18,8 +17,8 @@ public class IncSemiAutoTeleOp extends OpMode {
     public void init() {
 
         // Update statuses
-        drivebase.currentStatus = "initializing";
-        incSemiAutoArm.currentStatus = "initializing";
+        drivebase.setCurrentStatus("initializing");
+        incSemiAutoArm.setCurrentStatus("initializing");
 
         // Initializing subassemblies
         drivebase.init();
@@ -33,15 +32,8 @@ public class IncSemiAutoTeleOp extends OpMode {
     @Override
     public void loop() {
         // Update statuses
-        drivebase.currentStatus = "looping";
-        incSemiAutoArm.currentStatus = "looping";
-
-        // Update run time
-        drivebase.runTime = time;
-        incSemiAutoArm.runTime = time;
-
-        // Protect arm from hurting itself
-        incSemiAutoArm.overcurrentProtection();
+        drivebase.setCurrentStatus("looping");
+        incSemiAutoArm.setCurrentStatus("looping");
 
         // Main loop functions for Drivebase and SemiAutoArm
         drivebase.loop();
