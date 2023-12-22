@@ -8,8 +8,6 @@ public abstract class BaseTeleOp extends Linear {
     public BaseArm arm;
     public Drivebase drivebase = new Drivebase(this);
 
-    public BaseTeleOp(BaseArm arm) { this.arm = arm;}
-
     public void opInit() {
         // Update statuses
         drivebase.setCurrentStatus("initializing");

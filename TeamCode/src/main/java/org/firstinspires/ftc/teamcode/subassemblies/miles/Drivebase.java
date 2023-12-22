@@ -4,10 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.manchestermachinemakers.easyop.Device;
 import org.manchestermachinemakers.easyop.Subassembly;
 
 /**
@@ -19,15 +19,13 @@ public class Drivebase implements Subassembly {
     private final OpMode opMode;
     private Gamepad gamepad;
     private Telemetry telemetry;
+    private final HardwareMap hardwareMap;
 
     // Timer for tracking loop execution time
     public ElapsedTime loopTime = new ElapsedTime();
 
     // Motor instances for the drivebase
-    @Device("left_front") public DcMotor leftFront;
-    @Device("right_front") public DcMotor rightFront;
-    @Device("left_rear") public DcMotor leftRear;
-    @Device("right_rear") public DcMotor rightRear;
+    public DcMotor leftFront, rightFront, leftRear, rightRear;
 
     // Current status of the drivebase
     private String currentStatus = "unknown";
@@ -37,12 +35,18 @@ public class Drivebase implements Subassembly {
         this.opMode = opMode;
         this.gamepad = opMode.gamepad1;
         this.telemetry = opMode.telemetry;
+        this.hardwareMap = opMode.hardwareMap;
     }
 
     /**
      * Initializes the drivebase motors and sets their configurations.
      */
     public void init() {
+        leftFront = hardwareMap.get(DcMotor.class, "left_front");
+        rightFront = hardwareMap.get(DcMotor.class, "right_front");
+        leftRear = hardwareMap.get(DcMotor.class, "left_rear");
+        rightRear = hardwareMap.get(DcMotor.class, "right_rear");
+
         gamepad = opMode.gamepad1;
         telemetry = opMode.telemetry;
 
