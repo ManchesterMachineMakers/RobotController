@@ -1,80 +1,69 @@
-package org.firstinspires.ftc.teamcode.subassemblies;
+package org.firstinspires.ftc.teamcode.subassemblies
 
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.contracts.Controllable;
-import org.firstinspires.ftc.teamcode.util.GamepadManager;
-import org.manchestermachinemakers.easyop.Device;
-import org.manchestermachinemakers.easyop.Subassembly;
+import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.HardwareMap
+import com.rutins.aleks.diagonal.Subject
+import org.firstinspires.ftc.teamcode.contracts.Controllable
+import org.firstinspires.ftc.teamcode.util.GamepadManager
+import kotlin.math.asin
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 // Arm subassembly control
-public class Arm implements Subassembly, Controllable {
-    // Initializes all the motors and servos
-    @Device("motorEXP0")
-    public DcMotor armMotor;
-    @Device("servo0")
-    public CRServo parallel;
-    @Device("servo1")
-    public CRServo rightDropper;
-    @Device("servo2")
-    public CRServo leftDropper;
+class Arm(hardwareMap: HardwareMap) : Controllable, Subject {
+    val armMotor = hardwareMap.dcMotor.get("motorEXP0")
+    val parallel = hardwareMap.crservo.get("servo0")
+    val rightDropper = hardwareMap.crservo.get("servo1")
+    val leftDropper = hardwareMap.crservo.get("servo2")
 
-    public static class PlacementInfo {
-        public Double distToBase;
-        public Double alpha;
-        public Double beta;
+    init {
+        armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER // Resets the encoder (distance tracking)
+        armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
     }
+
+    class PlacementInfo(
+            val distToBase: Double,
+            val alpha: Double,
+            val beta: Double
+    )
+
+    fun getPlacementInfo(pixelRow: Int): PlacementInfo {
+        val beta = asin(((d1 + pixelRow * d2 - l3) * sin(Math.PI / 3) + l2 * cos(Math.PI / 3) - h) / r)
+        val alpha = Math.PI / 2 + Math.PI / 3 - gamma - beta
+        val distToBase = r * cos(beta) + l2 * sin(Math.PI / 3) + cos(Math.PI / 3) * (l3 - d1 - pixelRow * d2)
+        return PlacementInfo(distToBase, alpha, beta)
+    }
+
+    override fun controller(gamepad: GamepadManager) {
+        armMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        armMotor.power = gamepad.gamepad.left_stick_y * 0.25
+        parallel.power = gamepad.gamepad.right_stick_y * 0.25
+        if (gamepad.gamepad.left_bumper) {
+            leftDropper.power = -0.25
+        } else if (gamepad.gamepad.left_trigger > 0.05) {
+            leftDropper.power = 0.25
+        } else {
+            leftDropper.power = 0.0
+        }
+        if (gamepad.gamepad.right_bumper) {
+            rightDropper.power = 0.25
+        } else if (gamepad.gamepad.right_trigger > 0.05) {
+            rightDropper.power = -0.25
+        } else {
+            rightDropper.power = 0.0
+        }
+    }
+
+    companion object {
         // Constants
-    static double gamma = Math.atan2(16.0, 283.0);
-    static double l2 = 67.88;
-    static double l3 = 59.56;
-    static double r = 336.0;
-    static double h = 287.75;
-    static double d1 = 220.0;
-    static double d2 = 88.9;
-
-    @Override public void customInit(HardwareMap hardwareMap) {
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // Resets the encoder (distance tracking)
-        armMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    }
-
-    public PlacementInfo getPlacementInfo(int pixelRow) {
-        double localBeta = Math.asin(((((d1 + pixelRow * d2) - l3) * Math.sin(Math.PI / 3) + l2 * Math.cos(Math.PI / 3)) - h) / r);
-        double localAlpha = Math.PI / 2 + Math.PI / 3 - gamma - localBeta;
-        double localDistToBase =
-                r * Math.cos(localBeta) + l2 * Math.sin(Math.PI / 3) + Math.cos(Math.PI / 3) * ((l3 - d1) - pixelRow * d2);
-        return new PlacementInfo() {{
-            this.distToBase = localDistToBase;
-            this.alpha = localAlpha;
-            this.beta = localBeta;
-        }};
-    }
-
-    @Override
-    public void controller(GamepadManager gamepad) {
-        armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        armMotor.setPower(gamepad.getGamepad().left_stick_y * 0.25);
-
-        parallel.setPower(gamepad.getGamepad().right_stick_y * 0.25);
-
-        if(gamepad.getGamepad().left_bumper) {
-            leftDropper.setPower(-0.25);
-        } else if(gamepad.getGamepad().left_trigger > 0.05) {
-            leftDropper.setPower(0.25);
-        } else {
-            leftDropper.setPower(0);
-        }
-
-        if(gamepad.getGamepad().right_bumper) {
-            rightDropper.setPower(0.25);
-        } else if(gamepad.getGamepad().right_trigger > 0.05) {
-            rightDropper.setPower(-0.25);
-        } else {
-            rightDropper.setPower(0);
-        }
+        val gamma = atan2(16.0, 283.0)
+        val l2 = 67.88
+        val l3 = 59.56
+        val r = 336.0
+        val h = 287.75
+        val d1 = 220.0
+        val d2 = 88.9
     }
 }
