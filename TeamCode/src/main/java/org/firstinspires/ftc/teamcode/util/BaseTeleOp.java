@@ -22,6 +22,10 @@ public abstract class BaseTeleOp extends Linear {
         arm.telemetry();
     }
 
+    public void opBeforeLoop() {
+        arm.start();
+    }
+
     public void opLoop() {
         // Update statuses
         drivebase.setCurrentStatus("looping");

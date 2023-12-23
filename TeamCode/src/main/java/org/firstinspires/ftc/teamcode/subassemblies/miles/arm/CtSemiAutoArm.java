@@ -12,11 +12,6 @@ import org.firstinspires.ftc.teamcode.util.BaseArm;
  */
 public class CtSemiAutoArm extends BaseArm {
 
-    // Position presets
-    private static final int ARM_HORIZONTAL_POSITION = 1550; // encoder ticks (PPR)
-    private static final int ARM_WINCH_POSITION = 0; // TODO: get value for this
-    private static final double WRIST_WINCH_POSITION = 0; // TODO: get value for this
-
     private static final double GAMMA = Math.atan(16.0 / 283.0) * (180 / Math.PI); // for math
 
     private double theta = 60; // degrees
@@ -63,9 +58,12 @@ public class CtSemiAutoArm extends BaseArm {
 
         // Hook onto bar for winching
         if (gamepad.x) {
-            wrist.setPosition(WRIST_WINCH_POSITION);
-            arm.setTargetPosition(ARM_WINCH_POSITION);
-            arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            airplaneLauncherToggle = !airplaneLauncherToggle;
+            if (airplaneLauncherToggle) {
+                airplaneLauncher.setPosition(1);
+            } else {
+                airplaneLauncher.setPosition(0);
+            }
         }
 
         handlePixelDroppers();

@@ -4,12 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.manchestermachinemakers.easyop.Device;
 import org.manchestermachinemakers.easyop.Subassembly;
 
 /**
@@ -26,20 +26,23 @@ public abstract class BaseArm implements Subassembly {
     protected final OpMode opMode;
     protected Telemetry telemetry;
     protected Gamepad gamepad;
+    protected HardwareMap hardwareMap;
 
     // Timer for loop execution time
     protected final ElapsedTime loopTime = new ElapsedTime();
 
     // Devices
-    @Device("arm") protected DcMotorEx arm;
-    @Device("wrist") protected Servo wrist;
-    @Device("left_release") protected Servo leftRelease;
-    @Device("right_release") protected Servo rightRelease;
+    protected DcMotorEx arm;
+    protected Servo wrist;
+    protected Servo airplaneLauncher;
+    protected Servo leftRelease;
+    protected Servo rightRelease;
 
     // Arm state variables
     protected String currentStatus;
     protected int latestArmPosition; // in encoder ticks
     protected boolean buttonWasPressed;
+    protected boolean airplaneLauncherToggle = false; // false = closed, true = open
 
     /**
      * Constructor for BasicArm.
@@ -50,6 +53,7 @@ public abstract class BaseArm implements Subassembly {
         this.opMode = opMode;
         this.gamepad = opMode.gamepad2;
         this.telemetry = opMode.telemetry;
+        this.hardwareMap = opMode.hardwareMap;
     }
 
     /**
@@ -59,6 +63,12 @@ public abstract class BaseArm implements Subassembly {
         // Set up initial status and configurations
         currentStatus = "initializing";
 
+        arm = hardwareMap.get(DcMotorEx.class, "arm");
+        wrist = hardwareMap.get(Servo.class, "wrist");
+        airplaneLauncher = hardwareMap.get(Servo.class, "airplane_launcher");
+        leftRelease = hardwareMap.get(Servo.class, "left_release");
+        rightRelease = hardwareMap.get(Servo.class, "right_release");
+
         // Arm motor configuration
         arm.setDirection(DcMotor.Direction.REVERSE);
         arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -67,6 +77,10 @@ public abstract class BaseArm implements Subassembly {
         // Wrist servo configuration
         wrist.scaleRange(0.25, 0.78); // 53% of 300-degree range
         wrist.setDirection(Servo.Direction.FORWARD);
+
+        // Arm servo configuration
+        airplaneLauncher.scaleRange(0, 1); // 1 should be open, 0 should be closed; TODO: Get these values
+        airplaneLauncher.setDirection(Servo.Direction.FORWARD); // TODO: Get ideal direction
 
         // Left release servo configuration
         leftRelease.scaleRange(0.15, 0.40); // 22.5% of 300-degree range
@@ -82,6 +96,11 @@ public abstract class BaseArm implements Subassembly {
 
         // Display initialization completion message
         telemetry.addData(">", "Arm Subassembly Ready");
+    }
+
+    // Runs once after start is pressed, before loop()
+    public void start() {
+        airplaneLauncher.setPosition(0); // ensure launcher is closed
     }
 
     /**
