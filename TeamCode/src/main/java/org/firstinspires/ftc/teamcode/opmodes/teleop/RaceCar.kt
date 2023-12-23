@@ -1,27 +1,27 @@
 package org.firstinspires.ftc.teamcode
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
-import org.manchestermachinemakers.easyop.Linear
 import kotlin.math.*
 
 @TeleOp(name = "Jerry Was A Race Car Driver")
-class RaceCar : Linear() {
+class RaceCar : OpMode() {
 
     private val leftFront = hardwareMap.dcMotor.get("left_front")
     private val rightFront = hardwareMap.dcMotor.get("right_front")
     private val leftRear = hardwareMap.dcMotor.get("left_rear")
     private val rightRear = hardwareMap.dcMotor.get("right_rear")
 
-    override fun opInit() {
+    override fun init() {
         leftFront.config(  DcMotorSimple.Direction.REVERSE )
         rightFront.config( DcMotorSimple.Direction.FORWARD )
         leftRear.config(   DcMotorSimple.Direction.FORWARD )
         rightRear.config(  DcMotorSimple.Direction.REVERSE )
     }
 
-    override fun opLoop() {
+    override fun loop() {
         val r = hypot(gamepad1.left_stick_x.toDouble(), -gamepad1.left_stick_y.toDouble())
         val robotAngle = atan2(
             -gamepad1.left_stick_y.toDouble(),
