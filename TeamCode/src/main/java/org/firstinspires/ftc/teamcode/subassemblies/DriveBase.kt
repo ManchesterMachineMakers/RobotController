@@ -3,11 +3,14 @@ package org.firstinspires.ftc.teamcode.subassemblies
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotor.RunMode
+import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.teamcode.contracts.Controllable
 import org.firstinspires.ftc.teamcode.util.GamepadManager
+import kotlin.math.abs
 
 class DriveBase(opMode: OpMode) : Controllable, Subject {
     val hardwareMap = opMode.hardwareMap
@@ -63,6 +66,34 @@ class DriveBase(opMode: OpMode) : Controllable, Subject {
         rightFront!!.power = rightFrontPower
         leftRear!!.power = leftBackPower
         rightRear!!.power = rightBackPower
+    }
+
+    val motors = listOf(leftFront, rightFront, leftRear, rightRear)
+    fun List<DcMotor>.setMode(mode: DcMotor.RunMode) {
+        map { it.mode = mode }
+    }
+
+    fun setMode(mode: RunMode) {
+        motors.setMode(mode)
+    }
+
+    fun setTargetPositions(lf: Int, rf: Int, lr: Int, rr: Int) {
+        leftFront.targetPosition = lf
+        rightFront.targetPosition = rf
+        leftRear.targetPosition = lr
+        rightRear.targetPosition = rr
+    }
+
+    fun runToPosition(lf: Int, rf: Int, lr: Int, rr: Int) {
+        setMode(RunMode.RUN_USING_ENCODER)
+        setTargetPositions(abs(lf), abs(rf), abs(lr), abs(rr))
+        motors.map { (it as DcMotorEx).targetPositionTolerance = 5 }
+        setMode(RunMode.RUN_TO_POSITION)
+
+        leftFront.power  = if(lf < 0) -0.5 else 0.5
+        rightFront.power = if(rf < 0) -0.5 else 0.5
+        leftRear.power   = if(lr < 0) -0.5 else 0.5
+        rightRear.power  = if(rr < 0) -0.5 else 0.5
     }
 
     override fun controller(gamepad: GamepadManager) {
