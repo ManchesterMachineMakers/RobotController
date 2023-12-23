@@ -15,7 +15,7 @@ class DoNotBreakThisTeleOpArm : LinearOpMode() {
         val leftRear = hardwareMap.dcMotor["left_rear"]
         val rightRear = hardwareMap.dcMotor["right_rear"]
         val motors = arrayOf(leftFront, rightFront, leftRear, rightRear)
-        val arm = Arm(hardwareMap)
+        val arm = Arm(this)
 
         for (motor in motors) {
             motor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER

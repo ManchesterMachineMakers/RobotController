@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.vision.VisionPortal
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.rutins.aleks.diagonal.Subject
 
-class Vision(hardwareMap: HardwareMap) : Subject {
+class Vision(opMode: OpMode) : Subject {
+    val hardwareMap = opMode.hardwareMap
     val webcam = hardwareMap.get(WebcamName::class.java, "Webcam 1")
 
     var aprilTag: AprilTagProcessor? = null

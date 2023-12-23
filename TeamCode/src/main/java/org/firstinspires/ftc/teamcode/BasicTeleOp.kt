@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 class BasicTeleOp : LinearOpMode() {
     override fun runOpMode() {
         // grab subassemblies
-        val driveBase = DriveBase(hardwareMap)
-        val arm = Arm(hardwareMap)
+        val driveBase = DriveBase(this)
+        val arm = Arm(this)
         waitForStart()
         while(opModeIsActive() && !isStopRequested) {
             runAll(
