@@ -173,4 +173,16 @@ public abstract class BaseArm implements Subassembly {
             rightRelease.setPosition(0);
         }
     }
+
+    protected void handleAirplaneLauncher() {
+        // Airplane launcher
+        if (gamepad.x) {
+            airplaneLauncherToggle = !airplaneLauncherToggle;
+            if (airplaneLauncherToggle) {
+                airplaneLauncher.setPosition(1);
+            } else {
+                airplaneLauncher.setPosition(0);
+            }
+        }
+    }
 }

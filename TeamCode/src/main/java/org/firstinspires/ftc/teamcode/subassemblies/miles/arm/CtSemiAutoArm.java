@@ -56,18 +56,9 @@ public class CtSemiAutoArm extends BaseArm {
             wristAlignment = "easel";
         }
 
-        // Hook onto bar for winching
-        if (gamepad.x) {
-            airplaneLauncherToggle = !airplaneLauncherToggle;
-            if (airplaneLauncherToggle) {
-                airplaneLauncher.setPosition(1);
-            } else {
-                airplaneLauncher.setPosition(0);
-            }
-        }
-
         handlePixelDroppers();
         handleOvercurrentProtection();
+        handleAirplaneLauncher();
     }
 
     /**

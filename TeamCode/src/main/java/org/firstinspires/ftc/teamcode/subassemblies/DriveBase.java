@@ -54,7 +54,7 @@ public class DriveBase implements Subassembly, Controllable {
      * counter-clockwise
      * @param x Aleks define the units
      * @param y Aleks also define these units
-     * @param yaw angle of the robot in degrees
+     * @param yaw power for each axis (0-1)
      */
     public void moveRobot(double x, double y, double yaw) {
         // Calculate wheel powers.
