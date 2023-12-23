@@ -1,46 +1,30 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.util
 
-import org.firstinspires.ftc.teamcode.subassemblies.miles.Drivebase;
+import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 
-public class BaseTeleOp {
-
-    public BaseArm arm;
-    public Drivebase drivebase;
-
-    public BaseTeleOp(BaseArm arm, Drivebase drivebase) {
-        this.arm = arm;
-        this.drivebase = drivebase;
-    }
-
-    public void init() {
+class BaseTeleOp(var arm: BaseArm, var driveBase: DriveBase) {
+    fun init() {
         // Update statuses
-        drivebase.setCurrentStatus("initializing");
-        arm.setCurrentStatus("initializing");
-
-        // Initialize
-        drivebase.init();
-        arm.init();
+        arm.init()
 
         // Update telemetry
-        drivebase.telemetry();
-        arm.telemetry();
+        arm.telemetry()
     }
 
-    public void start() {
-        arm.start();
+    fun start() {
+        arm.start()
     }
 
-    public void loop() {
+    fun loop() {
         // Update statuses
-        drivebase.setCurrentStatus("looping");
-        arm.setCurrentStatus("looping");
+        arm.currentStatus = "looping"
 
         // Loops
-        drivebase.loop();
-        arm.loop();
+        driveBase.loop()
+        arm.loop()
 
         // Update telemetry
-        drivebase.telemetry();
-        arm.telemetry();
+        driveBase.telemetry()
+        arm.telemetry()
     }
 }

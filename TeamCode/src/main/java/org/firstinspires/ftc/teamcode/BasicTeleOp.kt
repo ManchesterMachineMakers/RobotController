@@ -15,14 +15,11 @@ import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 class BasicTeleOp : LinearOpMode() {
     override fun runOpMode() {
         // grab subassemblies
-        val driveBase = DriveBase(this)
+        val driveBase = DriveBase(this, gamepad1)
         val arm = Arm(this)
         waitForStart()
         while(opModeIsActive() && !isStopRequested) {
-            runAll(
-                    gamepad1 to driveBase,
-                    gamepad2 to arm
-            )
+            driveBase.loop()
         }
     }
 }

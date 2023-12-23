@@ -1,82 +1,73 @@
-package org.firstinspires.ftc.teamcode.subassemblies.miles.arm;
+package org.firstinspires.ftc.teamcode.subassemblies.miles.arm
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.util.BaseArm;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.qualcomm.robotcore.hardware.DcMotor
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
+import org.firstinspires.ftc.teamcode.util.BaseArm
+import kotlin.math.*
 
 /**
  * Semi-automatic arm subassembly for controlling arm and wrist movements.
  */
-public class CtSemiAutoArm extends BaseArm {
-
-    private static final double GAMMA = Math.atan(16.0 / 283.0) * (180 / Math.PI); // for math
-
-    private double theta = 60; // degrees
-    private String wristAlignment = "easel";
-
-    public CtSemiAutoArm(OpMode opMode) {
-        super(opMode);
-    }
+class CtSemiAutoArm(opMode: OpMode) : BaseArm(opMode) {
+    
+    override val name = "Continuous Semi-Auto Arm"
+    
+    private var theta = 60.0 // degrees
+    private var wristAlignment = "easel"
 
     /**
      * Main loop for controlling the semi-auto arm.
      */
-    @Override
-    public void loop() {
-
-        loopTime.reset();
+    override fun loop() {
+        loopTime.reset()
 
         // Arm movement
-        if (!arm.isOverCurrent()) {
-            if (gamepad.left_stick_y != 0) {
-                arm.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-                arm.setVelocity(gamepad.left_stick_y * ARM_ENCODER_RES * ARM_SPEED);
-                latestArmPosition = arm.getCurrentPosition();
+        if (!arm.isOverCurrent) {
+            if (gamepad.left_stick_y != 0f) {
+                arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
+                arm.velocity = gamepad.left_stick_y * ARM_ENCODER_RES * ARM_SPEED
+                latestArmPosition = arm.currentPosition
             } else {
-                brakeArm();
+                brakeArm()
             }
         }
 
         // Wrist movement
-        wrist.setPosition(findWristPosition());
+        wrist.position = findWristPosition()
 
         // Reset arm position
         if (gamepad.b) {
-            arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         }
         // Wrist alignment
         if (gamepad.a) {
-            theta = 120;
-            wristAlignment = "floor";
+            theta = 120.0
+            wristAlignment = "floor"
         } else if (gamepad.y) {
-            theta = 60;
-            wristAlignment = "easel";
+            theta = 60.0
+            wristAlignment = "easel"
         }
-
-        handlePixelDroppers();
-        handleOvercurrentProtection();
-        handleAirplaneLauncher();
+        handlePixelDroppers()
+        handleOvercurrentProtection()
+        handleAirplaneLauncher()
     }
 
     /**
      * Displays relevant telemetry information.
      */
-    @Override
-    public void telemetry() {
+    override fun telemetry() {
 
         // Telemetry updates
-        telemetry.addData("Semi-Automatic Arm", "");
-        telemetry.addData("status", currentStatus);
-        telemetry.addData("run time (seconds)", (int) opMode.getRuntime());
-        telemetry.addData("loop time (milliseconds)", (int) loopTime.milliseconds());
-        telemetry.addData("arm mode", arm.getMode());
-        telemetry.addData("arm velocity", arm.getVelocity());
-        telemetry.addData("wrist alignment", wristAlignment);
-        telemetry.addData("arm motor current (amps)", arm.getCurrent(CurrentUnit.AMPS));
-        telemetry.addLine();
+        telemetry.addData("Semi-Automatic Arm", "")
+        telemetry.addData("status", currentStatus)
+        telemetry.addData("run time (seconds)", opMode.runtime.toInt())
+        telemetry.addData("loop time (milliseconds)", loopTime.milliseconds().toInt())
+        telemetry.addData("arm mode", arm.mode)
+        telemetry.addData("arm velocity", arm.velocity)
+        telemetry.addData("wrist alignment", wristAlignment)
+        telemetry.addData("arm motor current (amps)", arm.getCurrent(CurrentUnit.AMPS))
+        telemetry.addLine()
     }
 
     /**
@@ -84,9 +75,13 @@ public class CtSemiAutoArm extends BaseArm {
      *
      * @return The calculated wrist position.
      */
-    private double findWristPosition() {
-        double armAngle = 360 * arm.getCurrentPosition() / ARM_ENCODER_RES;
-        double servoAngle = 90 + theta - GAMMA - armAngle;
-        return (servoAngle - 90) / (0.53 * 300) - (0.5 * 0.53);
+    private fun findWristPosition(): Double {
+        val armAngle = 360 * arm.currentPosition / ARM_ENCODER_RES
+        val servoAngle = 90 + theta - GAMMA - armAngle
+        return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53
+    }
+
+    companion object {
+        private val GAMMA = atan(16.0 / 283.0) * (180 / PI) // for math
     }
 }

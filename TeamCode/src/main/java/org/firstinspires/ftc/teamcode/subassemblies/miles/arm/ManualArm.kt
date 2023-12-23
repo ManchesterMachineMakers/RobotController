@@ -1,176 +1,145 @@
-package org.firstinspires.ftc.teamcode.subassemblies.miles;
+package org.firstinspires.ftc.teamcode.subassemblies.miles.arm
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorEx
+import com.qualcomm.robotcore.hardware.DcMotorSimple
+import com.qualcomm.robotcore.hardware.Gamepad
+import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.util.ElapsedTime
+import org.firstinspires.ftc.robotcore.external.Telemetry
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 
 // Comments courtesy of ChatGPT
-public class ManualArm {
+class ManualArm(private val opMode: OpMode, private val gamepad: Gamepad = opMode.gamepad2) {
 
-    // Constants for arm control
-    private static final double ARM_SPEED = 0.5;
-    private static final double ARM_OVERCURRENT_THRESHOLD = 4;
-
-    private final OpMode opMode;
-    private final Gamepad gamepad;
-    private final Telemetry telemetry;
-    private final HardwareMap hardwareMap;
-    private final ElapsedTime loopTime = new ElapsedTime();
+    private val name = "Manual Arm"
+    private var status = "uninitialized"
+    private val telemetry: Telemetry = opMode.telemetry
+    private val hardwareMap: HardwareMap = opMode.hardwareMap
+    private val loopTime = ElapsedTime()
 
     // Motor and servo instances for the manual arm
-    public DcMotorEx arm;
-    public Servo leftRelease;
-    public Servo rightRelease;
-    public Servo wrist;
+    private val arm: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "arm")
+    private val leftRelease: Servo = hardwareMap.servo.get("left_release")
+    private val rightRelease: Servo = hardwareMap.servo.get("right_release")
+    private val wrist: Servo = hardwareMap.servo.get("wrist")
 
     // Variables for tracking arm and wrist positions, release statuses, and button states
-    private String leftReleaseStatus;
-    private String rightReleaseStatus;
-    private int latestArmPosition;
-    private double wristPosition;
-    private boolean buttonWasPressed;
-    public boolean needsStop;
+    private var latestArmPosition = 0
+    private var wristPosition = 0.0
+    private var buttonWasPressed = false
 
-    public ManualArm(OpMode opMode) {
-        // References to gamepad, telemetry, and hardware map
-        this.opMode = opMode;
-        this.gamepad = opMode.gamepad2;
-        this.telemetry = opMode.telemetry;
-        this.hardwareMap = opMode.hardwareMap;
-    }
-
-    // Initializes the manual arm subassembly
-    public void init() {
-
-        wristPosition = wrist.getPosition();
-
-        arm = hardwareMap.get(DcMotorEx.class, "arm");
-        leftRelease = hardwareMap.get(Servo.class, "left_release");
-        rightRelease = hardwareMap.get(Servo.class, "right_release");
-        wrist = hardwareMap.get(Servo.class, "wrist");
+    init {
+        wristPosition = wrist.position
 
         // Configuring arm motor
-        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        arm.setDirection(DcMotorSimple.Direction.FORWARD);
-        arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        arm.setCurrentAlert(ARM_OVERCURRENT_THRESHOLD, CurrentUnit.AMPS);
+        arm.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        arm.direction = DcMotorSimple.Direction.FORWARD
+        arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        arm.setCurrentAlert(ARM_OVERCURRENT_THRESHOLD, CurrentUnit.AMPS)
 
         // Configuring servos with appropriate ranges and directions
-        leftRelease.scaleRange(0.175, 0.4); // 22.5% of 300 degree range
-        leftRelease.setDirection(Servo.Direction.FORWARD);
-
-        rightRelease.scaleRange(0.6, 0.825); // 22.5% of 300 degree range
-        rightRelease.setDirection(Servo.Direction.REVERSE);
-
-        wrist.scaleRange(0.25, 0.78); // // 53% of 300 degree range
-        wrist.setDirection(Servo.Direction.FORWARD);
+        leftRelease.scaleRange(0.175, 0.4) // 22.5% of 300 degree range
+        leftRelease.direction = Servo.Direction.FORWARD
+        rightRelease.scaleRange(0.6, 0.825) // 22.5% of 300 degree range
+        rightRelease.direction = Servo.Direction.REVERSE
+        wrist.scaleRange(0.25, 0.78) // // 53% of 300 degree range
+        wrist.direction = Servo.Direction.FORWARD
 
         // Initializing variables
-        leftReleaseStatus = "unknown";
-        rightReleaseStatus = "unknown";
-        latestArmPosition = arm.getCurrentPosition();
-        buttonWasPressed = false;
-
-        telemetry.addData(">", "Arm Subassembly Ready.");
+        latestArmPosition = arm.currentPosition
+        buttonWasPressed = false
+        telemetry.addData(">", "Arm Subassembly Ready.")
     }
 
     // Main loop for controlling the manual arm
-    public void loop() {
-        loopTime.reset(); // Keep track of time spent in each loop for debugging
-
-        protectArmIfOverCurrent();
+    fun loop() {
+        loopTime.reset() // Keep track of time spent in each loop for debugging
+        handleOvercurrentProtection()
 
         // Wrist control
-        wristPosition = wrist.getPosition();
-        wristPosition += gamepad.right_stick_y / 25;
+        wristPosition = wrist.position
+        wristPosition += (gamepad.right_stick_y / 25).toDouble()
         if (wristPosition < 0) {
-            wristPosition = 0;
+            wristPosition = 0.0
         } else if (wristPosition > 1) {
-            wristPosition = 1;
+            wristPosition = 1.0
         }
-        if (gamepad.left_stick_y != 0.0) {
-            arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            arm.setPower(-gamepad.left_stick_y * ARM_SPEED);
-            latestArmPosition = arm.getCurrentPosition();
+        if (gamepad.left_stick_y.toDouble() != 0.0) {
+            arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
+            arm.power = -gamepad.left_stick_y * ARM_SPEED
+            latestArmPosition = arm.currentPosition
         } else {
             // brake
-            arm.setTargetPosition(latestArmPosition);
-            arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            arm.targetPosition = latestArmPosition
+            arm.mode = DcMotor.RunMode.RUN_TO_POSITION
         }
 
         // Wrist control with buttons
         if (!buttonWasPressed) {
             if (gamepad.dpad_up) {
-                wristPosition -= 0.05;
+                wristPosition -= 0.05
             } else if (gamepad.dpad_down) {
-                wristPosition += 0.05;
+                wristPosition += 0.05
             } else if (gamepad.dpad_left) {
-                wristPosition += 0.2;
+                wristPosition += 0.2
             } else if (gamepad.dpad_right) {
-                wristPosition -= 0.2;
+                wristPosition -= 0.2
             }
         }
-        wrist.setPosition(wristPosition);
-
+        wrist.position = wristPosition
         if (gamepad.b) {
-            arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         }
 
         // Pixel release mechanism (brush)
         // Left
         if (gamepad.left_bumper) { // Open
-            leftRelease.setPosition(1);
-            leftReleaseStatus = "open";
+            leftRelease.position = 1.0
         } else if (gamepad.left_trigger > 0.2) { // Close
-            leftRelease.setPosition(0);
-            leftReleaseStatus = "closed";
+            leftRelease.position = 0.0
         }
         // Right
         if (gamepad.right_bumper) { // Open
-            rightRelease.setPosition(1);
-            rightReleaseStatus = "open";
+            rightRelease.position = 1.0
         } else if (gamepad.right_trigger > 0.2) { // Close
-            rightRelease.setPosition(0);
-            rightReleaseStatus = "closed";
+            rightRelease.position = 0.0
         }
 
         // For detecting when a button is pressed.
-        buttonWasPressed = gamepad.dpad_up || gamepad.dpad_down || gamepad.dpad_left || gamepad.dpad_right;
+        buttonWasPressed = gamepad.dpad_up || gamepad.dpad_down || gamepad.dpad_left || gamepad.dpad_right
     }
 
     // Displays relevant telemetry information
-    public void telemetry() {
-        telemetry.addData("Manual Arm", "");
-        telemetry.addData("loop time (nanoseconds)", loopTime.nanoseconds());
-        telemetry.addData("arm mode", arm.getMode());
-        telemetry.addData("arm target position", arm.getTargetPosition());
-        telemetry.addData("arm position", arm.getCurrentPosition());
-        telemetry.addData("arm position discrepancy", arm.getCurrentPosition() - arm.getTargetPosition());
-        telemetry.addData("wrist position", wrist.getPosition());
-        telemetry.addData("left release position", leftReleaseStatus);
-        telemetry.addData("right release position", rightReleaseStatus);
-        telemetry.addData("arm current (amps)", arm.getCurrent(CurrentUnit.AMPS));
-        telemetry.addLine();
+    fun telemetry() {
+        telemetry.addData(name, status)
+        telemetry.addData("loop time (nanoseconds)", loopTime.nanoseconds())
+        telemetry.addData("arm mode", arm.mode)
+        telemetry.addData("arm target position", arm.targetPosition)
+        telemetry.addData("arm position", arm.currentPosition)
+        telemetry.addData("arm position discrepancy", arm.currentPosition - arm.targetPosition)
+        telemetry.addData("wrist position", wrist.position)
+        telemetry.addData("arm current (amps)", arm.getCurrent(CurrentUnit.AMPS))
+        telemetry.addLine()
     }
 
-
     // Checks and handles overcurrent conditions for the arm motor
-    private void protectArmIfOverCurrent() {
-        if (arm.isOverCurrent()) {
+    private fun handleOvercurrentProtection() {
+        if (arm.isOverCurrent) {
             if (arm.getCurrent(CurrentUnit.AMPS) > ARM_OVERCURRENT_THRESHOLD * 1.4) {
-                needsStop = true; // request stop of the opMode
+                opMode.requestOpModeStop()
             } else {
-                arm.setTargetPosition(0);
-                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                arm.targetPosition = 0
+                arm.mode = DcMotor.RunMode.RUN_TO_POSITION
             }
         }
+    }
+
+    companion object {
+        // Constants for arm control
+        private const val ARM_SPEED = 0.5
+        private const val ARM_OVERCURRENT_THRESHOLD = 4.0
     }
 }

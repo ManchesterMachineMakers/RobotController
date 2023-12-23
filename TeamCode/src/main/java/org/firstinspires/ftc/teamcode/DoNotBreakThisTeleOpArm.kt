@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.subassemblies.Arm
+import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.ManualArm
 import org.firstinspires.ftc.teamcode.util.GamepadManager
 
 @TeleOp(name = "Do Not Break This TeleOp with Arm")
@@ -15,7 +16,7 @@ class DoNotBreakThisTeleOpArm : LinearOpMode() {
         val leftRear = hardwareMap.dcMotor["left_rear"]
         val rightRear = hardwareMap.dcMotor["right_rear"]
         val motors = arrayOf(leftFront, rightFront, leftRear, rightRear)
-        val arm = Arm(this)
+        val arm = ManualArm(this)
 
         for (motor in motors) {
             motor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
@@ -45,7 +46,7 @@ class DoNotBreakThisTeleOpArm : LinearOpMode() {
                 rightFront.power = v2 / 1.2
                 leftRear.power = v3 / 1.2
                 rightRear.power = v4 / 1.2
-                arm.controller(GamepadManager(gamepad2))
+                arm.loop()
             }
         }
     }
