@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
@@ -7,7 +9,8 @@ import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.teamcode.contracts.Controllable
 import org.firstinspires.ftc.teamcode.util.GamepadManager
 
-class DriveBase(hardwareMap: HardwareMap) : Controllable, Subject {
+class DriveBase(opMode: OpMode) : Controllable, Subject {
+    val hardwareMap = opMode.hardwareMap
     val leftFront = hardwareMap.dcMotor.get("leftFront")
     val rightFront = hardwareMap.dcMotor.get("rightFront")
     val leftRear = hardwareMap.dcMotor.get("leftRear")
@@ -20,8 +23,8 @@ class DriveBase(hardwareMap: HardwareMap) : Controllable, Subject {
         configMotor(rightRear, DcMotorSimple.Direction.REVERSE)
     }
 
-    private fun configMotor(motor: DcMotor?, direction: DcMotorSimple.Direction) {
-        motor!!.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER // Runs motor without distance tracking
+    private fun configMotor(motor: DcMotor, direction: DcMotorSimple.Direction) {
+        motor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER // Runs motor without distance tracking
         motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE // Brakes motor when stopping
         motor.direction = direction // Sets motors to their specified direction
     }

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.rutins.aleks.diagonal.Subject
@@ -11,7 +13,8 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 // Arm subassembly control
-class Arm(hardwareMap: HardwareMap) : Controllable, Subject {
+class Arm(opMode: OpMode) : Controllable, Subject {
+    private val hardwareMap = opMode.hardwareMap
     val armMotor = hardwareMap.dcMotor.get("motorEXP0")
     val parallel = hardwareMap.crservo.get("servo0")
     val rightDropper = hardwareMap.crservo.get("servo1")
