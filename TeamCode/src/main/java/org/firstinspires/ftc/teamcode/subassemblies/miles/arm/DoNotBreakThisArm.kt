@@ -5,26 +5,27 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Gamepad
-import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 
 // Comments courtesy of ChatGPT
-class ManualArm(private val opMode: OpMode, private val gamepad: Gamepad = opMode.gamepad2) {
+class DoNotBreakThisArm(private val opMode: OpMode, private val gamepad: Gamepad = opMode.gamepad2) {
 
     private val name = "Manual Arm"
     private var status = "uninitialized"
-    private val telemetry: Telemetry = opMode.telemetry
-    private val hardwareMap: HardwareMap = opMode.hardwareMap
+    private val telemetry = opMode.telemetry
+    private val hardwareMap = opMode.hardwareMap
     private val loopTime = ElapsedTime()
 
-    // Motor and servo instances for the manual arm
-    private val arm: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "arm")
-    private val leftRelease: Servo = hardwareMap.servo.get("left_release")
-    private val rightRelease: Servo = hardwareMap.servo.get("right_release")
-    private val wrist: Servo = hardwareMap.servo.get("wrist")
+    // Motors
+    private val arm = hardwareMap.get(DcMotorEx::class.java, "arm")
+//    private val winch = hardwareMap.dcMotor.get("winch")
+
+    // Servos
+    private val leftRelease = hardwareMap.servo.get("left_release")
+    private val rightRelease = hardwareMap.servo.get("right_release")
+    private val wrist = hardwareMap.servo.get("wrist")
 
     // Variables for tracking arm and wrist positions, release statuses, and button states
     private var latestArmPosition = 0
@@ -79,34 +80,24 @@ class ManualArm(private val opMode: OpMode, private val gamepad: Gamepad = opMod
 
         // Wrist control with buttons
         if (!buttonWasPressed) {
-            if (gamepad.dpad_up) {
-                wristPosition -= 0.05
-            } else if (gamepad.dpad_down) {
-                wristPosition += 0.05
-            } else if (gamepad.dpad_left) {
-                wristPosition += 0.2
-            } else if (gamepad.dpad_right) {
-                wristPosition -= 0.2
-            }
+
+            if      (gamepad.dpad_up)    wristPosition -= 0.05
+            else if (gamepad.dpad_down)  wristPosition += 0.05
+            else if (gamepad.dpad_left)  wristPosition += 0.2
+            else if (gamepad.dpad_right) wristPosition -= 0.2
         }
         wrist.position = wristPosition
-        if (gamepad.b) {
-            arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        }
+
+        if (gamepad.b) arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
 
         // Pixel release mechanism (brush)
         // Left
-        if (gamepad.left_bumper) { // Open
-            leftRelease.position = 1.0
-        } else if (gamepad.left_trigger > 0.2) { // Close
-            leftRelease.position = 0.0
-        }
+        if (gamepad.left_bumper) leftRelease.position = 1.0 // open
+        else if (gamepad.left_trigger > 0.2) leftRelease.position = 0.0 // close
         // Right
-        if (gamepad.right_bumper) { // Open
-            rightRelease.position = 1.0
-        } else if (gamepad.right_trigger > 0.2) { // Close
-            rightRelease.position = 0.0
-        }
+        if (gamepad.right_bumper) rightRelease.position = 1.0 // open
+        else if (gamepad.right_trigger > 0.2) rightRelease.position = 0.0 // close
+
 
         // For detecting when a button is pressed.
         buttonWasPressed = gamepad.dpad_up || gamepad.dpad_down || gamepad.dpad_left || gamepad.dpad_right

@@ -15,7 +15,6 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad)
     override val name = "Continuous Semi-Auto Arm"
     
     private var theta = 60.0 // degrees
-    private var wristAlignment = "easel"
 
     /**
      * Main loop for controlling the semi-auto arm.
@@ -27,10 +26,12 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad)
         if (!arm.isOverCurrent) {
             if (gamepad.left_stick_y != 0f) {
                 arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
-                arm.velocity = gamepad.left_stick_y * ARM_SPEED
+                arm.power = gamepad.left_stick_y * ARM_SPEED
                 latestArmPosition = arm.currentPosition
             } else {
-                brakeArm()
+                arm.targetPosition = latestArmPosition
+                arm.mode = DcMotor.RunMode.RUN_TO_POSITION
+                arm.power = ARM_SPEED
             }
         }
 
@@ -38,17 +39,12 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad)
         wrist.position = findWristPosition()
 
         // Reset arm position
-        if (gamepad.b) {
-            arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        }
+        if (gamepad.b) arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+
         // Wrist alignment
-        if (gamepad.a) {
-            theta = 120.0
-            wristAlignment = "floor"
-        } else if (gamepad.y) {
-            theta = 60.0
-            wristAlignment = "easel"
-        }
+        if (gamepad.a) theta = 120.0
+        else if (gamepad.y) theta = 60.0
+
         handlePixelDroppers()
         handleOvercurrentProtection()
         handleAirplaneLauncher()
@@ -65,10 +61,11 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad)
         telemetry.addData("loop time (milliseconds)", loopTime.milliseconds().toInt())
         telemetry.addData("arm mode", arm.mode)
         telemetry.addData("arm velocity", arm.velocity)
-        telemetry.addData("wrist alignment", wristAlignment)
+        telemetry.addData("arm target position", arm.targetPosition)
+        telemetry.addData("arm actual position", arm.currentPosition)
+        telemetry.addData("theta", theta)
         telemetry.addData("arm motor current (amps)", arm.getCurrent(CurrentUnit.AMPS))
         telemetry.addLine()
-        telemetry.addData("gamepad 2 left stick y", gamepad.left_stick_y)
     }
 
     /**

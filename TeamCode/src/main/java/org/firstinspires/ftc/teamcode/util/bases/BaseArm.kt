@@ -14,8 +14,11 @@ import org.firstinspires.ftc.teamcode.util.Subassembly
  */
 abstract class BaseArm(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad) {
 
-    // Devices
+    // Motors
     protected val arm: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "arm")
+//    protected val winch: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "winch")
+
+    // Servos
     protected val wrist: Servo = hardwareMap.servo.get("wrist")
     protected val airplaneLauncher: Servo = hardwareMap.servo.get("airplane_launcher")
     protected val leftRelease: Servo = hardwareMap.servo.get("left_release")
@@ -27,6 +30,8 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, g
     protected var airplaneLauncherToggle = false // false = closed, true = open
 
     init {
+        status = "initializing"
+
         // Arm motor configuration
         arm.direction = DcMotorSimple.Direction.REVERSE
         arm.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
@@ -74,11 +79,6 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, g
         telemetry.addLine()
     }
 
-    protected fun brakeArm() {
-        arm.targetPosition = latestArmPosition
-        arm.mode = DcMotor.RunMode.RUN_TO_POSITION
-    }
-
     /**
      * Check for overcurrent condition and take appropriate action.
      */
@@ -87,17 +87,13 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, g
             // Display warning message
             telemetry.addData("WARNING", "arm motor is overcurrent, reduce load or the arm may break")
 
-            // Emergency stop if overcurrent is severe
+            // Stop opMode if overcurrent is severe
             if (arm.getCurrent(CurrentUnit.AMPS) > ARM_OVERCURRENT_THRESHOLD * 1.4) {
                 opMode.requestOpModeStop()
             } else {
-                // Reset arm position and set mode to RUN_TO_POSITION
                 arm.targetPosition = 0
                 arm.mode = DcMotor.RunMode.RUN_TO_POSITION
             }
-        } else {
-            // Set mode to RUN_USING_ENCODER if no overcurrent
-            arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
         }
     }
 

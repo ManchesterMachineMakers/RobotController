@@ -5,19 +5,14 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.util.bases.BaseArm
-import java.util.AbstractMap
 import kotlin.math.*
 
-/**
- * Semi-automatic arm subassembly for incremental control of arm and wrist movements.
- */
 class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad) {
 
     override val name = "Incremented Semi-Auto Arm"
 
     // Initial values for arm and wrist
     private var theta = 60.0 // 60 for easel, 120 for floor
-    private var wristAlignment: String = "easel"
     private var pixelLayer = 0
 
     /**
@@ -27,8 +22,8 @@ class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad
         loopTime.reset()
 
         // Set target positions for arm and wrist
-        arm.targetPosition = targetArmAndWristPositions.key
-        wrist.position = targetArmAndWristPositions.value
+        arm.targetPosition = targetArmAndWristPosition.first
+        wrist.position = targetArmAndWristPosition.second
 
         // Incrementer based on gamepad input
         if (!buttonWasPressed) {
@@ -39,36 +34,31 @@ class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad
         }
 
         // Ensure pixelLayer stays within limits
-        if (pixelLayer < -1) {
-            pixelLayer = -1
-        } else if (pixelLayer > ARM_INCREMENT_UPPER_LIMIT) {
-            pixelLayer = ARM_INCREMENT_UPPER_LIMIT
-        }
+        if (pixelLayer < -1) pixelLayer = -1
+        else if (pixelLayer > ARM_INCREMENT_UPPER_LIMIT) pixelLayer = ARM_INCREMENT_UPPER_LIMIT
 
-        // Reset arm position based on gamepad input
+        // Reset arm position (encoder ticks)
         if (gamepad.b) arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         else arm.mode = DcMotor.RunMode.RUN_TO_POSITION
 
 
         // Wrist alignment based on gamepad input
-        if (gamepad.a) {
-            theta = 120.0
-            wristAlignment = "floor"
-        } else if (gamepad.y) {
-            theta = 60.0
-            wristAlignment = "easel"
-        }
+        if (gamepad.a) theta = 120.0
+        else if (gamepad.y) theta = 60.0
 
-        // Hook onto bar for winching based on gamepad input
+        // Hook onto bar for winching
         if (gamepad.x) {
             wrist.position = WRIST_WINCH_POSITION
             arm.targetPosition = ARM_WINCH_POSITION
             arm.mode = DcMotor.RunMode.RUN_TO_POSITION
         }
+
+        // Common throughout all arm subassemblies
+        handleAirplaneLauncher()
         handlePixelDroppers()
         handleOvercurrentProtection()
 
-        // Update buttonWasPressed flag
+        // Detect whether the dpad was used this loop
         buttonWasPressed = gamepad.dpad_up || gamepad.dpad_down || gamepad.dpad_left || gamepad.dpad_right
     }
 
@@ -83,12 +73,12 @@ class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad
         telemetry.addData("arm target position", arm.targetPosition)
         telemetry.addData("arm position discrepancy", arm.currentPosition - arm.targetPosition)
         telemetry.addData("arm pixel layer", pixelLayer)
-        telemetry.addData("wrist alignment", wristAlignment)
+        telemetry.addData("theta", theta)
         telemetry.addData("arm motor current (amps)", arm.getCurrent(CurrentUnit.AMPS))
         telemetry.addLine()
     }
 
-    private val targetArmAndWristPositions: Map.Entry<Int, Double>
+    private val targetArmAndWristPosition: Pair<Int, Double>
         /**
          * See math: [...](https://drive.google.com/file/d/1ADeKl-3EPOc8nBHZwGThREwBQAEdIAJ9/view)
          * Calculates the target positions for arm and wrist.
@@ -114,7 +104,7 @@ class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad
             val targetArmPosition = (alpha / 360 * ARM_ENCODER_RES).toInt() // from degrees (alpha) to encoder ticks (targetArmPosition)
             val targetWristPosition = beta * 0.53 * 300 / 360 // from degrees (beta) to the servo's range (targetWristPosition) (53% of 300 degrees)
 
-            return AbstractMap.SimpleEntry(targetArmPosition, targetWristPosition)
+            return Pair(targetArmPosition, targetWristPosition)
         }
 
     companion object {
