@@ -32,6 +32,17 @@ class DriveBase(opMode: OpMode) : Controllable, Subject {
         motor.direction = direction // Sets motors to their specified direction
     }
 
+    data class MoveRobotCalculations(
+            val x: Double,
+            val y: Double,
+            val yaw: Double,
+
+            val leftFront: Double = x - y - yaw,
+            val rightFront: Double = x + y + yaw,
+            val leftRear: Double = x + y - yaw,
+            val rightRear: Double = x - y + yaw
+    )
+
     /**
      * Taken from the RobotAutoDriveToAprilTagOmni example (2023) Move robot according to desired
      * axes motions
@@ -45,10 +56,11 @@ class DriveBase(opMode: OpMode) : Controllable, Subject {
      */
     fun moveRobot(x: Double, y: Double, yaw: Double) {
         // Calculate wheel powers.
-        var leftFrontPower = x - y - yaw
-        var rightFrontPower = x + y + yaw
-        var leftBackPower = x + y - yaw
-        var rightBackPower = x - y + yaw
+        var (_, _, _,
+                leftFrontPower,
+                rightFrontPower,
+                leftBackPower,
+                rightBackPower) = MoveRobotCalculations(x, y, yaw)
 
         // Normalize wheel powers to be less than 1.0
         var max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower))
@@ -85,15 +97,16 @@ class DriveBase(opMode: OpMode) : Controllable, Subject {
     }
 
     fun runToPosition(lf: Int, rf: Int, lr: Int, rr: Int) {
+        setMode(RunMode.STOP_AND_RESET_ENCODER)
         setMode(RunMode.RUN_USING_ENCODER)
         setTargetPositions(abs(lf), abs(rf), abs(lr), abs(rr))
         motors.map { (it as DcMotorEx).targetPositionTolerance = 5 }
         setMode(RunMode.RUN_TO_POSITION)
 
-        leftFront.power  = if(lf < 0) -0.5 else 0.5
-        rightFront.power = if(rf < 0) -0.5 else 0.5
-        leftRear.power   = if(lr < 0) -0.5 else 0.5
-        rightRear.power  = if(rr < 0) -0.5 else 0.5
+        leftFront.power = if (lf < 0) -0.5 else 0.5
+        rightFront.power = if (rf < 0) -0.5 else 0.5
+        leftRear.power = if (lr < 0) -0.5 else 0.5
+        rightRear.power = if (rr < 0) -0.5 else 0.5
     }
 
     override fun controller(gamepad: GamepadManager) {
