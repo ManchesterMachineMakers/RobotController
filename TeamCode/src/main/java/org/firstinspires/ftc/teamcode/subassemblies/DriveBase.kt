@@ -4,19 +4,18 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Gamepad
-import com.rutins.aleks.diagonal.Subject
-import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.Subassembly
+import org.firstinspires.ftc.teamcode.util.config
 import kotlin.math.*
 
-class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad), Subject {
+class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad) {
 
     override val name = "Drive Base"
 
-    private val leftFront = hardwareMap.dcMotor.get("leftFront")!!
-    private val rightFront = hardwareMap.dcMotor.get("rightFront")!!
-    private val leftRear = hardwareMap.dcMotor.get("leftRear")!!
-    private val rightRear = hardwareMap.dcMotor.get("rightRear")!!
+    private val leftFront: DcMotor = hardwareMap.dcMotor.get("left_front")
+    private val rightFront: DcMotor = hardwareMap.dcMotor.get("right_front")
+    private val leftRear: DcMotor = hardwareMap.dcMotor.get("left_rear")
+    private val rightRear: DcMotor = hardwareMap.dcMotor.get("right_rear")
 
     init {
         leftFront.config(DcMotorSimple.Direction.FORWARD)
@@ -26,7 +25,7 @@ class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad)
     }
 
     override fun loop() {
-        super.loop()
+        loopTime.reset()
 
         val r = hypot(gamepad.left_stick_x.toDouble(), -gamepad.left_stick_y.toDouble())
         val robotAngle = atan2(-gamepad.left_stick_y.toDouble(), gamepad.left_stick_x.toDouble()) - PI / 4
@@ -77,11 +76,5 @@ class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad)
         rightFront.power = rightFrontPower
         leftRear.power = leftBackPower
         rightRear.power = rightBackPower
-    }
-
-    private fun DcMotor.config(direction: DcMotorSimple.Direction) {
-        mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER // Runs motor without distance tracking
-        zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE // Brakes motor when stopping
-        this.direction = direction // Sets motors to their specified direction
     }
 }

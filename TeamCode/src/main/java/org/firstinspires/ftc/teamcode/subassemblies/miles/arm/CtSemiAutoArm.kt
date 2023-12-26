@@ -2,14 +2,15 @@ package org.firstinspires.ftc.teamcode.subassemblies.miles.arm
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
-import org.firstinspires.ftc.teamcode.util.BaseArm
+import org.firstinspires.ftc.teamcode.util.bases.BaseArm
 import kotlin.math.*
 
 /**
  * Semi-automatic arm subassembly for controlling arm and wrist movements.
  */
-class CtSemiAutoArm(opMode: OpMode) : BaseArm(opMode) {
+class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad) {
     
     override val name = "Continuous Semi-Auto Arm"
     
@@ -26,7 +27,7 @@ class CtSemiAutoArm(opMode: OpMode) : BaseArm(opMode) {
         if (!arm.isOverCurrent) {
             if (gamepad.left_stick_y != 0f) {
                 arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
-                arm.velocity = gamepad.left_stick_y * ARM_ENCODER_RES * ARM_SPEED
+                arm.velocity = gamepad.left_stick_y * ARM_SPEED
                 latestArmPosition = arm.currentPosition
             } else {
                 brakeArm()
@@ -57,10 +58,9 @@ class CtSemiAutoArm(opMode: OpMode) : BaseArm(opMode) {
      * Displays relevant telemetry information.
      */
     override fun telemetry() {
-
         // Telemetry updates
         telemetry.addData("Semi-Automatic Arm", "")
-        telemetry.addData("status", currentStatus)
+        telemetry.addData("status", status)
         telemetry.addData("run time (seconds)", opMode.runtime.toInt())
         telemetry.addData("loop time (milliseconds)", loopTime.milliseconds().toInt())
         telemetry.addData("arm mode", arm.mode)
@@ -68,6 +68,7 @@ class CtSemiAutoArm(opMode: OpMode) : BaseArm(opMode) {
         telemetry.addData("wrist alignment", wristAlignment)
         telemetry.addData("arm motor current (amps)", arm.getCurrent(CurrentUnit.AMPS))
         telemetry.addLine()
+        telemetry.addData("gamepad 2 left stick y", gamepad.left_stick_y)
     }
 
     /**

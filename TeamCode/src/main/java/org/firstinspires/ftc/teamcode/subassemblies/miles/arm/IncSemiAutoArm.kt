@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
-import org.firstinspires.ftc.teamcode.util.BaseArm
+import org.firstinspires.ftc.teamcode.util.bases.BaseArm
 import java.util.AbstractMap
 import kotlin.math.*
 
@@ -14,7 +14,7 @@ import kotlin.math.*
 class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad) {
 
     override val name = "Incremented Semi-Auto Arm"
-    
+
     // Initial values for arm and wrist
     private var theta = 60.0 // 60 for easel, 120 for floor
     private var wristAlignment: String = "easel"
@@ -31,14 +31,11 @@ class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad
         wrist.position = targetArmAndWristPositions.value
 
         // Incrementer based on gamepad input
-        if (gamepad.dpad_up && !buttonWasPressed) {
-            pixelLayer++
-        } else if (gamepad.dpad_down && !buttonWasPressed) {
-            pixelLayer = -1
-        } else if (gamepad.dpad_right && !buttonWasPressed) {
-            pixelLayer += ARM_LARGE_INCREMENT
-        } else if (gamepad.dpad_left && !buttonWasPressed) {
-            pixelLayer -= ARM_LARGE_INCREMENT
+        if (!buttonWasPressed) {
+            if      (gamepad.dpad_up)    pixelLayer++
+            else if (gamepad.dpad_down)  pixelLayer--
+            else if (gamepad.dpad_right) pixelLayer += ARM_LARGE_INCREMENT
+            else if (gamepad.dpad_left)  pixelLayer -= ARM_LARGE_INCREMENT
         }
 
         // Ensure pixelLayer stays within limits
@@ -49,11 +46,9 @@ class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad
         }
 
         // Reset arm position based on gamepad input
-        if (gamepad.b) {
-            arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        } else {
-            arm.mode = DcMotor.RunMode.RUN_TO_POSITION
-        }
+        if (gamepad.b) arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        else arm.mode = DcMotor.RunMode.RUN_TO_POSITION
+
 
         // Wrist alignment based on gamepad input
         if (gamepad.a) {
@@ -112,13 +107,10 @@ class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad
             } else if (alpha > 1) {
                 alpha = 1.0
             }
-            val beta: Double = 
-                    if (pixelLayer <= -1) { // floor
-                        0.5
-                    } else { // easel
-                        theta - GAMMA - alpha
-                    }
-            
+            val beta =
+                    if (pixelLayer <= -1) 0.5
+                    else theta - GAMMA - alpha
+
             val targetArmPosition = (alpha / 360 * ARM_ENCODER_RES).toInt() // from degrees (alpha) to encoder ticks (targetArmPosition)
             val targetWristPosition = beta * 0.53 * 300 / 360 // from degrees (beta) to the servo's range (targetWristPosition) (53% of 300 degrees)
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.util
+package org.firstinspires.ftc.teamcode.util.bases
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotorSimple
@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
+import org.firstinspires.ftc.teamcode.util.Subassembly
 
 /**
  * Abstract class representing a basic arm subassembly for FTC robotics.
@@ -130,11 +131,10 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, g
         }
     }
 
-    companion object {
+    protected companion object {
         // Constants
-        @JvmStatic
-        protected const val ARM_ENCODER_RES = 2786.2 // PPR
-        protected const val ARM_SPEED = 0.4
-        protected const val ARM_OVERCURRENT_THRESHOLD = 4.0 // Amps
+        const val ARM_ENCODER_RES = 2786.2 // PPR
+        const val ARM_SPEED = 0.4
+        const val ARM_OVERCURRENT_THRESHOLD = 4.0 // Amps
     }
 }
