@@ -1,32 +1,45 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
-import com.qualcomm.robotcore.hardware.HardwareMap
-import com.rutins.aleks.diagonal.Subject
-import org.firstinspires.ftc.teamcode.contracts.Controllable
-import org.firstinspires.ftc.teamcode.util.GamepadManager
+import com.qualcomm.robotcore.hardware.Gamepad
+import org.firstinspires.ftc.teamcode.util.Subassembly
+import org.firstinspires.ftc.teamcode.util.config
+import kotlin.math.*
 
-class DriveBase(opMode: OpMode) : Controllable, Subject {
-    val hardwareMap = opMode.hardwareMap
-    val leftFront = hardwareMap.dcMotor.get("leftFront")
-    val rightFront = hardwareMap.dcMotor.get("rightFront")
-    val leftRear = hardwareMap.dcMotor.get("leftRear")
-    val rightRear = hardwareMap.dcMotor.get("rightRear")
+class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad) {
+
+    override val name = "Drive Base"
+
+    private val leftFront: DcMotor = hardwareMap.dcMotor.get("left_front")
+    private val rightFront: DcMotor = hardwareMap.dcMotor.get("right_front")
+    private val leftRear: DcMotor = hardwareMap.dcMotor.get("left_rear")
+    private val rightRear: DcMotor = hardwareMap.dcMotor.get("right_rear")
 
     init {
-        configMotor(leftFront, DcMotorSimple.Direction.FORWARD)
-        configMotor(rightFront, DcMotorSimple.Direction.REVERSE)
-        configMotor(leftRear, DcMotorSimple.Direction.FORWARD)
-        configMotor(rightRear, DcMotorSimple.Direction.REVERSE)
+        leftFront.config(DcMotorSimple.Direction.FORWARD)
+        rightFront.config(DcMotorSimple.Direction.REVERSE)
+        leftRear.config(DcMotorSimple.Direction.FORWARD)
+        rightRear.config(DcMotorSimple.Direction.REVERSE)
     }
 
-    private fun configMotor(motor: DcMotor, direction: DcMotorSimple.Direction) {
-        motor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER // Runs motor without distance tracking
-        motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE // Brakes motor when stopping
-        motor.direction = direction // Sets motors to their specified direction
+    override fun loop() {
+        loopTime.reset()
+
+        val r = hypot(gamepad.left_stick_x.toDouble(), -gamepad.left_stick_y.toDouble())
+        val robotAngle = atan2(-gamepad.left_stick_y.toDouble(), gamepad.left_stick_x.toDouble()) - PI / 4
+        val rightX = gamepad.right_stick_x.toDouble()
+
+        val v1 = r * cos(robotAngle) + rightX
+        val v2 = r * sin(robotAngle) - rightX
+        val v3 = r * sin(robotAngle) + rightX
+        val v4 = r * cos(robotAngle) - rightX
+
+        leftFront.power = v1 / 1.2
+        rightFront.power = v2 / 1.2
+        leftRear.power = v3 / 1.2
+        rightRear.power = v4 / 1.2
     }
 
     /**
@@ -48,9 +61,9 @@ class DriveBase(opMode: OpMode) : Controllable, Subject {
         var rightBackPower = x - y + yaw
 
         // Normalize wheel powers to be less than 1.0
-        var max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower))
-        max = Math.max(max, Math.abs(leftBackPower))
-        max = Math.max(max, Math.abs(rightBackPower))
+        var max = max(abs(leftFrontPower), abs(rightFrontPower))
+        max = max(max, abs(leftBackPower))
+        max = max(max, abs(rightBackPower))
         if (max > 1.0) {
             leftFrontPower /= max
             rightFrontPower /= max
@@ -59,23 +72,9 @@ class DriveBase(opMode: OpMode) : Controllable, Subject {
         }
 
         // Send powers to the wheels.
-        leftFront!!.power = leftFrontPower
-        rightFront!!.power = rightFrontPower
-        leftRear!!.power = leftBackPower
-        rightRear!!.power = rightBackPower
-    }
-
-    override fun controller(gamepad: GamepadManager) {
-        val r = Math.hypot(gamepad.gamepad.left_stick_x.toDouble(), -gamepad.gamepad.left_stick_y.toDouble())
-        val robotAngle = Math.atan2(-gamepad.gamepad.left_stick_y.toDouble(), gamepad.gamepad.left_stick_x.toDouble()) - Math.PI / 4
-        val rightX = gamepad.gamepad.right_stick_x.toDouble()
-        val v1 = r * Math.cos(robotAngle) + rightX
-        val v2 = r * Math.sin(robotAngle) - rightX
-        val v3 = r * Math.sin(robotAngle) + rightX
-        val v4 = r * Math.cos(robotAngle) - rightX
-        leftFront!!.power = v1 / 1.2
-        rightFront!!.power = v2 / 1.2
-        leftRear!!.power = v3 / 1.2
-        rightRear!!.power = v4 / 1.2
+        leftFront.power = leftFrontPower
+        rightFront.power = rightFrontPower
+        leftRear.power = leftBackPower
+        rightRear.power = rightBackPower
     }
 }
