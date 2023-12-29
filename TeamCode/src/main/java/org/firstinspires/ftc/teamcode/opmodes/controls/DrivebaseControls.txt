@@ -1,9 +1,0 @@
-Gamepad 1:
-    Left stick:
-        Up: move robot forward
-        Down: move robot backward
-        Left: strafe robot left
-        Right: strafe robot right
-    Right stick:
-        Left: turn robot left (counter-clockwise)
-        Right: turn robot right (clockwise)

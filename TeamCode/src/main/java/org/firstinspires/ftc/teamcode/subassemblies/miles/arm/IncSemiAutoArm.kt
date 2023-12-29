@@ -12,6 +12,7 @@ class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad
     override val name = "Incremented Semi-Auto Arm"
 
     // Initial values for arm and wrist
+    /** The angle at which the intake will be level with. */
     private var theta = 60.0 // 60 for easel, 120 for floor
     private var pixelLayer = 0
 
@@ -27,10 +28,12 @@ class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad
 
         // Incrementer based on gamepad input
         if (!buttonWasPressed) {
-            if      (gamepad.dpad_up)    pixelLayer++
-            else if (gamepad.dpad_down)  pixelLayer--
-            else if (gamepad.dpad_right) pixelLayer += ARM_LARGE_INCREMENT
-            else if (gamepad.dpad_left)  pixelLayer -= ARM_LARGE_INCREMENT
+            when {
+                gamepad.dpad_up -> pixelLayer++
+                gamepad.dpad_down -> pixelLayer--
+                gamepad.dpad_right -> pixelLayer += ARM_LARGE_INCREMENT
+                gamepad.dpad_left -> pixelLayer -= ARM_LARGE_INCREMENT
+            }
         }
 
         // Ensure pixelLayer stays within limits
@@ -57,6 +60,7 @@ class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad
         handleAirplaneLauncher()
         handlePixelDroppers()
         handleOvercurrentProtection()
+        handleWinch()
 
         // Detect whether the dpad was used this loop
         buttonWasPressed = gamepad.dpad_up || gamepad.dpad_down || gamepad.dpad_left || gamepad.dpad_right

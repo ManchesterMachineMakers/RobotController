@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.hardware.TouchSensor
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.util.Subassembly
 
@@ -16,13 +17,15 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, g
 
     // Motors
     protected val arm: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "arm")
-//    protected val winch: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "winch")
+    protected val winch: DcMotor = hardwareMap.dcMotor.get("winch")
 
     // Servos
     protected val wrist: Servo = hardwareMap.servo.get("wrist")
     protected val airplaneLauncher: Servo = hardwareMap.servo.get("airplane_launcher")
     protected val leftRelease: Servo = hardwareMap.servo.get("left_release")
     protected val rightRelease: Servo = hardwareMap.servo.get("right_release")
+
+    protected val intakeTouch: TouchSensor = hardwareMap.touchSensor.get("intake")
 
     // Arm state variables
     protected var latestArmPosition = 0 // in encoder ticks
@@ -36,6 +39,7 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, g
         arm.direction = DcMotorSimple.Direction.REVERSE
         arm.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         arm.setCurrentAlert(ARM_OVERCURRENT_THRESHOLD, CurrentUnit.AMPS)
+
 
         // Wrist servo configuration
         wrist.scaleRange(0.25, 0.78) // 53% of 300-degree range
@@ -70,13 +74,13 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, g
     abstract override fun loop()
 
     override fun telemetry() {
-        telemetry.addData(name, status)
+        telemetry.addLine(name)
+        telemetry.addData("status", status)
         telemetry.addData("run time (seconds)", opMode.runtime)
         telemetry.addData("loop time (milliseconds)", loopTime.milliseconds())
         telemetry.addData("arm mode", arm.mode)
         telemetry.addData("arm position", arm.currentPosition)
         telemetry.addData("arm current (amps)", arm.getCurrent(CurrentUnit.AMPS).toString() + " out of : " + ARM_OVERCURRENT_THRESHOLD)
-        telemetry.addLine()
     }
 
     /**
@@ -125,6 +129,10 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, g
                 airplaneLauncher.position = 0.0
             }
         }
+    }
+
+    protected fun handleWinch() {
+        winch.power = gamepad.right_stick_y.toDouble()
     }
 
     protected companion object {

@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.subassemblies.miles.arm
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Gamepad
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.util.bases.BaseArm
 import kotlin.math.*
 
@@ -13,7 +12,7 @@ import kotlin.math.*
 class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad) {
     
     override val name = "Continuous Semi-Auto Arm"
-    
+
     private var theta = 60.0 // degrees
 
     /**
@@ -48,6 +47,7 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad)
         handlePixelDroppers()
         handleOvercurrentProtection()
         handleAirplaneLauncher()
+        handleWinch()
     }
 
     /**
@@ -55,16 +55,8 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad)
      */
     override fun telemetry() {
         // Telemetry updates
-        telemetry.addData("Semi-Automatic Arm", "")
-        telemetry.addData("status", status)
-        telemetry.addData("run time (seconds)", opMode.runtime.toInt())
-        telemetry.addData("loop time (milliseconds)", loopTime.milliseconds().toInt())
-        telemetry.addData("arm mode", arm.mode)
-        telemetry.addData("arm velocity", arm.velocity)
-        telemetry.addData("arm target position", arm.targetPosition)
-        telemetry.addData("arm actual position", arm.currentPosition)
-        telemetry.addData("theta", theta)
-        telemetry.addData("arm motor current (amps)", arm.getCurrent(CurrentUnit.AMPS))
+        super.telemetry()
+        telemetry.addData("theta (intake angle)", theta)
         telemetry.addLine()
     }
 
@@ -74,9 +66,9 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad)
      * @return The calculated wrist position.
      */
     private fun findWristPosition(): Double {
-        val armAngle = 360 * arm.currentPosition / ARM_ENCODER_RES
-        val servoAngle = 90 + theta - GAMMA - armAngle
-        return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53
+        val armAngle = 360 * arm.currentPosition / ARM_ENCODER_RES // degrees
+        val servoAngle = 90 + theta - GAMMA - armAngle // degrees?
+        return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53 // from degrees? to servo range
     }
 
     companion object {

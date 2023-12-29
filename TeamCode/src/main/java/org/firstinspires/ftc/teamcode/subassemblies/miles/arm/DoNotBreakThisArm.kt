@@ -26,11 +26,13 @@ class DoNotBreakThisArm(private val opMode: OpMode, private val gamepad: Gamepad
     private val leftRelease = hardwareMap.servo.get("left_release")
     private val rightRelease = hardwareMap.servo.get("right_release")
     private val wrist = hardwareMap.servo.get("wrist")
+    private val airplaneLauncher = hardwareMap.servo.get("airplane_launcher")
 
     // Variables for tracking arm and wrist positions, release statuses, and button states
     private var latestArmPosition = 0
     private var wristPosition = 0.0
     private var buttonWasPressed = false
+    private var airplaneLauncherToggle = false
 
     init {
         wristPosition = wrist.position
@@ -44,10 +46,15 @@ class DoNotBreakThisArm(private val opMode: OpMode, private val gamepad: Gamepad
         // Configuring servos with appropriate ranges and directions
         leftRelease.scaleRange(0.175, 0.4) // 22.5% of 300 degree range
         leftRelease.direction = Servo.Direction.FORWARD
+
         rightRelease.scaleRange(0.6, 0.825) // 22.5% of 300 degree range
         rightRelease.direction = Servo.Direction.REVERSE
+
         wrist.scaleRange(0.25, 0.78) // // 53% of 300 degree range
         wrist.direction = Servo.Direction.FORWARD
+
+        airplaneLauncher.scaleRange(0.0, 1.0) // 1 should be open, 0 should be closed; TODO: Get these values
+        airplaneLauncher.direction = Servo.Direction.FORWARD // TODO: Get ideal direction
 
         // Initializing variables
         latestArmPosition = arm.currentPosition
@@ -98,6 +105,15 @@ class DoNotBreakThisArm(private val opMode: OpMode, private val gamepad: Gamepad
         if (gamepad.right_bumper) rightRelease.position = 1.0 // open
         else if (gamepad.right_trigger > 0.2) rightRelease.position = 0.0 // close
 
+        // Airplane Launcher
+        if (gamepad.x) {
+            airplaneLauncherToggle = !airplaneLauncherToggle
+            if (airplaneLauncherToggle) {
+                airplaneLauncher.position = 1.0 // open
+            } else {
+                airplaneLauncher.position = 0.0 // close
+            }
+        }
 
         // For detecting when a button is pressed.
         buttonWasPressed = gamepad.dpad_up || gamepad.dpad_down || gamepad.dpad_left || gamepad.dpad_right
