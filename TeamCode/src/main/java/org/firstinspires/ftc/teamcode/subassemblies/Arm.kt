@@ -15,10 +15,10 @@ import kotlin.math.sin
 // Arm subassembly control
 class Arm(opMode: OpMode) : Controllable, Subject {
     private val hardwareMap = opMode.hardwareMap
-    val armMotor = hardwareMap.dcMotor.get("motorEXP0")
-    val parallel = hardwareMap.crservo.get("servo0")
-    val rightDropper = hardwareMap.crservo.get("servo1")
-    val leftDropper = hardwareMap.crservo.get("servo2")
+    val armMotor = hardwareMap.dcMotor.get("arm")
+    val wrist = hardwareMap.servo.get("wrist")
+    val rightRelease = hardwareMap.servo.get("right_release")
+    val leftRelease = hardwareMap.servo.get("left_release")
 
     init {
         armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER // Resets the encoder (distance tracking)
@@ -42,20 +42,20 @@ class Arm(opMode: OpMode) : Controllable, Subject {
     override fun controller(gamepad: GamepadManager) {
         armMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         armMotor.power = gamepad.gamepad.left_stick_y * 0.25
-        parallel.power = gamepad.gamepad.right_stick_y * 0.25
+        //parallel.power = gamepad.gamepad.right_stick_y * 0.25
         if (gamepad.gamepad.left_bumper) {
-            leftDropper.power = -0.25
+            //leftDropper.power = -0.25
         } else if (gamepad.gamepad.left_trigger > 0.05) {
-            leftDropper.power = 0.25
+            //leftDropper.power = 0.25
         } else {
-            leftDropper.power = 0.0
+            //leftDropper.power = 0.0
         }
         if (gamepad.gamepad.right_bumper) {
-            rightDropper.power = 0.25
+            //rightDropper.power = 0.25
         } else if (gamepad.gamepad.right_trigger > 0.05) {
-            rightDropper.power = -0.25
+            //rightDropper.power = -0.25
         } else {
-            rightDropper.power = 0.0
+            //rightDropper.power = 0.0
         }
     }
 

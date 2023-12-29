@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 import org.firstinspires.ftc.teamcode.autonomous.path.GridPath
@@ -9,7 +10,7 @@ import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.Vision
 import org.firstinspires.ftc.teamcode.util.log
 
-
+@Autonomous
 class CenterStageAutonomous : LinearOpMode() {
 
     private enum class DuckPosition {
@@ -20,7 +21,7 @@ class CenterStageAutonomous : LinearOpMode() {
     private fun detect(vision: Vision): Recognition =
         vision.tfod.recognitions
             .filter { r ->
-                r.label == "DUCK" && r.confidence > 0.9
+                r.label == "Pixel" && r.confidence > 0.9
             }
             .sortedBy(Recognition::getConfidence)
             .reversed()
@@ -81,10 +82,9 @@ class CenterStageAutonomous : LinearOpMode() {
 
     /**
      * Park in the parking area.
-     *
      */
-    private fun park() {
-
+    private fun park(driveBase: DriveBase) {
+        driveBase.runGrid(0.0, -1.0, -1.0);
     }
 
     override fun runOpMode() {
@@ -95,13 +95,13 @@ class CenterStageAutonomous : LinearOpMode() {
         log("detecting a duck")
         val recognition = detect(vision)
 
-        log("detected a duck, delivering purple pixel")
+        log("detected a duck at ${recognitionPosition(recognition)}, delivering purple pixel")
         placePurplePixel(driveBase, arm, recognitionPosition(recognition))
 
         log("delivered the purple pixel, now moving on to yellow")
         placeYellowPixel(driveBase, arm, vision, recognitionPosition(recognition))
 
         log("parking in the parking area")
-        park()
+        park(driveBase)
     }
 }

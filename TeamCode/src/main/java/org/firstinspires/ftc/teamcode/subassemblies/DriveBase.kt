@@ -14,14 +14,14 @@ import kotlin.math.abs
 
 class DriveBase(opMode: OpMode) : Controllable, Subject {
     val hardwareMap = opMode.hardwareMap
-    val leftFront = hardwareMap.dcMotor.get("leftFront")
-    val rightFront = hardwareMap.dcMotor.get("rightFront")
-    val leftRear = hardwareMap.dcMotor.get("leftRear")
-    val rightRear = hardwareMap.dcMotor.get("rightRear")
+    val leftFront = hardwareMap.dcMotor.get("left_front")
+    val rightFront = hardwareMap.dcMotor.get("right_front")
+    val leftRear = hardwareMap.dcMotor.get("left_rear")
+    val rightRear = hardwareMap.dcMotor.get("right_rear")
 
     init {
-        configMotor(leftFront, DcMotorSimple.Direction.FORWARD)
-        configMotor(rightFront, DcMotorSimple.Direction.REVERSE)
+        configMotor(leftFront, DcMotorSimple.Direction.REVERSE)
+        configMotor(rightFront, DcMotorSimple.Direction.FORWARD)
         configMotor(leftRear, DcMotorSimple.Direction.FORWARD)
         configMotor(rightRear, DcMotorSimple.Direction.REVERSE)
     }
