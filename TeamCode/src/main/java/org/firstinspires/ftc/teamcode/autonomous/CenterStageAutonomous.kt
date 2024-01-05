@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autonomous
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 import org.firstinspires.ftc.teamcode.autonomous.path.GridPath
 import org.firstinspires.ftc.teamcode.autonomous.path.runGrid
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.subassemblies.Arm
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.Vision
 import org.firstinspires.ftc.teamcode.util.log
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection
 
 @Autonomous
 class CenterStageAutonomous : LinearOpMode() {
@@ -61,6 +63,40 @@ class CenterStageAutonomous : LinearOpMode() {
         // place the pixel
     }
 
+
+    /**
+     * Drive to a place in front of the provided apriltag.
+     * @return true if the robot is within tolerance of the desired position
+     */
+    private fun driveToAprilTag(driveBase: DriveBase, desiredTag: AprilTagDetection, desiredDistance: Double): Boolean {
+        //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
+        //  applied to the drive motors to correct the error.
+        //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
+        val SPEED_GAIN       = 0.02  //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+        val STRAFE_GAIN      = 0.015 //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        val TURN_GAIN        = 0.01  //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+
+        val MAX_AUTO_SPEED   = 0.7   //  Clip the approach speed to this max value (adjust for your robot)
+        val MAX_AUTO_STRAFE  = 0.7   //  Clip the approach speed to this max value (adjust for your robot)
+        val MAX_AUTO_TURN    = 0.3   //  Clip the turn speed to this max value (adjust for your robot)
+
+        val ACCEPTABLE_ERROR = 10    //  Acceptable distance error
+        // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+        val rangeError       = (desiredTag.ftcPose.range - desiredDistance)
+        val headingError     = desiredTag.ftcPose.bearing
+        val yawError         = desiredTag.ftcPose.yaw
+        // Use the speed and turn "gains" to calculate how we want the robot to move.
+        val drive            = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED)
+        val turn             = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN)
+        val strafe           = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE)
+
+        telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+        driveBase.moveRobot(drive, strafe, turn)
+        sleep(10)
+
+        return (rangeError < ACCEPTABLE_ERROR && headingError < ACCEPTABLE_ERROR && yawError < ACCEPTABLE_ERROR)
+    }
+
     /**
      * Place the yellow pixel (which should be preloaded into the right dropper) on the correct position on the backdrop.
      * @param duckPosition the position returned by [recognitionPosition]
@@ -76,6 +112,21 @@ class CenterStageAutonomous : LinearOpMode() {
         driveBase.runGrid(path)
 
         // now that we're at the backdrop, align to the correct apriltag
+        val aprilTags = vision.aprilTag.detections.sortedBy { it.center.x }
+
+        if(aprilTags.size == 3) {
+            val correctTag = when(duckPosition) {
+                DuckPosition.left -> aprilTags[0]
+                DuckPosition.center -> aprilTags[1]
+                DuckPosition.right -> aprilTags[2]
+            }
+            while(!driveToAprilTag(driveBase, correctTag, 1000.0))
+        } else {
+            log("Incorrect number of AprilTags detected on the backdrop, is the robot drunk?")
+            log("Continuing to next stage")
+            return
+        }
+
 
         // put the pixel on the backdrop
     }
