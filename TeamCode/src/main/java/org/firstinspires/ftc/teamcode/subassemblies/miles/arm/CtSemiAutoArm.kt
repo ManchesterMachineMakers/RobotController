@@ -44,10 +44,8 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad)
         if (gamepad.a) theta = 120.0
         else if (gamepad.y) theta = 60.0
 
-        handlePixelDroppers()
-        handleOvercurrentProtection()
-        handleAirplaneLauncher()
-        handleWinch()
+
+        handleAllRobotBits()
     }
 
     /**

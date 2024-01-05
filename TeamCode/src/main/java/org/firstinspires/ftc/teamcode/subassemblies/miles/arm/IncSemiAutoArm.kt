@@ -56,11 +56,7 @@ class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad
             arm.mode = DcMotor.RunMode.RUN_TO_POSITION
         }
 
-        // Common throughout all arm subassemblies
-        handleAirplaneLauncher()
-        handlePixelDroppers()
-        handleOvercurrentProtection()
-        handleWinch()
+        handleAllRobotBits()
 
         // Detect whether the dpad was used this loop
         buttonWasPressed = gamepad.dpad_up || gamepad.dpad_down || gamepad.dpad_left || gamepad.dpad_right

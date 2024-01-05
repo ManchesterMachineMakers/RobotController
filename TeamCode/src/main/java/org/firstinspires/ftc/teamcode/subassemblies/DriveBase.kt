@@ -18,8 +18,8 @@ class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad)
     private val rightRear: DcMotor = hardwareMap.dcMotor.get("right_rear")
 
     init {
-        leftFront.config(DcMotorSimple.Direction.FORWARD)
-        rightFront.config(DcMotorSimple.Direction.REVERSE)
+        leftFront.config(DcMotorSimple.Direction.REVERSE)
+        rightFront.config(DcMotorSimple.Direction.FORWARD)
         leftRear.config(DcMotorSimple.Direction.FORWARD)
         rightRear.config(DcMotorSimple.Direction.REVERSE)
     }

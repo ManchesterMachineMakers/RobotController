@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.hardware.TouchSensor
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.util.Subassembly
+import kotlin.math.*
 
 /**
  * Abstract class representing a basic arm subassembly for FTC robotics.
@@ -29,8 +30,10 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, g
 
     // Arm state variables
     protected var latestArmPosition = 0 // in encoder ticks
+    protected var latestWinchPosition = 0
     protected var buttonWasPressed = false
     protected var airplaneLauncherToggle = false // false = closed, true = open
+    protected var allowWinchMovement = true
 
     init {
         status = "initializing"
@@ -132,7 +135,25 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, g
     }
 
     protected fun handleWinch() {
-        winch.power = gamepad.right_stick_y.toDouble()
+        latestWinchPosition = winch.currentPosition
+        winch.power = gamepad.right_stick_y.pow(2).toDouble() * WINCH_SPEED
+        gamepadManager.once("left_stick_y") { allowWinchMovement = !allowWinchMovement }
+        if (allowWinchMovement) {
+            winch.mode = DcMotor.RunMode.RUN_USING_ENCODER
+            winch.power = gamepad.right_stick_y.pow(2).toDouble() * WINCH_SPEED
+        } else {
+            winch.mode = DcMotor.RunMode.RUN_TO_POSITION
+            winch.targetPosition = latestWinchPosition
+            winch.power = 0.2
+        }
+    }
+
+
+    protected fun handleAllRobotBits() {
+        handleOvercurrentProtection()
+        handlePixelDroppers()
+        handleAirplaneLauncher()
+        handleWinch()
     }
 
     protected companion object {
@@ -140,5 +161,6 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, g
         const val ARM_ENCODER_RES = 2786.2 // PPR
         const val ARM_SPEED = 0.4
         const val ARM_OVERCURRENT_THRESHOLD = 4.0 // Amps
+        const val WINCH_SPEED = 0.5
     }
 }
