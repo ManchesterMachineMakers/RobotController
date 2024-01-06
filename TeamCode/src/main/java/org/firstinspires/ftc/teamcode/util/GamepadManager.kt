@@ -17,7 +17,7 @@ class GamepadManager(val gamepad: Gamepad) {
             closure()
         }
     }
-    fun once(button: String, closure: () -> Void) {
+    fun once(button: String, closure: () -> Unit) {
         if(getButton(button)) {
             if(!wasPressed.contains(button)) {
                 closure()
