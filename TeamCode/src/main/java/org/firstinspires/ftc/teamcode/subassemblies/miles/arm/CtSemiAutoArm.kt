@@ -9,11 +9,15 @@ import kotlin.math.*
 /**
  * Semi-automatic arm subassembly for controlling arm and wrist movements.
  */
-class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad) {
-    
-    override val name = "Continuous Semi-Auto Arm"
-
-    private var theta = 60.0 // degrees
+class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad, "Continuous Semi-Auto Arm") {
+    private var theta = 60 // degrees
+    /** Position of the wrist to stay level with the floor or easel. */
+    private val relativeWristPosition: Double
+        get() {
+            val armAngle = 360 * arm.currentPosition / ARM_ENCODER_RES // degrees
+            val servoAngle = 90 + theta - GAMMA - armAngle // degrees?
+            return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53 // from degrees? to servo range
+        }
 
     /**
      * Main loop for controlling the semi-auto arm.
@@ -25,25 +29,20 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad)
         if (!arm.isOverCurrent) {
             if (gamepad.left_stick_y != 0f) {
                 arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
-                arm.power = gamepad.left_stick_y * ARM_SPEED
-                latestArmPosition = arm.currentPosition
-            } else {
-                arm.targetPosition = latestArmPosition
-                arm.mode = DcMotor.RunMode.RUN_TO_POSITION
-                arm.power = ARM_SPEED
-            }
+                arm.power = gamepad.left_stick_y * ARM_POWER
+                arm.updateLatestPosition()
+            } else arm.brake(0.2)
         }
 
         // Wrist movement
-        wrist.position = findWristPosition()
+        wrist.position = relativeWristPosition
 
         // Reset arm position
         if (gamepad.b) arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
 
         // Wrist alignment
-        if (gamepad.a) theta = 120.0
-        else if (gamepad.y) theta = 60.0
-
+        if (gamepad.a) theta = 120
+        else if (gamepad.y) theta = 60
 
         handleAllRobotBits()
     }
@@ -52,21 +51,17 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad)
      * Displays relevant telemetry information.
      */
     override fun telemetry() {
+        val intakeAlignment =
+            when (theta) {
+                120 -> "easel"
+                60 -> "floor"
+                else -> "unknown"
+            }
+
         // Telemetry updates
         super.telemetry()
-        telemetry.addData("theta (intake angle)", theta)
+        telemetry.addData("intake alignment", intakeAlignment)
         telemetry.addLine()
-    }
-
-    /**
-     * Calculates the wrist position based on arm angle and theta.
-     *
-     * @return The calculated wrist position.
-     */
-    private fun findWristPosition(): Double {
-        val armAngle = 360 * arm.currentPosition / ARM_ENCODER_RES // degrees
-        val servoAngle = 90 + theta - GAMMA - armAngle // degrees?
-        return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53 // from degrees? to servo range
     }
 
     companion object {

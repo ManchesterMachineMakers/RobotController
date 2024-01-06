@@ -8,9 +8,7 @@ import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.config
 import kotlin.math.*
 
-class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad) {
-
-    override val name = "Drive Base"
+class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad, "Drive Base") {
 
     private val leftFront: DcMotor = hardwareMap.dcMotor.get("left_front")
     private val rightFront: DcMotor = hardwareMap.dcMotor.get("right_front")
