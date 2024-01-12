@@ -49,7 +49,7 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subasse
         wrist.direction = Servo.Direction.FORWARD
 
         // Arm servo configuration
-        airplaneLauncher.scaleRange(0.1, 0.5) // 1 should be open, 0 should be closed; TODO: Get these values
+        airplaneLauncher.scaleRange(0.7, 0.78) // 0: closed, 1: open
         airplaneLauncher.direction = Servo.Direction.REVERSE
 
         // Left release servo configuration
@@ -120,8 +120,8 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subasse
         gamepadManager.once("x") {
             airplaneLauncherToggle = !airplaneLauncherToggle
 
-            if (airplaneLauncherToggle) airplaneLauncher.position = 1.0
-            else airplaneLauncher.position = 0.0
+            if (airplaneLauncherToggle) airplaneLauncher.position = 1.0 // Open
+            else airplaneLauncher.position = 0.0 // Close
         }
     }
 
