@@ -29,10 +29,10 @@ class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad,
         val robotAngle = atan2(-gamepad.left_stick_y.toDouble(), gamepad.left_stick_x.toDouble()) - PI / 4
         val rightX = gamepad.right_stick_x.toDouble()
 
-        val v1 = r * cos(robotAngle) + rightX
-        val v2 = r * sin(robotAngle) - rightX
-        val v3 = r * sin(robotAngle) + rightX
-        val v4 = r * cos(robotAngle) - rightX
+        val v1 = r * sin(robotAngle) + rightX
+        val v2 = r * cos(robotAngle) - rightX
+        val v3 = r * cos(robotAngle) + rightX
+        val v4 = r * sin(robotAngle) - rightX
 
         leftFront.power = v1 / 1.2
         rightFront.power = v2 / 1.2

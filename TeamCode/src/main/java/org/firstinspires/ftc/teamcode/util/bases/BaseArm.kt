@@ -90,13 +90,11 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subasse
             // Stop opMode if overcurrent is severe
             if (arm.getCurrent(CurrentUnit.AMPS) > ARM_OVERCURRENT_THRESHOLD * 1.4) {
                 opMode.requestOpModeStop()
-            } else if (arm.getCurrent(CurrentUnit.AMPS) > ARM_OVERCURRENT_THRESHOLD * 1.2) {
-                arm.setMotorDisable()
             } else {
                 arm.targetPosition = 0
                 arm.mode = DcMotor.RunMode.RUN_TO_POSITION
             }
-        } else arm.setMotorEnable()
+        }
     }
 
     /**
