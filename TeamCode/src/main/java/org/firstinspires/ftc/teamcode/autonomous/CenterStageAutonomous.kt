@@ -120,7 +120,7 @@ class CenterStageAutonomous : LinearOpMode() {
                 DuckPosition.center -> aprilTags[1]
                 DuckPosition.right -> aprilTags[2]
             }
-            while(!driveToAprilTag(driveBase, correctTag, 1000.0))
+            while(!driveToAprilTag(driveBase, correctTag, 1000.0));
         } else {
             log("Incorrect number of AprilTags detected on the backdrop, is the robot drunk?")
             log("Continuing to next stage")
