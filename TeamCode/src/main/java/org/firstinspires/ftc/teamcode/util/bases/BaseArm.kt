@@ -31,6 +31,8 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subasse
     // Arm state variables
     private var airplaneLauncherToggle = false // false = closed, true = open
     private var allowWinchMovement = true
+    // Button register
+    private var registerX = false
 
     init {
         status = "initializing"
@@ -117,12 +119,14 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subasse
 
     private fun handleAirplaneLauncher() {
         // Airplane launcher
-        gamepadManager.once("x") {
+        if(gamepad.x && !registerX) {
+            registerX = true
             airplaneLauncherToggle = !airplaneLauncherToggle
 
             if (airplaneLauncherToggle) airplaneLauncher.position = 1.0 // Open
             else airplaneLauncher.position = 0.0 // Close
         }
+        else if (!gamepad.x) registerX = false
     }
 
     private fun handleWinch() {
