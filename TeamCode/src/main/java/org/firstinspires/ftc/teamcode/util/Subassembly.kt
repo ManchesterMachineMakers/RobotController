@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.Telemetry
-import kotlin.math.*
 
 abstract class Subassembly(protected val opMode: OpMode, protected val gamepad: Gamepad, protected val name: String) {
 
@@ -23,8 +22,8 @@ abstract class Subassembly(protected val opMode: OpMode, protected val gamepad: 
     open fun telemetry() {
         telemetry.addLine(name)
         telemetry.addData("status", status)
-        telemetry.addData("runtime (s)", floor(opMode.runtime))
-        telemetry.addData("loop time (ms)", floor(loopTime.milliseconds()))
+        telemetry.addData("runtime (s)", "%.1f", opMode.runtime)
+        telemetry.addData("loop time (ms)", "%.1f", loopTime.milliseconds())
     }
 
     /** Make sure this starts with "loopTime.reset()" */
