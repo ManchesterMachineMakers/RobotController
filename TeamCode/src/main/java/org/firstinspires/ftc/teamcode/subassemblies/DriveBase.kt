@@ -34,10 +34,10 @@ class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad,
         val v3 = r * cos(robotAngle) + rightX
         val v4 = r * sin(robotAngle) - rightX
 
-        leftFront.power = v1 / 1.2
-        rightFront.power = v2 / 1.2
-        leftRear.power = v3 / 1.2
-        rightRear.power = v4 / 1.2
+        leftFront.power = curveDouble(v1) / FRONT_POWER
+        rightFront.power = curveDouble(v2) / FRONT_POWER
+        leftRear.power = curveDouble(v3) / REAR_POWER
+        rightRear.power = curveDouble(v4) / REAR_POWER
     }
 
     override fun telemetry() {
@@ -79,5 +79,15 @@ class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad,
         rightFront.power = rightFrontPower
         leftRear.power = leftBackPower
         rightRear.power = rightBackPower
+    }
+
+    private fun curveDouble(num: Double): Double {
+        return  if (num > 0) num.pow(2)
+                else -num.pow(2)
+    }
+
+    companion object {
+        const val FRONT_POWER = 0.6
+        const val REAR_POWER = 0.8
     }
 }

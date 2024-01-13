@@ -14,7 +14,7 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad,
     /** Position of the wrist to stay level with the floor or easel. */
     private val relativeWristPosition: Double
         get() {
-            val armAngle = arm.currentPosition / 2 // TODO: Figure out what is going on with this
+            val armAngle = 360 * arm.currentPosition / ARM_ENCODER_RES
             val servoAngle = 90 + theta - GAMMA - armAngle // degrees?
             return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53 // from degrees? to servo range
         }

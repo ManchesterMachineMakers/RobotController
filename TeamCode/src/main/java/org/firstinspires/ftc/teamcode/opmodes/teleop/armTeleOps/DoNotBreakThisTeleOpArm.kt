@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.DoNotBreakThisArm
 import kotlin.math.*
 
-@TeleOp(name = "Do Not Break This TeleOp with Arm")
+@TeleOp(name = "Do Not Break This TeleOp with Arm", group = "do not break")
 class DoNotBreakThisTeleOpArm : LinearOpMode() {
     override fun runOpMode() {
 

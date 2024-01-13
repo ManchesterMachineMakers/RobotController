@@ -20,7 +20,7 @@ class DoNotBreakThisArm(private val opMode: OpMode, private val gamepad: Gamepad
 
     // Motors
     private val arm = hardwareMap.get(DcMotorEx::class.java, "arm")
-//    private val winch = hardwareMap.dcMotor.get("winch")
+    private val winch = hardwareMap.dcMotor.get("winch")
 
     // Servos
     private val leftRelease = hardwareMap.servo.get("left_release")
@@ -69,7 +69,6 @@ class DoNotBreakThisArm(private val opMode: OpMode, private val gamepad: Gamepad
 
         // Wrist control
         wristPosition = wrist.position
-        wristPosition += (gamepad.right_stick_y / 25).toDouble()
         if (wristPosition < 0) {
             wristPosition = 0.0
         } else if (wristPosition > 1) {
@@ -85,9 +84,10 @@ class DoNotBreakThisArm(private val opMode: OpMode, private val gamepad: Gamepad
             arm.mode = DcMotor.RunMode.RUN_TO_POSITION
         }
 
+        winch.power = gamepad.right_stick_y.toDouble()
+
         // Wrist control with buttons
         if (!buttonWasPressed) {
-
             if      (gamepad.dpad_up)    wristPosition -= 0.05
             else if (gamepad.dpad_down)  wristPosition += 0.05
             else if (gamepad.dpad_left)  wristPosition += 0.2
