@@ -7,7 +7,7 @@ internal const val squareSize = 584.2 // mm
 
 internal const val motorEncoderEventsPerRevolution = 537.7
 internal const val wheelCircumference = 310 // mm
-internal const val motorEncoderEventsPerMM = motorEncoderEventsPerRevolution / wheelCircumference
+const val motorEncoderEventsPerMM = motorEncoderEventsPerRevolution / wheelCircumference
 
 internal const val strafingCoefficient = 0.7071 // speed difference between normal running and strafing - 1/sqrt(2), approximately
 

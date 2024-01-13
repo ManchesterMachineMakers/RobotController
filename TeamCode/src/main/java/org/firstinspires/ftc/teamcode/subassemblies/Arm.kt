@@ -39,6 +39,10 @@ class Arm(opMode: OpMode) : Controllable, Subject {
         return PlacementInfo(distToBase, alpha, beta)
     }
 
+    fun placePixel(driveBase: DriveBase, placementInfo: PlacementInfo) {
+
+    }
+
     override fun controller(gamepad: GamepadManager) {
         armMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         armMotor.power = gamepad.gamepad.left_stick_y * 0.25

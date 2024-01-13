@@ -138,7 +138,12 @@ class CenterStageAutonomous : LinearOpMode() {
         driveBase.runGrid(0.0, -1.0, -1.0);
     }
 
-    override fun runOpMode() {
+    fun runParkOnly() {
+        val driveBase = DriveBase(this)
+        driveBase.runGrid(0.0, 1.0, 1.0)
+    }
+
+    fun runFull() {
         val vision = Vision(this)
         val driveBase = DriveBase(this)
         val arm = Arm(this)
@@ -154,5 +159,9 @@ class CenterStageAutonomous : LinearOpMode() {
 
         log("parking in the parking area")
         park(driveBase)
+    }
+
+    override fun runOpMode() {
+        runParkOnly()
     }
 }
