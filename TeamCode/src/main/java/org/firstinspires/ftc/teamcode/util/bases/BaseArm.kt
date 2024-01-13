@@ -133,15 +133,12 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subasse
         if (gamepad.right_stick_y != 0f) allowWinchMovement = true
         gamepadManager.once("right_stick_button") { allowWinchMovement = false }
 
-        if (allowWinchMovement) {
-            // Normal Movement
-            val rightY = gamepad.right_stick_y
-            winch.mode = DcMotor.RunMode.RUN_USING_ENCODER
-            // Power curve to increase winch sensitivity, without reducing speed
-            if (rightY > 0f) winch.power = rightY.pow(2) * WINCH_SPEED
-            else winch.power = -rightY.pow(2) * WINCH_SPEED
-            winch.updateLatestPosition()
-        } else winch.brake(0.2)
+        val rightY = gamepad.right_stick_y
+        winch.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        // Power curve to increase winch sensitivity, without reducing speed
+        winch.power =
+            if (rightY > 0.0) rightY.pow(2) * WINCH_POWER
+            else -rightY.pow(2) * WINCH_POWER
     }
 
     protected fun handleAllRobotBits() {
@@ -155,8 +152,8 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subasse
     protected companion object {
         // Constants
         const val ARM_ENCODER_RES = 2786.2 // PPR
-        const val ARM_POWER = 0.4
+        const val ARM_POWER = 0.2
         const val ARM_OVERCURRENT_THRESHOLD = 5.0 // Amps
-        const val WINCH_SPEED = 1.0
+        const val WINCH_POWER = 1.0
     }
 }

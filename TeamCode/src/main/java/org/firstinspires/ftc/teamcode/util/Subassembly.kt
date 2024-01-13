@@ -16,9 +16,6 @@ abstract class Subassembly(protected val opMode: OpMode, protected val gamepad: 
     protected val loopTime = ElapsedTime()
     // Extension property (see: https://stackoverflow.com/questions/36502413/extension-fields-in-kotlin)
     private val externalMap = mutableMapOf<DcMotor, Int>()
-    private var DcMotor.latestPosition: Int
-        get() = externalMap[this] ?: 0
-        set(value) { externalMap[this] = value }
 
     val gamepadManager
         get() = GamepadManager(gamepad)
@@ -32,13 +29,4 @@ abstract class Subassembly(protected val opMode: OpMode, protected val gamepad: 
 
     /** Make sure this starts with "loopTime.reset()" */
     abstract fun loop()
-
-    protected fun DcMotor.updateLatestPosition() { latestPosition = currentPosition }
-
-    /** Brakes a motor with more power than regular DcMotor.ZeroPowerBehavior.BRAKE */
-    protected fun DcMotor.brake(power: Double) {
-        targetPosition = latestPosition
-        mode = DcMotor.RunMode.RUN_TO_POSITION
-        this.power = power
-    }
 }

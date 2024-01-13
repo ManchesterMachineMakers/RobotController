@@ -27,11 +27,12 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad,
 
         // Arm movement
         if (!arm.isOverCurrent) {
-            if (gamepad.left_stick_y != 0f) {
-                arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
-                arm.power = gamepad.left_stick_y * ARM_POWER
-                arm.updateLatestPosition()
-            } else arm.brake(0.2)
+            arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
+            // Power curve
+            val leftY = gamepad.left_stick_y
+            arm.power =
+                if (leftY > 0.0) leftY.pow(2) * ARM_POWER
+                else -leftY.pow(2) * ARM_POWER
         }
 
         // Wrist movement
@@ -53,14 +54,16 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad,
     override fun telemetry() {
         val intakeAlignment =
             when (theta) {
-                120 -> "easel"
-                60 -> "floor"
+                120 -> "floor"
+                60 -> "easel"
                 else -> "unknown"
             }
 
         // Telemetry updates
         super.telemetry()
         telemetry.addData("intake alignment", intakeAlignment)
+        telemetry.addData("target wrist position", relativeWristPosition)
+        telemetry.addData("actual wrist position", wrist.position)
         telemetry.addLine()
     }
 

@@ -40,6 +40,11 @@ class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad,
         rightRear.power = v4 / 1.2
     }
 
+    override fun telemetry() {
+        super.telemetry()
+        telemetry.addLine()
+    }
+
     /**
      * Taken from the RobotAutoDriveToAprilTagOmni example (2023) Move robot according to desired
      * axes motions
