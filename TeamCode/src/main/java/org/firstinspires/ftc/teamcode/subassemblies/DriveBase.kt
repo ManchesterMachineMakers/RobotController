@@ -8,9 +8,7 @@ import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.config
 import kotlin.math.*
 
-class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad) {
-
-    override val name = "Drive Base"
+class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad, "Drive Base") {
 
     private val leftFront: DcMotor = hardwareMap.dcMotor.get("left_front")
     private val rightFront: DcMotor = hardwareMap.dcMotor.get("right_front")
@@ -18,8 +16,8 @@ class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad)
     private val rightRear: DcMotor = hardwareMap.dcMotor.get("right_rear")
 
     init {
-        leftFront.config(DcMotorSimple.Direction.FORWARD)
-        rightFront.config(DcMotorSimple.Direction.REVERSE)
+        leftFront.config(DcMotorSimple.Direction.REVERSE)
+        rightFront.config(DcMotorSimple.Direction.FORWARD)
         leftRear.config(DcMotorSimple.Direction.FORWARD)
         rightRear.config(DcMotorSimple.Direction.REVERSE)
     }
@@ -31,15 +29,20 @@ class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad)
         val robotAngle = atan2(-gamepad.left_stick_y.toDouble(), gamepad.left_stick_x.toDouble()) - PI / 4
         val rightX = gamepad.right_stick_x.toDouble()
 
-        val v1 = r * cos(robotAngle) + rightX
-        val v2 = r * sin(robotAngle) - rightX
-        val v3 = r * sin(robotAngle) + rightX
-        val v4 = r * cos(robotAngle) - rightX
+        val v1 = r * sin(robotAngle) + rightX
+        val v2 = r * cos(robotAngle) - rightX
+        val v3 = r * cos(robotAngle) + rightX
+        val v4 = r * sin(robotAngle) - rightX
 
-        leftFront.power = v1 / 1.2
-        rightFront.power = v2 / 1.2
-        leftRear.power = v3 / 1.2
-        rightRear.power = v4 / 1.2
+        leftFront.power = curveDouble(v1) / FRONT_POWER
+        rightFront.power = curveDouble(v2) / FRONT_POWER
+        leftRear.power = curveDouble(v3) / REAR_POWER
+        rightRear.power = curveDouble(v4) / REAR_POWER
+    }
+
+    override fun telemetry() {
+        super.telemetry()
+        telemetry.addLine()
     }
 
     /**
@@ -76,5 +79,15 @@ class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad)
         rightFront.power = rightFrontPower
         leftRear.power = leftBackPower
         rightRear.power = rightBackPower
+    }
+
+    private fun curveDouble(num: Double): Double {
+        return  if (num > 0) num.pow(2)
+                else -num.pow(2)
+    }
+
+    companion object {
+        const val FRONT_POWER = 0.6
+        const val REAR_POWER = 0.8
     }
 }

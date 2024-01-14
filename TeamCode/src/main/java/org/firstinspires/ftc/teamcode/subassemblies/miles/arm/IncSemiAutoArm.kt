@@ -3,80 +3,13 @@ package org.firstinspires.ftc.teamcode.subassemblies.miles.arm
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Gamepad
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.util.bases.BaseArm
 import kotlin.math.*
 
-class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad) {
-
-    override val name = "Incremented Semi-Auto Arm"
-
-    // Initial values for arm and wrist
+class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad, "Incremented Semi-Auto Arm") {
+    /** The angle at which the intake will be level with. */
     private var theta = 60.0 // 60 for easel, 120 for floor
     private var pixelLayer = 0
-
-    /**
-     * Main loop for controlling the semi-auto arm.
-     */
-    override fun loop() {
-        loopTime.reset()
-
-        // Set target positions for arm and wrist
-        arm.targetPosition = targetArmAndWristPosition.first
-        wrist.position = targetArmAndWristPosition.second
-
-        // Incrementer based on gamepad input
-        if (!buttonWasPressed) {
-            if      (gamepad.dpad_up)    pixelLayer++
-            else if (gamepad.dpad_down)  pixelLayer--
-            else if (gamepad.dpad_right) pixelLayer += ARM_LARGE_INCREMENT
-            else if (gamepad.dpad_left)  pixelLayer -= ARM_LARGE_INCREMENT
-        }
-
-        // Ensure pixelLayer stays within limits
-        if (pixelLayer < -1) pixelLayer = -1
-        else if (pixelLayer > ARM_INCREMENT_UPPER_LIMIT) pixelLayer = ARM_INCREMENT_UPPER_LIMIT
-
-        // Reset arm position (encoder ticks)
-        if (gamepad.b) arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        else arm.mode = DcMotor.RunMode.RUN_TO_POSITION
-
-
-        // Wrist alignment based on gamepad input
-        if (gamepad.a) theta = 120.0
-        else if (gamepad.y) theta = 60.0
-
-        // Hook onto bar for winching
-        if (gamepad.x) {
-            wrist.position = WRIST_WINCH_POSITION
-            arm.targetPosition = ARM_WINCH_POSITION
-            arm.mode = DcMotor.RunMode.RUN_TO_POSITION
-        }
-
-        // Common throughout all arm subassemblies
-        handleAirplaneLauncher()
-        handlePixelDroppers()
-        handleOvercurrentProtection()
-
-        // Detect whether the dpad was used this loop
-        buttonWasPressed = gamepad.dpad_up || gamepad.dpad_down || gamepad.dpad_left || gamepad.dpad_right
-    }
-
-    /**
-     * Displays relevant telemetry information.
-     */
-    override fun telemetry() {
-        // Telemetry updates
-        super.telemetry()
-        telemetry.addData("arm mode", arm.mode)
-        telemetry.addData("arm position", arm.currentPosition)
-        telemetry.addData("arm target position", arm.targetPosition)
-        telemetry.addData("arm position discrepancy", arm.currentPosition - arm.targetPosition)
-        telemetry.addData("arm pixel layer", pixelLayer)
-        telemetry.addData("theta", theta)
-        telemetry.addData("arm motor current (amps)", arm.getCurrent(CurrentUnit.AMPS))
-        telemetry.addLine()
-    }
 
     private val targetArmAndWristPosition: Pair<Int, Double>
         /**
@@ -98,14 +31,65 @@ class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad
                 alpha = 1.0
             }
             val beta =
-                    if (pixelLayer <= -1) 0.5
-                    else theta - GAMMA - alpha
+                if (pixelLayer <= -1) 0.5
+                else theta - GAMMA - alpha
 
             val targetArmPosition = (alpha / 360 * ARM_ENCODER_RES).toInt() // from degrees (alpha) to encoder ticks (targetArmPosition)
             val targetWristPosition = beta * 0.53 * 300 / 360 // from degrees (beta) to the servo's range (targetWristPosition) (53% of 300 degrees)
 
             return Pair(targetArmPosition, targetWristPosition)
         }
+
+    /**
+     * Main loop for controlling the semi-auto arm.
+     */
+    override fun loop() {
+        loopTime.reset()
+
+        // Set target positions for arm and wrist
+        arm.targetPosition = targetArmAndWristPosition.first
+        wrist.position = targetArmAndWristPosition.second
+
+        // Incrementer
+        gamepadManager.once("dpad_up") { pixelLayer++ }
+        gamepadManager.once("dpad_down") { pixelLayer-- }
+        gamepadManager.once("dpad_right") { pixelLayer += ARM_LARGE_INCREMENT }
+        gamepadManager.once("dpad_left") { pixelLayer -= ARM_LARGE_INCREMENT }
+
+        // Ensure pixelLayer stays within limits
+        if (pixelLayer < -1) pixelLayer = -1
+        else if (pixelLayer > ARM_INCREMENT_UPPER_LIMIT) pixelLayer = ARM_INCREMENT_UPPER_LIMIT
+
+        // Wrist alignment based on gamepad input
+        if (gamepad.a) theta = 120.0
+        else if (gamepad.y) theta = 60.0
+
+        // Encoder reset
+        arm.mode =
+            if (gamepad.b) DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            else DcMotor.RunMode.RUN_TO_POSITION
+
+        // Hook onto bar for winching
+        if (gamepad.x) {
+            wrist.position = WRIST_WINCH_POSITION
+            arm.targetPosition = ARM_WINCH_POSITION
+            arm.mode = DcMotor.RunMode.RUN_TO_POSITION
+        }
+
+        handleAllRobotBits()
+    }
+
+    /**
+     * Displays relevant telemetry information.
+     */
+    override fun telemetry() {
+        // Telemetry updates
+        super.telemetry()
+        telemetry.addData("arm target position", arm.targetPosition)
+        telemetry.addData("arm pixel layer", pixelLayer)
+        telemetry.addData("theta", theta)
+        telemetry.addLine()
+    }
 
     companion object {
         // Constants for arm increments and limits

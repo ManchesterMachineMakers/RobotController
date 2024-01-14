@@ -3,18 +3,21 @@ package org.firstinspires.ftc.teamcode.subassemblies.miles.arm
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Gamepad
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.util.bases.BaseArm
 import kotlin.math.*
 
 /**
  * Semi-automatic arm subassembly for controlling arm and wrist movements.
  */
-class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad) {
-    
-    override val name = "Continuous Semi-Auto Arm"
-    
-    private var theta = 60.0 // degrees
+class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad, "Continuous Semi-Auto Arm") {
+    private var theta = 60 // degrees
+    /** Position of the wrist to stay level with the floor or easel. */
+    private val relativeWristPosition: Double
+        get() {
+            val armAngle = 360 * arm.currentPosition / ARM_ENCODER_RES
+            val servoAngle = 90 + theta - GAMMA - armAngle // degrees?
+            return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53 // from degrees? to servo range
+        }
 
     /**
      * Main loop for controlling the semi-auto arm.
@@ -24,59 +27,45 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad)
 
         // Arm movement
         if (!arm.isOverCurrent) {
-            if (gamepad.left_stick_y != 0f) {
-                arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
-                arm.power = gamepad.left_stick_y * ARM_SPEED
-                latestArmPosition = arm.currentPosition
-            } else {
-                arm.targetPosition = latestArmPosition
-                arm.mode = DcMotor.RunMode.RUN_TO_POSITION
-                arm.power = ARM_SPEED
-            }
+            arm.mode = DcMotor.RunMode.RUN_USING_ENCODER
+            // Power curve
+            val leftY = gamepad.left_stick_y
+            arm.power =
+                if (leftY > 0.0) leftY.pow(2) * ARM_POWER
+                else -leftY.pow(2) * ARM_POWER
         }
 
         // Wrist movement
-        wrist.position = findWristPosition()
+        wrist.position = relativeWristPosition
 
         // Reset arm position
         if (gamepad.b) arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
 
         // Wrist alignment
-        if (gamepad.a) theta = 120.0
-        else if (gamepad.y) theta = 60.0
+        if (gamepad.a) theta = 120
+        else if (gamepad.y) theta = 60
 
-        handlePixelDroppers()
-        handleOvercurrentProtection()
-        handleAirplaneLauncher()
+        handleAllRobotBits()
     }
 
     /**
      * Displays relevant telemetry information.
      */
     override fun telemetry() {
-        // Telemetry updates
-        telemetry.addData("Semi-Automatic Arm", "")
-        telemetry.addData("status", status)
-        telemetry.addData("run time (seconds)", opMode.runtime.toInt())
-        telemetry.addData("loop time (milliseconds)", loopTime.milliseconds().toInt())
-        telemetry.addData("arm mode", arm.mode)
-        telemetry.addData("arm velocity", arm.velocity)
-        telemetry.addData("arm target position", arm.targetPosition)
-        telemetry.addData("arm actual position", arm.currentPosition)
-        telemetry.addData("theta", theta)
-        telemetry.addData("arm motor current (amps)", arm.getCurrent(CurrentUnit.AMPS))
-        telemetry.addLine()
-    }
+        val intakeAlignment =
+            when (theta) {
+                120 -> "floor"
+                60 -> "easel"
+                else -> "unknown"
+            }
 
-    /**
-     * Calculates the wrist position based on arm angle and theta.
-     *
-     * @return The calculated wrist position.
-     */
-    private fun findWristPosition(): Double {
-        val armAngle = 360 * arm.currentPosition / ARM_ENCODER_RES
-        val servoAngle = 90 + theta - GAMMA - armAngle
-        return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53
+        // Telemetry updates
+        super.telemetry()
+        telemetry.addData("theta", theta)
+        telemetry.addData("intake alignment", intakeAlignment)
+        telemetry.addData("target wrist position", relativeWristPosition)
+        telemetry.addData("actual wrist position", wrist.position)
+        telemetry.addLine()
     }
 
     companion object {
