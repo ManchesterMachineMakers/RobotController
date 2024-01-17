@@ -5,11 +5,16 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.rutins.aleks.diagonal.Subject
+import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerMM
+import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerRevolution
 import org.firstinspires.ftc.teamcode.contracts.Controllable
 import org.firstinspires.ftc.teamcode.util.GamepadManager
+import org.firstinspires.ftc.teamcode.util.clamp
+import kotlin.math.PI
 import kotlin.math.asin
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
 // Arm subassembly control
@@ -40,6 +45,19 @@ class Arm(opMode: OpMode) : Controllable, Subject {
     }
 
     fun placePixel(driveBase: DriveBase, placementInfo: PlacementInfo) {
+        // math from matlab (armcode.mlx)
+        val ticksToBase = placementInfo.distToBase * motorEncoderEventsPerMM
+
+        val servoDegreesMax = 300.0
+        val servoDegrees = clamp(((placementInfo.alpha - PI/2) / (2*PI)) * 360, 0.0, servoDegreesMax)
+        val motorTicks = (placementInfo.beta / (2*PI)) * motorEncoderEventsPerRevolution
+
+        armMotor.targetPosition = motorTicks.roundToInt()
+        armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+        wrist.position = servoDegrees
+
+        driveBase.runToPosition(ticksToBase.roundToInt())
 
     }
 

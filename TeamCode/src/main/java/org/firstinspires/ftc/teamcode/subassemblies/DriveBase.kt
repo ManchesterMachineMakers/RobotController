@@ -109,6 +109,10 @@ class DriveBase(opMode: OpMode) : Controllable, Subject {
         rightRear.power = if (rr < 0) -0.5 else 0.5
     }
 
+    fun runToPosition(ticks: Int) {
+        runToPosition(ticks, ticks, ticks, ticks)
+    }
+
     override fun controller(gamepad: GamepadManager) {
         val r = Math.hypot(gamepad.gamepad.left_stick_x.toDouble(), -gamepad.gamepad.left_stick_y.toDouble())
         val robotAngle = Math.atan2(-gamepad.gamepad.left_stick_y.toDouble(), gamepad.gamepad.left_stick_x.toDouble()) - Math.PI / 4

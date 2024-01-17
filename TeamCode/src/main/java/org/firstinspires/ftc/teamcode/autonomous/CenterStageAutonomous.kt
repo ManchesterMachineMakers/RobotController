@@ -129,6 +129,7 @@ class CenterStageAutonomous : LinearOpMode() {
 
 
         // put the pixel on the backdrop
+        arm.placePixel(driveBase, arm.getPlacementInfo(1))
     }
 
     /**
