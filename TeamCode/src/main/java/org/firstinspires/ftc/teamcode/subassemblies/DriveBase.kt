@@ -14,6 +14,7 @@ class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad,
     private val rightFront: DcMotor = hardwareMap.dcMotor.get("right_front")
     private val leftRear: DcMotor = hardwareMap.dcMotor.get("left_rear")
     private val rightRear: DcMotor = hardwareMap.dcMotor.get("right_rear")
+    private val strafeCoeff = 0.5
 
     init {
         leftFront.config(DcMotorSimple.Direction.REVERSE)
@@ -60,8 +61,8 @@ class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad,
         // Calculate wheel powers.
         var leftFrontPower = x - y - yaw
         var rightFrontPower = x + y + yaw
-        var leftBackPower = x + y - yaw
-        var rightBackPower = x - y + yaw
+        var leftBackPower = strafeCoeff * (x + y - yaw)
+        var rightBackPower = strafeCoeff * (x - y + yaw)
 
         // Normalize wheel powers to be less than 1.0
         var max = max(abs(leftFrontPower), abs(rightFrontPower))
