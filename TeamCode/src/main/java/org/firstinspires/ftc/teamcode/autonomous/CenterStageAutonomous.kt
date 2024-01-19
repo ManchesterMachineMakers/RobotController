@@ -141,7 +141,7 @@ class CenterStageAutonomous : LinearOpMode() {
 
     fun runParkOnly() {
         val driveBase = DriveBase(this)
-        driveBase.runGrid(0.0, 1.0, 1.0)
+        driveBase.runGrid(0.0, 2.0, 1.0)
     }
 
     fun runFull() {
