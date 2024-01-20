@@ -42,7 +42,7 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subasse
         arm.setCurrentAlert(ARM_OVERCURRENT_THRESHOLD, CurrentUnit.AMPS)
 
         // Winch motor configuration
-        winch.direction = DcMotorSimple.Direction.REVERSE
+        winch.direction = DcMotorSimple.Direction.FORWARD
         winch.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         // Wrist servo configuration
