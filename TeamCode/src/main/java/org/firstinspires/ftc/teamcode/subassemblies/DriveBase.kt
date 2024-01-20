@@ -88,7 +88,7 @@ class DriveBase(opMode: OpMode, gamepad: Gamepad) : Subassembly(opMode, gamepad,
     }
 
     companion object {
-        const val FRONT_POWER = 0.6
+        const val FRONT_POWER = 0.8
         const val REAR_POWER = 0.8
     }
 }
