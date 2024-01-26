@@ -13,7 +13,9 @@ internal const val strafingCoefficient = 0.7071 // speed difference between norm
 
 data class GridPath(val x: Double, val y: Double, val yaw: Double)
 
-fun DriveBase.runGrid(x: Double, y: Double, yaw: Double) {
+fun DriveBase.runGrid(strafe: Double, fwb: Double, yaw: Double) {
+    val y = strafe
+    val x = fwb
     val xTicks = x * squareSize * motorEncoderEventsPerMM
     val yTicks = y * squareSize * motorEncoderEventsPerMM * (1/strafingCoefficient)
     val yawTicks = yaw * squareSize * motorEncoderEventsPerMM
@@ -21,6 +23,7 @@ fun DriveBase.runGrid(x: Double, y: Double, yaw: Double) {
     val (_, _, _, leftFront, rightFront, leftRear, rightRear) = DriveBase.MoveRobotCalculations(xTicks, yTicks, yawTicks)
 
     runToPosition(leftFront.roundToInt(), rightFront.roundToInt(), leftRear.roundToInt(), rightRear.roundToInt())
+    while(motors.any { it.isBusy }) {}
 }
 
 fun DriveBase.runGrid(path: GridPath) {

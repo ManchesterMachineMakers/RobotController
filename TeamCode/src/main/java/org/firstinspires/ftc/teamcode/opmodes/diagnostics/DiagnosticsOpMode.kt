@@ -19,8 +19,9 @@ abstract class DiagnosticsOpMode(
         )
 ) : LinearOpMode() {
     // Get all the subassemblies currently on the robot.
-    open fun provides(): Array<Subject> = arrayOf(Arm::class, DriveBase::class, Vision::class)
+    open fun provides(): Array<Subject> = (arrayOf(Arm::class, DriveBase::class, Vision::class)
             .mapNotNull { it.constructors.find { it.parameters.firstOrNull()?.type == HardwareMap::class }?.call(hardwareMap) }
+            as List<Subject>)
             .toTypedArray()
 
 

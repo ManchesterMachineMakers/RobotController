@@ -4,11 +4,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
+import com.qualcomm.robotcore.hardware.Servo
 import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerMM
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerRevolution
 import org.firstinspires.ftc.teamcode.contracts.Controllable
+import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.CtSemiAutoArm
 import org.firstinspires.ftc.teamcode.util.GamepadManager
+import org.firstinspires.ftc.teamcode.util.bases.BaseArm
 import org.firstinspires.ftc.teamcode.util.clamp
 import kotlin.math.PI
 import kotlin.math.asin
@@ -17,6 +20,10 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
+fun Servo.release() {
+
+}
+
 // Arm subassembly control
 class Arm(opMode: OpMode) : Controllable, Subject {
     private val hardwareMap = opMode.hardwareMap
@@ -24,6 +31,7 @@ class Arm(opMode: OpMode) : Controllable, Subject {
     val wrist = hardwareMap.servo.get("wrist")
     val rightRelease = hardwareMap.servo.get("right_release")
     val leftRelease = hardwareMap.servo.get("left_release")
+    val touchSensor = hardwareMap.touchSensor.get("intake")
 
     init {
         armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER // Resets the encoder (distance tracking)
@@ -44,6 +52,7 @@ class Arm(opMode: OpMode) : Controllable, Subject {
         return PlacementInfo(distToBase, alpha, beta)
     }
 
+    // TODO: run the drivebase in the right direction
     fun placePixel(driveBase: DriveBase, placementInfo: PlacementInfo) {
         // math from matlab (armcode.mlx)
         val ticksToBase = placementInfo.distToBase * motorEncoderEventsPerMM
@@ -59,6 +68,42 @@ class Arm(opMode: OpMode) : Controllable, Subject {
 
         driveBase.runToPosition(ticksToBase.roundToInt())
 
+    }
+
+    data class DropCorrection(val armPosition: Int, val wristPosition: Double)
+
+    enum class RelativeDropTarget {
+        easel, floor
+    }
+
+    fun relativeWristPosition(target: RelativeDropTarget): Double {
+        val theta = when(target) {
+            RelativeDropTarget.easel -> 60
+            RelativeDropTarget.floor -> 120
+        }
+        val armAngle = 360 * armMotor.currentPosition / BaseArm.ARM_ENCODER_RES
+        val servoAngle = 90 + theta - CtSemiAutoArm.GAMMA - armAngle // degrees?
+        return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53 // from degrees? to servo range
+    }
+
+    fun drop(): DropCorrection {
+        armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        val initialWristPos = wrist.position
+        while(!touchSensor.isPressed) {
+            armMotor.power = -0.2
+            wrist.position--
+        }
+        armMotor.power = 0.0
+
+        return DropCorrection(armMotor.currentPosition, initialWristPos)
+    }
+
+    fun raise(correction: DropCorrection) {
+        armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        armMotor.targetPosition = -correction.armPosition
+        armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+        armMotor.power = 0.2
+        wrist.position = correction.wristPosition
     }
 
     override fun controller(gamepad: GamepadManager) {

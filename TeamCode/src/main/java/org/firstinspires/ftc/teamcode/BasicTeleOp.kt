@@ -19,10 +19,7 @@ class BasicTeleOp : LinearOpMode() {
         val arm = Arm(this)
         waitForStart()
         while(opModeIsActive() && !isStopRequested) {
-            runAll(
-                    gamepad1 to driveBase,
-                    gamepad2 to arm
-            )
+            driveBase.loop(gamepad1)
         }
     }
 }

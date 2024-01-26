@@ -9,17 +9,24 @@ import org.firstinspires.ftc.teamcode.autonomous.path.runGrid
 import org.firstinspires.ftc.teamcode.subassemblies.Arm
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.Vision
+import org.firstinspires.ftc.teamcode.subassemblies.release
 import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection
 
 @Autonomous
-class CenterStageAutonomous : LinearOpMode() {
+class CenterStageAutonomous(val startPosition: StartPosition = StartPosition.blueBackstage) : LinearOpMode() {
+
+    enum class StartPosition {
+        blueBackstage, blueFront,
+        redBackstage, redFront
+    }
 
     private enum class DuckPosition {
         left, center, right
     }
 
-    /** Detect a [Recognition] with a [label][Recognition.getLabel] of "DUCK" and a [confidence][Recognition.getConfidence] of 90% or above (takes the most confident one). THIS FUNCTION WILL CONTINUE TO RUN FOREVER IF NOTHING IS DETECTED. */
+    /** Detect a [Recognition] with a [label][Recognition.getLabel] of "Pixel" and a [confidence][Recognition.getConfidence] of 90% or above (takes the most confident one). THIS FUNCTION WILL CONTINUE TO RUN FOREVER IF NOTHING IS DETECTED. */
+    // TODO: use the custom element
     private fun detect(vision: Vision): Recognition =
         vision.tfod.recognitions
             .filter { r ->
@@ -60,7 +67,10 @@ class CenterStageAutonomous : LinearOpMode() {
         driveBase.runGrid(path)
 
         // drop the arm
+        val dropCorrection = arm.drop()
         // place the pixel
+        arm.leftRelease.release()
+        arm.raise(dropCorrection)
     }
 
 
@@ -112,6 +122,7 @@ class CenterStageAutonomous : LinearOpMode() {
         driveBase.runGrid(path)
 
         // now that we're at the backdrop, align to the correct apriltag
+        // TODO: use the apriltag value to at least try to get to the correct spot
         val aprilTags = vision.aprilTag.detections.sortedBy { it.center.x }
 
         if(aprilTags.size == 3) {
@@ -136,18 +147,23 @@ class CenterStageAutonomous : LinearOpMode() {
      * Park in the parking area.
      */
     private fun park(driveBase: DriveBase) {
+        // TODO: adjust based on position
         driveBase.runGrid(0.0, -1.0, -1.0);
     }
 
     fun runParkOnly() {
         val driveBase = DriveBase(this)
+        waitForStart()
         driveBase.runGrid(0.0, 2.0, 1.0)
     }
 
+    // TODO: support more start positions
     fun runFull() {
         val vision = Vision(this)
         val driveBase = DriveBase(this)
         val arm = Arm(this)
+
+        waitForStart()
 
         log("detecting a duck")
         val recognition = detect(vision)

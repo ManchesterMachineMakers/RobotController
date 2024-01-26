@@ -13,11 +13,11 @@ class GamepadManager(val gamepad: Gamepad) {
     }
     fun off(buttons: Array<String>, closure: () -> Void) {
         if(wasPressed.any { buttons.contains(it) } && !buttons.any { getButton(it) }) {
-            wasPressed.removeAll(buttons)
+            wasPressed.removeAll(buttons.toSet())
             closure()
         }
     }
-    fun once(button: String, closure: () -> Void) {
+    fun once(button: String, closure: () -> Unit) {
         if(getButton(button)) {
             if(!wasPressed.contains(button)) {
                 closure()
