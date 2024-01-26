@@ -147,7 +147,7 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subasse
 
     protected companion object {
         // Constants
-        const val ARM_ENCODER_RES = 2786.2 // PPR
+        const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
         const val ARM_POWER = 0.4
         const val ARM_OVERCURRENT_THRESHOLD = 5.0 // Amps
         const val WINCH_POWER = 1.0
