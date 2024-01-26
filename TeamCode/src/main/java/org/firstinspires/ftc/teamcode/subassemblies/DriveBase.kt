@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor.RunMode
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Gamepad
+import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.teamcode.autonomous.path.strafingCoefficient
 import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.Subassembly
@@ -153,6 +154,65 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         rightFront.power = v2 / 1.2
         leftRear.power = v3 / 1.2
         rightRear.power = v4 / 1.2
+    }
+
+    /**
+     * Drive a number of ticks in a particular direction. Stops on exception.
+     * @param power the power to each motor (we can make this a list if  needed)
+     * @param encoderTicks a  list of  encoder tick values,  distances  that each motor should go by the encoders.
+     * @param tolerance the tolerance to set on each motor
+     */
+    fun go(power: Double, encoderTicks: Array<Int>, tolerance: Int): Double {
+        RobotLog.i("Power: $power Encoder Ticks: $encoderTicks")
+        RobotLog.i("Tolerance: $tolerance")
+
+        // set each motor, based on drive configuration/travel direction
+        for (i in motors.indices) {
+            motors[i].mode = RunMode.RUN_USING_ENCODER
+            motors[i].targetPosition =
+                encoderTicks[i] //calcTargetPosition(motors[i].getDirection(), currentPositions[i], encoderTicks[i]));
+            (motors[i] as DcMotorEx).targetPositionTolerance = tolerance
+            motors[i].mode = RunMode.RUN_TO_POSITION
+            motors[i].power = power
+        }
+        return power
+    }
+
+    fun yaw(rotations: Float) {
+
+    }
+
+    enum class TravelDirection {
+        base, forward, reverse, pivotLeft, pivotRight, strafeLeft, strafeLeftForward, strafeLeftBackward, strafeRight, strafeRightForward, strafeRightBackward,
+        @Deprecated("Newer drive bases do not support pitching")
+        pitch
+    }
+
+    fun mecanumCoefficientsForDirection(direction: TravelDirection)
+            = when (direction) {
+                TravelDirection.base, TravelDirection.forward -> arrayOf( 1,  1,  1,  1)
+                TravelDirection.reverse ->                       arrayOf(-1, -1, -1, -1)
+                TravelDirection.pivotLeft ->                     arrayOf(-1,  1, -1,  1)
+                TravelDirection.pivotRight ->                    arrayOf( 1, -1,  1, -1)
+                TravelDirection.strafeLeft ->                    arrayOf(-1,  1,  1, -1)
+                TravelDirection.strafeLeftForward ->             arrayOf( 0,  1,  1,  0)
+                TravelDirection.strafeLeftBackward ->            arrayOf(-1,  0,  0, -1)
+                TravelDirection.strafeRight ->                   arrayOf( 1, -1, -1,  1)
+                TravelDirection.strafeRightForward ->            arrayOf( 1,  0,  0,  1)
+                TravelDirection.strafeRightBackward ->           arrayOf( 0, -1, -1,  0)
+                TravelDirection.pitch ->                         arrayOf( 0,  0,  0,  0)
+            }
+
+    fun setRunMode(runMode: RunMode?): Boolean {
+        return try {
+            for (motor in motors) {
+                motor.mode = runMode
+            }
+            true
+        } catch (e: Exception) {
+            RobotLog.i(e.message)
+            false
+        }
     }
 
     private fun curveDouble(num: Double): Double {

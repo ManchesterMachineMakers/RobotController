@@ -4,8 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition
-import org.firstinspires.ftc.teamcode.autonomous.path.GridPath
-import org.firstinspires.ftc.teamcode.autonomous.path.runGrid
+import org.firstinspires.ftc.teamcode.autonomous.pathfinder.Path
+import org.firstinspires.ftc.teamcode.autonomous.pathfinder.Segment
+import org.firstinspires.ftc.teamcode.autonomous.pathfinder.runPath
 import org.firstinspires.ftc.teamcode.subassemblies.Arm
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.Vision
@@ -59,12 +60,10 @@ class CenterStageAutonomous(val startPosition: StartPosition = StartPosition.blu
      * @param duckPosition the position returned by [recognitionPosition]
      */
     private fun placePurplePixel(driveBase: DriveBase, arm: Arm, duckPosition: DuckPosition) {
-        val path = when(duckPosition) {
-            DuckPosition.left -> GridPath(1.0, 0.0, 1.0)
-            DuckPosition.center -> GridPath(1.0, 0.0, 0.0)
-            DuckPosition.right -> GridPath(1.0, 0.0, -1.0)
-        }
-        driveBase.runGrid(path)
+
+        driveBase.runPath(Path(Segment(1f, 0f)))
+
+
 
         // drop the arm
         val dropCorrection = arm.drop()
