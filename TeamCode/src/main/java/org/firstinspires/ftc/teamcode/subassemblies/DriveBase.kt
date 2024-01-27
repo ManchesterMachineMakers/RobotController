@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
+import com.farthergate.ctrlcurve.PID
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode
@@ -7,18 +8,21 @@ import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.util.RobotLog
-import org.firstinspires.ftc.teamcode.autonomous.path.strafingCoefficient
+import kotlin.math.*
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.config
-import kotlin.math.*
+import org.firstinspires.ftc.teamcode.util.equalsTolerance
 
 class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
 
-    private val leftFront: DcMotor = hardwareMap.dcMotor.get("left_front")
-    private val rightFront: DcMotor = hardwareMap.dcMotor.get("right_front")
-    private val leftRear: DcMotor = hardwareMap.dcMotor.get("left_rear")
-    private val rightRear: DcMotor = hardwareMap.dcMotor.get("right_rear")
+    private val leftFront = hardwareMap.dcMotor.get("left_front")
+    private val rightFront = hardwareMap.dcMotor.get("right_front")
+    private val leftRear = hardwareMap.dcMotor.get("left_rear")
+    private val rightRear = hardwareMap.dcMotor.get("right_rear")
+    private val imu = IMUManager(opMode)
+
     companion object {
         const val strafeCoeff = 0.5
         const val FRONT_POWER = 0.6
@@ -36,7 +40,8 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         loopTime.reset()
 
         val r = hypot(gamepad.left_stick_x.toDouble(), -gamepad.left_stick_y.toDouble())
-        val robotAngle = atan2(-gamepad.left_stick_y.toDouble(), gamepad.left_stick_x.toDouble()) - PI / 4
+        val robotAngle =
+                atan2(-gamepad.left_stick_y.toDouble(), gamepad.left_stick_x.toDouble()) - PI / 4
         val rightX = gamepad.right_stick_x.toDouble()
 
         val v1 = r * sin(robotAngle) + rightX
@@ -59,7 +64,6 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
             val x: Double,
             val y: Double,
             val yaw: Double,
-
             val leftFront: Double = x - y - yaw,
             val rightFront: Double = x + y + yaw,
             val leftRear: Double = strafeCoeff * (x + y - yaw),
@@ -74,16 +78,12 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
      *
      * Positive Y is strafe left
      *
-     * Positive Yaw is
-     * counter-clockwise
+     * Positive Yaw is counter-clockwise
      */
     fun moveRobot(x: Double, y: Double, yaw: Double) {
         // Calculate wheel powers.
-        var (_, _, _,
-                leftFrontPower,
-                rightFrontPower,
-                leftBackPower,
-                rightBackPower) = MoveRobotCalculations(x, y, yaw)
+        var (_, _, _, leftFrontPower, rightFrontPower, leftBackPower, rightBackPower) =
+                MoveRobotCalculations(x, y, yaw)
 
         // Normalize wheel powers to be less than 1.0
         var max = max(abs(leftFrontPower), abs(rightFrontPower))
@@ -119,6 +119,17 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         rightRear.targetPosition = rr
     }
 
+    fun setPower(lf: Double, rf: Double, lr: Double, rr: Double) {
+        leftFront.power = lf
+        rightFront.power = rf
+        leftRear.power = lr
+        rightRear.power = rr
+    }
+
+    fun setPower(powers: Array<Double>) {
+        motors.forEachIndexed { index, motor -> motor.power = powers[index] }
+    }
+
     fun runToPosition(lf: Int, rf: Int, lr: Int, rr: Int) {
         setMode(RunMode.STOP_AND_RESET_ENCODER)
         setMode(RunMode.RUN_USING_ENCODER)
@@ -137,14 +148,16 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     fun controller(gamepad: GamepadManager) {
-        val r = Math.hypot(
-            gamepad.gamepad.left_stick_x.toDouble(),
-            -gamepad.gamepad.left_stick_y.toDouble()
-        )
-        val robotAngle = Math.atan2(
-            -gamepad.gamepad.left_stick_y.toDouble(),
-            gamepad.gamepad.left_stick_x.toDouble()
-        ) - Math.PI / 4
+        val r =
+                Math.hypot(
+                        gamepad.gamepad.left_stick_x.toDouble(),
+                        -gamepad.gamepad.left_stick_y.toDouble()
+                )
+        val robotAngle =
+                Math.atan2(
+                        -gamepad.gamepad.left_stick_y.toDouble(),
+                        gamepad.gamepad.left_stick_x.toDouble()
+                ) - Math.PI / 4
         val rightX = gamepad.gamepad.right_stick_x.toDouble()
         val v1 = r * Math.cos(robotAngle) + rightX
         val v2 = r * Math.sin(robotAngle) - rightX
@@ -158,8 +171,9 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
 
     /**
      * Drive a number of ticks in a particular direction. Stops on exception.
-     * @param power the power to each motor (we can make this a list if  needed)
-     * @param encoderTicks a  list of  encoder tick values,  distances  that each motor should go by the encoders.
+     * @param power the power to each motor (we can make this a list if needed)
+     * @param encoderTicks a list of encoder tick values, distances that each motor should go by the
+     * encoders.
      * @param tolerance the tolerance to set on each motor
      */
     fun go(power: Double, encoderTicks: Array<Int>, tolerance: Int): Double {
@@ -170,7 +184,9 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         for (i in motors.indices) {
             motors[i].mode = RunMode.RUN_USING_ENCODER
             motors[i].targetPosition =
-                encoderTicks[i] //calcTargetPosition(motors[i].getDirection(), currentPositions[i], encoderTicks[i]));
+                    encoderTicks[
+                            i] // calcTargetPosition(motors[i].getDirection(), currentPositions[i],
+            // encoderTicks[i]));
             (motors[i] as DcMotorEx).targetPositionTolerance = tolerance
             motors[i].mode = RunMode.RUN_TO_POSITION
             motors[i].power = power
@@ -178,29 +194,54 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         return power
     }
 
-    fun yaw(rotations: Float) {
+    fun yaw(degrees: Double, power: Double) {
+        setMode(RunMode.RUN_WITHOUT_ENCODER)
+        imu.imu.resetYaw()
 
+        val corrections =
+                if (-degrees < 0) {
+                    arrayOf(-1.0, 1.0, -1.0, 1.0)
+                } else {
+                    arrayOf(1.0, -1.0, 1.0, -1.0)
+                }
+
+        PID.runPID(0.0, degrees, 5.0, 0.75, 0.75, 0.75) { pid, initial, current, target, error ->
+            setPower(corrections.map { it * pid.calculateCorrection() }.toTypedArray())
+            Thread.sleep(10)
+            imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
+        }
+
+        setPower(0.0, 0.0, 0.0, 0.0)
     }
 
     enum class TravelDirection {
-        base, forward, reverse, pivotLeft, pivotRight, strafeLeft, strafeLeftForward, strafeLeftBackward, strafeRight, strafeRightForward, strafeRightBackward,
-        @Deprecated("Newer drive bases do not support pitching")
-        pitch
+        base,
+        forward,
+        reverse,
+        pivotLeft,
+        pivotRight,
+        strafeLeft,
+        strafeLeftForward,
+        strafeLeftBackward,
+        strafeRight,
+        strafeRightForward,
+        strafeRightBackward,
+        @Deprecated("Newer drive bases do not support pitching") pitch
     }
 
-    fun mecanumCoefficientsForDirection(direction: TravelDirection)
-            = when (direction) {
-                TravelDirection.base, TravelDirection.forward -> arrayOf( 1,  1,  1,  1)
-                TravelDirection.reverse ->                       arrayOf(-1, -1, -1, -1)
-                TravelDirection.pivotLeft ->                     arrayOf(-1,  1, -1,  1)
-                TravelDirection.pivotRight ->                    arrayOf( 1, -1,  1, -1)
-                TravelDirection.strafeLeft ->                    arrayOf(-1,  1,  1, -1)
-                TravelDirection.strafeLeftForward ->             arrayOf( 0,  1,  1,  0)
-                TravelDirection.strafeLeftBackward ->            arrayOf(-1,  0,  0, -1)
-                TravelDirection.strafeRight ->                   arrayOf( 1, -1, -1,  1)
-                TravelDirection.strafeRightForward ->            arrayOf( 1,  0,  0,  1)
-                TravelDirection.strafeRightBackward ->           arrayOf( 0, -1, -1,  0)
-                TravelDirection.pitch ->                         arrayOf( 0,  0,  0,  0)
+    fun mecanumCoefficientsForDirection(direction: TravelDirection) =
+            when (direction) {
+                TravelDirection.base, TravelDirection.forward -> arrayOf(1, 1, 1, 1)
+                TravelDirection.reverse -> arrayOf(-1, -1, -1, -1)
+                TravelDirection.pivotLeft -> arrayOf(-1, 1, -1, 1)
+                TravelDirection.pivotRight -> arrayOf(1, -1, 1, -1)
+                TravelDirection.strafeLeft -> arrayOf(-1, 1, 1, -1)
+                TravelDirection.strafeLeftForward -> arrayOf(0, 1, 1, 0)
+                TravelDirection.strafeLeftBackward -> arrayOf(-1, 0, 0, -1)
+                TravelDirection.strafeRight -> arrayOf(1, -1, -1, 1)
+                TravelDirection.strafeRightForward -> arrayOf(1, 0, 0, 1)
+                TravelDirection.strafeRightBackward -> arrayOf(0, -1, -1, 0)
+                TravelDirection.pitch -> arrayOf(0, 0, 0, 0)
             }
 
     fun setRunMode(runMode: RunMode?): Boolean {
@@ -216,7 +257,6 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     private fun curveDouble(num: Double): Double {
-        return  if (num > 0) num.pow(2)
-                else -num.pow(2)
+        return if (num > 0) num.pow(2) else -num.pow(2)
     }
 }

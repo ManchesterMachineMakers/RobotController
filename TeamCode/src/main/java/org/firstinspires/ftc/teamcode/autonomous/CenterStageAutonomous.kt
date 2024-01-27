@@ -61,8 +61,14 @@ class CenterStageAutonomous(val startPosition: StartPosition = StartPosition.blu
      */
     private fun placePurplePixel(driveBase: DriveBase, arm: Arm, duckPosition: DuckPosition) {
 
-        driveBase.runPath(Path(Segment(1f, 0f)))
-
+        driveBase.runPath(Path(
+            Segment.Grid(0f, 1f),
+            when(duckPosition) {
+                DuckPosition.left -> Segment.Yaw(-90.0)
+                DuckPosition.center -> Segment.Noop()
+                DuckPosition.right -> Segment.Yaw(90.0)
+            }
+        ))
 
 
         // drop the arm
@@ -113,12 +119,18 @@ class CenterStageAutonomous(val startPosition: StartPosition = StartPosition.blu
     private fun placeYellowPixel(driveBase: DriveBase, arm: Arm, vision: Vision, duckPosition: DuckPosition) {
         // run to backdrop
         // determine the path based on the duck position, because placePurplePixel already moved the bot
-        val path = when(duckPosition) {
-            DuckPosition.left -> GridPath(1.5, 0.0, 0.0)
-            DuckPosition.center -> GridPath(0.0, 1.5, 1.0)
-            DuckPosition.right -> GridPath(-1.5, 0.0, 2.0)
-        }
-        driveBase.runGrid(path)
+        driveBase.runPath(Path(
+            // rotate to get out of purple pixel placement
+            when(duckPosition) {
+                DuckPosition.left -> Segment.Noop()
+                DuckPosition.center -> Segment.Yaw(-90.0)
+                DuckPosition.right -> Segment.Yaw(-180.0)
+            },
+
+            // run to backdrop
+            Segment.Grid(0f, 1.5f)
+        ))
+
 
         // now that we're at the backdrop, align to the correct apriltag
         // TODO: use the apriltag value to at least try to get to the correct spot
@@ -147,13 +159,20 @@ class CenterStageAutonomous(val startPosition: StartPosition = StartPosition.blu
      */
     private fun park(driveBase: DriveBase) {
         // TODO: adjust based on position
-        driveBase.runGrid(0.0, -1.0, -1.0);
+        driveBase.runPath(Path(
+            Segment.Yaw(-90.0),
+            Segment.Grid(0f, 0.5f)
+        ))
     }
 
     fun runParkOnly() {
         val driveBase = DriveBase(this)
         waitForStart()
-        driveBase.runGrid(0.0, 2.0, 1.0)
+        driveBase.runPath(Path(
+            Segment.Grid(0f, 0.2f),
+            Segment.Yaw(90.0),
+            Segment.Grid(0f, 2f)
+        ))
     }
 
     // TODO: support more start positions
