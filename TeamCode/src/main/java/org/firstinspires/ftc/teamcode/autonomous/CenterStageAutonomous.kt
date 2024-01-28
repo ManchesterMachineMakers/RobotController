@@ -15,11 +15,14 @@ import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection
 
 @Autonomous
-class CenterStageAutonomous(val startPosition: StartPosition = StartPosition.blueBackstage) : LinearOpMode() {
+open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val startPosition: StartPosition = StartPosition.backstage) : LinearOpMode() {
+
+    enum class Alliance {
+        blue, red
+    }
 
     enum class StartPosition {
-        blueBackstage, blueFront,
-        redBackstage, redFront
+        backstage, front
     }
 
     private enum class DuckPosition {
@@ -29,27 +32,27 @@ class CenterStageAutonomous(val startPosition: StartPosition = StartPosition.blu
     /** Detect a [Recognition] with a [label][Recognition.getLabel] of "Pixel" and a [confidence][Recognition.getConfidence] of 90% or above (takes the most confident one). THIS FUNCTION WILL CONTINUE TO RUN FOREVER IF NOTHING IS DETECTED. */
     // TODO: use the custom element
     private fun detect(vision: Vision): Recognition =
-        vision.tfod.recognitions
-            .filter { r ->
-                r.label == "Pixel" && r.confidence > 0.9
-            }
-            .sortedBy(Recognition::getConfidence)
-            .reversed()
-            .firstOrNull()
-                ?: run {
-                    sleep(20)
-                    detect(vision)
-                }
+            vision.tfod.recognitions
+                    .filter { r ->
+                        r.label == "Pixel" && r.confidence > 0.9
+                    }
+                    .sortedBy(Recognition::getConfidence)
+                    .reversed()
+                    .firstOrNull()
+                    ?: run {
+                        sleep(20)
+                        detect(vision)
+                    }
 
     /** Get the [DuckPosition] of a TFOD [Recognition] returned by [detect]. */
     private fun recognitionPosition(recognition: Recognition): DuckPosition {
         val center = (recognition.left + recognition.right) / 2
 
-        val third = recognition.imageWidth/3
+        val third = recognition.imageWidth / 3
 
         return (
-                if(center < third) DuckPosition.left
-                else if(third < center && center < 2*third) DuckPosition.center
+                if (center < third) DuckPosition.left
+                else if (third < center && center < 2 * third) DuckPosition.center
                 else DuckPosition.right
                 )
     }
@@ -62,12 +65,12 @@ class CenterStageAutonomous(val startPosition: StartPosition = StartPosition.blu
     private fun placePurplePixel(driveBase: DriveBase, arm: Arm, duckPosition: DuckPosition) {
 
         driveBase.runPath(Path(
-            Segment.Grid(0f, 1f),
-            when(duckPosition) {
-                DuckPosition.left -> Segment.Yaw(-90.0)
-                DuckPosition.center -> Segment.Noop()
-                DuckPosition.right -> Segment.Yaw(90.0)
-            }
+                Segment.Grid(0f, 1f),
+                when (duckPosition) {
+                    DuckPosition.left -> Segment.Yaw(-90.0)
+                    DuckPosition.center -> Segment.Noop()
+                    DuckPosition.right -> Segment.Yaw(90.0)
+                }
         ))
 
 
@@ -87,25 +90,25 @@ class CenterStageAutonomous(val startPosition: StartPosition = StartPosition.blu
         //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
         //  applied to the drive motors to correct the error.
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-        val SPEED_GAIN       = 0.02  //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-        val STRAFE_GAIN      = 0.015 //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-        val TURN_GAIN        = 0.01  //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        val SPEED_GAIN = 0.02  //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+        val STRAFE_GAIN = 0.015 //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        val TURN_GAIN = 0.01  //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-        val MAX_AUTO_SPEED   = 0.7   //  Clip the approach speed to this max value (adjust for your robot)
-        val MAX_AUTO_STRAFE  = 0.7   //  Clip the approach speed to this max value (adjust for your robot)
-        val MAX_AUTO_TURN    = 0.3   //  Clip the turn speed to this max value (adjust for your robot)
+        val MAX_AUTO_SPEED = 0.7   //  Clip the approach speed to this max value (adjust for your robot)
+        val MAX_AUTO_STRAFE = 0.7   //  Clip the approach speed to this max value (adjust for your robot)
+        val MAX_AUTO_TURN = 0.3   //  Clip the turn speed to this max value (adjust for your robot)
 
         val ACCEPTABLE_ERROR = 10    //  Acceptable distance error
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-        val rangeError       = (desiredTag.ftcPose.range - desiredDistance)
-        val headingError     = desiredTag.ftcPose.bearing
-        val yawError         = desiredTag.ftcPose.yaw
+        val rangeError = (desiredTag.ftcPose.range - desiredDistance)
+        val headingError = desiredTag.ftcPose.bearing
+        val yawError = desiredTag.ftcPose.yaw
         // Use the speed and turn "gains" to calculate how we want the robot to move.
-        val drive            = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED)
-        val turn             = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN)
-        val strafe           = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE)
+        val drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED)
+        val turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN)
+        val strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE)
 
-        telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+        telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
         driveBase.moveRobot(drive, strafe, turn)
         sleep(10)
 
@@ -120,15 +123,15 @@ class CenterStageAutonomous(val startPosition: StartPosition = StartPosition.blu
         // run to backdrop
         // determine the path based on the duck position, because placePurplePixel already moved the bot
         driveBase.runPath(Path(
-            // rotate to get out of purple pixel placement
-            when(duckPosition) {
-                DuckPosition.left -> Segment.Noop()
-                DuckPosition.center -> Segment.Yaw(-90.0)
-                DuckPosition.right -> Segment.Yaw(-180.0)
-            },
+                // rotate to get out of purple pixel placement
+                when (duckPosition) {
+                    DuckPosition.left -> Segment.Noop()
+                    DuckPosition.center -> Segment.Yaw(-90.0)
+                    DuckPosition.right -> Segment.Yaw(-180.0)
+                },
 
-            // run to backdrop
-            Segment.Grid(0f, 1.5f)
+                // run to backdrop
+                Segment.Grid(0f, 1.5f)
         ))
 
 
@@ -136,13 +139,13 @@ class CenterStageAutonomous(val startPosition: StartPosition = StartPosition.blu
         // TODO: use the apriltag value to at least try to get to the correct spot
         val aprilTags = vision.aprilTag.detections.sortedBy { it.center.x }
 
-        if(aprilTags.size == 3) {
-            val correctTag = when(duckPosition) {
+        if (aprilTags.size == 3) {
+            val correctTag = when (duckPosition) {
                 DuckPosition.left -> aprilTags[0]
                 DuckPosition.center -> aprilTags[1]
                 DuckPosition.right -> aprilTags[2]
             }
-            while(!driveToAprilTag(driveBase, correctTag, 1000.0));
+            while (!driveToAprilTag(driveBase, correctTag, 1000.0));
         } else {
             log("Incorrect number of AprilTags detected on the backdrop, is the robot drunk?")
             log("Continuing to next stage")
@@ -160,8 +163,8 @@ class CenterStageAutonomous(val startPosition: StartPosition = StartPosition.blu
     private fun park(driveBase: DriveBase) {
         // TODO: adjust based on position
         driveBase.runPath(Path(
-            Segment.Yaw(-90.0),
-            Segment.Grid(0f, 0.5f)
+                Segment.Yaw(-90.0),
+                Segment.Grid(0f, 0.5f)
         ))
     }
 
@@ -169,9 +172,17 @@ class CenterStageAutonomous(val startPosition: StartPosition = StartPosition.blu
         val driveBase = DriveBase(this)
         waitForStart()
         driveBase.runPath(Path(
-            Segment.Grid(0f, 0.2f),
-            Segment.Yaw(90.0),
-            Segment.Grid(0f, 2f)
+                Segment.Grid(0f, 0.2f),
+                Segment.Yaw(
+                        when (alliance) {
+                            Alliance.blue -> 90.0
+                            Alliance.red -> -90.0
+                        }
+                ),
+                Segment.Grid(0f, when(startPosition) {
+                    StartPosition.backstage -> 2f
+                    StartPosition.front -> 5f
+                })
         ))
     }
 
