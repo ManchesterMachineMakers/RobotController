@@ -29,20 +29,21 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         left, center, right
     }
 
-    /** Detect a [Recognition] with a [label][Recognition.getLabel] of "Pixel" and a [confidence][Recognition.getConfidence] of 90% or above (takes the most confident one). THIS FUNCTION WILL CONTINUE TO RUN FOREVER IF NOTHING IS DETECTED. */
+    /** Detect a [Recognition] with a [label][Recognition.getLabel] of "Pixel" and a [confidence][Recognition.getConfidence] of 75% or above (takes the most confident one). THIS FUNCTION WILL CONTINUE TO RUN FOREVER IF NOTHING IS DETECTED. */
     // TODO: use the custom element
-    private fun detect(vision: Vision): Recognition =
+    private fun detect(vision: Vision) = detect(vision, 0)
+    private fun detect(vision: Vision, iteration: Int): Recognition? =
             vision.tfod.recognitions
                     .filter { r ->
-                        r.label == "Pixel" && r.confidence > 0.9
+                        r.label == "Pixel" && r.confidence > 0.75
                     }
                     .sortedBy(Recognition::getConfidence)
                     .reversed()
                     .firstOrNull()
-                    ?: run {
+                    ?: if (opModeIsActive() && !isStopRequested && iteration < 500 /* approx. 10 seconds */) { run {
                         sleep(20)
-                        detect(vision)
-                    }
+                        detect(vision, iteration + 1)
+                    } } else { null }
 
     /** Get the [DuckPosition] of a TFOD [Recognition] returned by [detect]. */
     private fun recognitionPosition(recognition: Recognition): DuckPosition {
@@ -196,6 +197,11 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
 
         log("detecting a duck")
         val recognition = detect(vision)
+        if (recognition == null) {
+            log("No duck detected, running only with parking")
+            runParkOnly()
+            return
+        }
 
         log("detected a duck at ${recognitionPosition(recognition)}, delivering purple pixel")
         placePurplePixel(driveBase, arm, recognitionPosition(recognition))
@@ -208,6 +214,6 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
     }
 
     override fun runOpMode() {
-        runParkOnly()
+        runFull()
     }
 }

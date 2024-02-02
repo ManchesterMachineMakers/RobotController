@@ -11,9 +11,10 @@ class Vision(opMode: OpMode) : Subject {
     private val hardwareMap = opMode.hardwareMap
     private val webcam = hardwareMap.get(WebcamName::class.java, "Webcam 1")
 
+
     val aprilTag = AprilTagProcessor.Builder().build()
     val tfod = TfodProcessor.Builder()
-            // TODO: use custom model
+        .setModelAssetName("model_20240130_212636.tflite")
             .build()
 
     val visionPortal = VisionPortal.Builder()
