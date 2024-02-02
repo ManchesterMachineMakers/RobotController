@@ -7,14 +7,14 @@ import com.qualcomm.robotcore.hardware.IMU
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.util.Subassembly
 
-
 class IMUManager(opMode: OpMode) : Subassembly(opMode, "IMU Manager") {
-    val imuParameters = IMU.Parameters(
-        RevHubOrientationOnRobot(
-            RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
-            RevHubOrientationOnRobot.UsbFacingDirection.UP
-        )
-    )
+    val imuParameters =
+            IMU.Parameters(
+                    RevHubOrientationOnRobot(
+                            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                            RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
+                    )
+            )
     val imu = hardwareMap.get(IMU::class.java, "imu")
 
     init {
