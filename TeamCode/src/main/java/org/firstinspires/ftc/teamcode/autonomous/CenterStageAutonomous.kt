@@ -51,10 +51,11 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
 
         val third = recognition.imageWidth / 3
 
+        // camera view is backwards
         return (
-                if (center < third) DuckPosition.left
+                if (center < third) DuckPosition.right
                 else if (third < center && center < 2 * third) DuckPosition.center
-                else DuckPosition.right
+                else DuckPosition.left
                 )
     }
 
