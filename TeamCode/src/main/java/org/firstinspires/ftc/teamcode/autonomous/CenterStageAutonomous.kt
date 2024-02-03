@@ -187,7 +187,6 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         ))
     }
 
-    // TODO: support more start positions
     fun runFull() {
         val vision = Vision(this)
         val driveBase = DriveBase(this)
