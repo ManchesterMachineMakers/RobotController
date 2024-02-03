@@ -42,7 +42,7 @@ abstract class BaseArm(opMode: OpMode, name: String) : Subassembly(opMode, name)
         arm.setCurrentAlert(ARM_OVERCURRENT_THRESHOLD, CurrentUnit.AMPS)
 
         // Winch motor configuration
-        winch.direction = DcMotorSimple.Direction.REVERSE
+        winch.direction = DcMotorSimple.Direction.FORWARD
         winch.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         // Wrist servo configuration
@@ -145,8 +145,8 @@ abstract class BaseArm(opMode: OpMode, name: String) : Subassembly(opMode, name)
 
     companion object {
         // Constants
-        const val ARM_ENCODER_RES = 2786.2 // PPR
-        const val ARM_POWER = 0.4
+        const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
+        const val ARM_POWER = 0.8
         const val ARM_OVERCURRENT_THRESHOLD = 5.0 // Amps
         const val WINCH_POWER = 1.0
     }

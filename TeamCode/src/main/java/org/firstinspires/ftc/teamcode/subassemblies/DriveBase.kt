@@ -49,10 +49,10 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         val v3 = r * cos(robotAngle) + rightX
         val v4 = r * sin(robotAngle) - rightX
 
-        leftFront.power = curveDouble(v1) / FRONT_POWER
-        rightFront.power = curveDouble(v2) / FRONT_POWER
-        leftRear.power = curveDouble(v3) / REAR_POWER
-        rightRear.power = curveDouble(v4) / REAR_POWER
+        leftFront.power = curveDouble(v1) * FRONT_POWER
+        rightFront.power = curveDouble(v2) * FRONT_POWER
+        leftRear.power = curveDouble(v3) * REAR_POWER
+        rightRear.power = curveDouble(v4) * REAR_POWER
     }
 
     override fun telemetry() {
@@ -258,5 +258,4 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
 
     private fun curveDouble(num: Double): Double {
         return if (num > 0) num.pow(2) else -num.pow(2)
-    }
 }
