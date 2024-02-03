@@ -14,7 +14,7 @@ import kotlin.math.*
 /**
  * Abstract class representing a basic arm subassembly for FTC robotics.
  */
-abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subassembly(opMode, gamepad, name) {
+abstract class BaseArm(opMode: OpMode, name: String) : Subassembly(opMode, name) {
 
     // Motors
     protected val arm: DcMotorEx = hardwareMap.get(DcMotorEx::class.java, "arm")
@@ -71,8 +71,6 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subasse
         airplaneLauncher.position = 0.0 // ensure launcher is closed
     }
 
-    abstract override fun loop()
-
     override fun telemetry() {
         super.telemetry()
         telemetry.addData("arm mode", arm.mode)
@@ -101,7 +99,7 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subasse
     /**
      * Control the intake servos based on gamepad input.
      */
-    private fun handlePixelDroppers() {
+    private fun handlePixelDroppers(gamepad: Gamepad) {
         // Left release servo control
         if (gamepad.left_bumper) { // Open
             leftRelease.position = 1.0
@@ -116,7 +114,7 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subasse
         }
     }
 
-    private fun handleAirplaneLauncher() {
+    private fun handleAirplaneLauncher(gamepad: Gamepad) {
         // Airplane launcher
         if(gamepad.x && !registerX) {
             registerX = true
@@ -128,7 +126,7 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subasse
         else if (!gamepad.x) registerX = false
     }
 
-    private fun handleWinch() {
+    private fun handleWinch(gamepad: Gamepad) {
         val rightY = gamepad.right_stick_y
         // Power curve to increase winch sensitivity, without reducing speed
         winch.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
@@ -137,15 +135,15 @@ abstract class BaseArm(opMode: OpMode, gamepad: Gamepad, name: String) : Subasse
             else -rightY.pow(2) * WINCH_POWER
     }
 
-    protected fun handleAllRobotBits() {
+    protected fun handleAllRobotBits(gamepad: Gamepad) {
         handleOvercurrentProtection()
-        handlePixelDroppers()
-        handleAirplaneLauncher()
-        handleWinch()
+        handlePixelDroppers(gamepad)
+        handleAirplaneLauncher(gamepad)
+        handleWinch(gamepad)
     }
 
 
-    protected companion object {
+    companion object {
         // Constants
         const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
         const val ARM_POWER = 0.8

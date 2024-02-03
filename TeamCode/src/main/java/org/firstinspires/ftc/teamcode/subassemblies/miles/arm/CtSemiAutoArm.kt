@@ -9,7 +9,7 @@ import kotlin.math.*
 /**
  * Semi-automatic arm subassembly for controlling arm and wrist movements.
  */
-class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad, "Continuous Semi-Auto Arm") {
+class CtSemiAutoArm(opMode: OpMode) : BaseArm(opMode, "Continuous Semi-Auto Arm") {
     private var theta = 60 // degrees
     /** Position of the wrist to stay level with the floor or easel. */
     private val relativeWristPosition: Double
@@ -22,7 +22,7 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad,
     /**
      * Main loop for controlling the semi-auto arm.
      */
-    override fun loop() {
+    override fun loop(gamepad: Gamepad) {
         loopTime.reset()
 
         // Arm movement
@@ -45,7 +45,7 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad,
         if (gamepad.a) theta = 120
         else if (gamepad.y) theta = 60
 
-        handleAllRobotBits()
+        handleAllRobotBits(gamepad)
     }
 
     /**
@@ -69,6 +69,6 @@ class CtSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad,
     }
 
     companion object {
-        private val GAMMA = atan(16.0 / 283.0) * (180 / PI) // for math
+        val GAMMA = atan(16.0 / 283.0) * (180 / PI) // for math
     }
 }

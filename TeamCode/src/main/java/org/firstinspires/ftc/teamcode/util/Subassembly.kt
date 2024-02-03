@@ -6,15 +6,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.Telemetry
 
-abstract class Subassembly(protected val opMode: OpMode, protected val gamepad: Gamepad, protected val name: String) {
+abstract class Subassembly(protected val opMode: OpMode, protected val name: String) {
 
     var status = "unknown"
     protected val telemetry: Telemetry = opMode.telemetry
     protected val hardwareMap: HardwareMap = opMode.hardwareMap
     protected val loopTime = ElapsedTime()
-
-    val gamepadManager
-        get() = GamepadManager(gamepad)
 
     open fun telemetry() {
         telemetry.addLine(name)
@@ -24,5 +21,5 @@ abstract class Subassembly(protected val opMode: OpMode, protected val gamepad: 
     }
 
     /** Make sure this starts with "loopTime.reset()" */
-    abstract fun loop()
+    abstract fun loop(gamepad: Gamepad)
 }

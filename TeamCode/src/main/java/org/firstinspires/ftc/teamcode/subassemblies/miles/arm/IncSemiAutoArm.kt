@@ -3,10 +3,11 @@ package org.firstinspires.ftc.teamcode.subassemblies.miles.arm
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Gamepad
+import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.bases.BaseArm
 import kotlin.math.*
 
-class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad, "Incremented Semi-Auto Arm") {
+class IncSemiAutoArm(opMode: OpMode) : BaseArm(opMode, "Incremented Semi-Auto Arm") {
     /** The angle at which the intake will be level with. */
     private var theta = 60.0 // 60 for easel, 120 for floor
     private var pixelLayer = 0
@@ -43,7 +44,8 @@ class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad
     /**
      * Main loop for controlling the semi-auto arm.
      */
-    override fun loop() {
+    override fun loop(gamepad: Gamepad) {
+        val gamepadManager = GamepadManager(gamepad)
         loopTime.reset()
 
         // Set target positions for arm and wrist
@@ -76,7 +78,7 @@ class IncSemiAutoArm(opMode: OpMode, gamepad: Gamepad) : BaseArm(opMode, gamepad
             arm.mode = DcMotor.RunMode.RUN_TO_POSITION
         }
 
-        handleAllRobotBits()
+        handleAllRobotBits(gamepad)
     }
 
     /**

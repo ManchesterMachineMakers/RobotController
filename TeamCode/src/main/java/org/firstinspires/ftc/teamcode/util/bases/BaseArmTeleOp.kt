@@ -21,8 +21,8 @@ class BaseArmTeleOp(val opMode: OpMode, private val driveBase: DriveBase, privat
         arm.status = "looping"
 
         // Loops
-        driveBase.loop()
-        arm.loop()
+        driveBase.loop(opMode.gamepad1)
+        arm.loop(opMode.gamepad2)
     }
 
     fun telemetry() {

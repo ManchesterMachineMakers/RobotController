@@ -9,8 +9,8 @@ import org.firstinspires.ftc.teamcode.util.bases.BaseArmTeleOp
 @TeleOp(name = "Semi-Auto Inc Arm TeleOp", group = "arm")
 class IncSemiAutoTeleOp : LinearOpMode() {
     override fun runOpMode() {
-        val driveBase = DriveBase(this, gamepad1)
-        val semiAutoArm = IncSemiAutoArm(this, gamepad2)
+        val driveBase = DriveBase(this)
+        val semiAutoArm = IncSemiAutoArm(this)
         val baseTeleOp = BaseArmTeleOp(this, driveBase, semiAutoArm)
 
         baseTeleOp.init()
