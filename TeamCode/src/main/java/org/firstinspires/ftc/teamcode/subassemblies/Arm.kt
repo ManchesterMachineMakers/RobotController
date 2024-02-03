@@ -3,16 +3,20 @@ package org.firstinspires.ftc.teamcode.subassemblies
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 import com.rutins.aleks.diagonal.Subject
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerMM
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerRevolution
 import org.firstinspires.ftc.teamcode.contracts.Controllable
 import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.CtSemiAutoArm
+import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.DoNotBreakThisArm
 import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.bases.BaseArm
 import org.firstinspires.ftc.teamcode.util.clamp
+import org.firstinspires.ftc.teamcode.util.log
 import kotlin.math.PI
 import kotlin.math.asin
 import kotlin.math.atan2
@@ -25,9 +29,9 @@ fun Servo.release() {
 }
 
 // Arm subassembly control
-class Arm(opMode: OpMode) : Controllable, Subject {
+class Arm(private val opMode: OpMode) : Controllable, Subject {
     private val hardwareMap = opMode.hardwareMap
-    val armMotor = hardwareMap.dcMotor.get("arm")
+    val armMotor = hardwareMap.dcMotor.get("arm") as DcMotorEx
     val wrist = hardwareMap.servo.get("wrist")
     val rightRelease = hardwareMap.servo.get("right_release")
     val leftRelease = hardwareMap.servo.get("left_release")
@@ -37,7 +41,14 @@ class Arm(opMode: OpMode) : Controllable, Subject {
         armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER // Resets the encoder (distance tracking)
         armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+
+        // Wrist servo configuration
+        wrist.scaleRange(0.25, 0.78) // 53% of 300-degree range
+        wrist.direction = Servo.Direction.FORWARD
+
+        handleOvercurrentProtection()
     }
+
 
     class PlacementInfo(
             val distToBase: Double,
@@ -88,10 +99,16 @@ class Arm(opMode: OpMode) : Controllable, Subject {
 
     fun drop(): DropCorrection {
         armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
         val initialWristPos = wrist.position
+
+        wrist.position = 0.25
         while(!touchSensor.isPressed) {
             armMotor.power = -0.2
-            wrist.position--
+            opMode.telemetry.addData("Touch Sensor", touchSensor.isPressed)
+            opMode.telemetry.addData("Arm Motor", armMotor.currentPosition)
+            opMode.telemetry.update()
+            Thread.sleep(10)
         }
         armMotor.power = 0.0
 
@@ -124,6 +141,22 @@ class Arm(opMode: OpMode) : Controllable, Subject {
         } else {
             //rightDropper.power = 0.0
         }
+    }
+
+    fun handleOvercurrentProtection() {
+        Thread {
+            while(true) {
+                if (armMotor.isOverCurrent) {
+                    if (armMotor.getCurrent(CurrentUnit.AMPS) > DoNotBreakThisArm.ARM_OVERCURRENT_THRESHOLD * 1.4) {
+                        opMode.requestOpModeStop()
+                    } else {
+                        armMotor.targetPosition = 0
+                        armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+                    }
+                }
+                Thread.sleep(20)
+            }
+        }.start()
     }
 
     companion object {

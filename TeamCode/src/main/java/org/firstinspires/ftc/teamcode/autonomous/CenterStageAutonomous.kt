@@ -2,15 +2,19 @@ package org.firstinspires.ftc.teamcode.autonomous
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition
-import org.firstinspires.ftc.teamcode.autonomous.pathfinder.Path
 import org.firstinspires.ftc.teamcode.autonomous.pathfinder.Segment
-import org.firstinspires.ftc.teamcode.autonomous.pathfinder.runPath
+import org.firstinspires.ftc.teamcode.autonomous.pathfinder.Segment.*
+import org.firstinspires.ftc.teamcode.autonomous.pathfinder.div
+import org.firstinspires.ftc.teamcode.autonomous.pathfinder.rangeTo
 import org.firstinspires.ftc.teamcode.subassemblies.Arm
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.Vision
+import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.CtSemiAutoArm
 import org.firstinspires.ftc.teamcode.subassemblies.release
+import org.firstinspires.ftc.teamcode.util.bases.BaseArm
 import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection
 
@@ -29,8 +33,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         left, center, right
     }
 
-    /** Detect a [Recognition] with a [label][Recognition.getLabel] of "Pixel" and a [confidence][Recognition.getConfidence] of 75% or above (takes the most confident one). THIS FUNCTION WILL CONTINUE TO RUN FOREVER IF NOTHING IS DETECTED. */
-    // TODO: use the custom element
+    /** Detect a [Recognition] with a [label][Recognition.getLabel] of "Pixel" and a [confidence][Recognition.getConfidence] greater than 75% (takes the most confident one). THIS FUNCTION WILL CONTINUE TO RUN FOREVER IF NOTHING IS DETECTED. */
     private fun detect(vision: Vision) = detect(vision, 0)
     private fun detect(vision: Vision, iteration: Int): Recognition? =
             vision.tfod.recognitions
@@ -40,41 +43,36 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
                     .sortedBy(Recognition::getConfidence)
                     .reversed()
                     .firstOrNull()
-                    ?: if (opModeIsActive() && !isStopRequested && iteration < 500 /* approx. 10 seconds */) { run {
+                    ?: if (opModeIsActive() && !isStopRequested && iteration < 100 /* approx. 2 seconds */) { run {
                         sleep(20)
                         detect(vision, iteration + 1)
                     } } else { null }
 
     /** Get the [DuckPosition] of a TFOD [Recognition] returned by [detect]. */
-    private fun recognitionPosition(recognition: Recognition): DuckPosition {
+    private fun recognitionPosition(recognition: Recognition?): DuckPosition {
+        if(recognition == null) return DuckPosition.left
         val center = (recognition.left + recognition.right) / 2
 
-        val third = recognition.imageWidth / 3
+        val half = recognition.imageWidth / 2
 
         // camera view is backwards
         return (
-                if (center < third) DuckPosition.right
-                else if (third < center && center < 2 * third) DuckPosition.center
-                else DuckPosition.left
+                if (center < half) DuckPosition.center
+                else DuckPosition.right
                 )
     }
 
+    private fun runDetection(vision: Vision) =
+        (0f to 0.9f) / Grid ..
+        -45.0 / Yaw ..
+        Run { driveBase, input ->
+            recognitionPosition(detect(vision))
+        }
 
     /**
-     * Place the purple pixel (which should be preloaded into the left dropper) next to the duck.
-     * @param duckPosition the position returned by [recognitionPosition]
+     * Place the purple pixel (which should be preloaded into the left dropper) next to the duck
      */
-    private fun placePurplePixel(driveBase: DriveBase, arm: Arm, duckPosition: DuckPosition) {
-
-        driveBase.runPath(Path(
-                Segment.Grid(0f, 1f),
-                when (duckPosition) {
-                    DuckPosition.left -> Segment.Yaw(-90.0)
-                    DuckPosition.center -> Segment.Noop()
-                    DuckPosition.right -> Segment.Yaw(90.0)
-                }
-        ))
-
+    private fun placePurplePixel(arm: Arm) {
 
         // drop the arm
         val dropCorrection = arm.drop()
@@ -121,71 +119,67 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
      * Place the yellow pixel (which should be preloaded into the right dropper) on the correct position on the backdrop.
      * @param duckPosition the position returned by [recognitionPosition]
      */
-    private fun placeYellowPixel(driveBase: DriveBase, arm: Arm, vision: Vision, duckPosition: DuckPosition) {
-        // run to backdrop
-        // determine the path based on the duck position, because placePurplePixel already moved the bot
-        driveBase.runPath(Path(
+    private fun placeYellowPixel(arm: Arm, vision: Vision, duckPosition: DuckPosition) =
+                // run to backdrop
+                // determine the path based on the duck position, because we already moved the bot
                 // rotate to get out of purple pixel placement
                 when (duckPosition) {
-                    DuckPosition.left -> Segment.Noop()
-                    DuckPosition.center -> Segment.Yaw(-90.0)
-                    DuckPosition.right -> Segment.Yaw(-180.0)
-                },
+                    DuckPosition.left -> Noop
+                    DuckPosition.center -> 90.0 / Yaw
+                    DuckPosition.right -> 180.0 / Yaw
+                } ..
 
                 // run to backdrop
-                Segment.Grid(0f, 1.5f)
-        ))
+                (0f to 1.5f) / Grid ..
 
+                // now that we're at the backdrop, align to the correct apriltag
+                // TODO: use the apriltag value to at least try to get to the correct spot
+                Run { driveBase, input ->
+                    val aprilTags = vision.aprilTag.detections.sortedBy { it.center.x }
 
-        // now that we're at the backdrop, align to the correct apriltag
-        // TODO: use the apriltag value to at least try to get to the correct spot
-        val aprilTags = vision.aprilTag.detections.sortedBy { it.center.x }
-
-        if (aprilTags.size == 3) {
-            val correctTag = when (duckPosition) {
-                DuckPosition.left -> aprilTags[0]
-                DuckPosition.center -> aprilTags[1]
-                DuckPosition.right -> aprilTags[2]
-            }
-            while (!driveToAprilTag(driveBase, correctTag, 1000.0));
-        } else {
-            log("Incorrect number of AprilTags detected on the backdrop, is the robot drunk?")
-            log("Continuing to next stage")
-            return
-        }
-
-
-        // put the pixel on the backdrop
-        arm.placePixel(driveBase, arm.getPlacementInfo(1))
-    }
+                    if (aprilTags.size == 3) {
+                        val correctTag = when (duckPosition) {
+                            DuckPosition.left -> aprilTags[0]
+                            DuckPosition.center -> aprilTags[1]
+                            DuckPosition.right -> aprilTags[2]
+                        }
+                        while (!driveToAprilTag(driveBase, correctTag, 1000.0));
+                        // put the pixel on the backdrop
+                        arm.placePixel(driveBase, arm.getPlacementInfo(1))
+                        arm.rightRelease.release()
+                    } else {
+                        log("Incorrect number of AprilTags detected on the backdrop, is the robot drunk?")
+                        log("Continuing to next stage")
+                    }
+                }
 
     /**
      * Park in the parking area.
      */
-    private fun park(driveBase: DriveBase) {
-        // TODO: adjust based on position
-        driveBase.runPath(Path(
-                Segment.Yaw(-90.0),
-                Segment.Grid(0f, 0.5f)
-        ))
-    }
+    private fun park(duckPosition: DuckPosition) =
+        90.0 / Yaw ..
+        (0f to when(duckPosition) {
+            DuckPosition.left -> 0.75f
+            DuckPosition.center -> 1f
+            DuckPosition.right -> 1.25f
+        }) / Grid ..
+        -90.0 / Yaw ..
+        (0f to 0.5f) / Grid
 
     fun runParkOnly() {
         val driveBase = DriveBase(this)
         waitForStart()
-        driveBase.runPath(Path(
-                Segment.Grid(0f, 0.2f),
-                Segment.Yaw(
-                        when (alliance) {
-                            Alliance.blue -> 90.0
-                            Alliance.red -> -90.0
-                        }
-                ),
-                Segment.Grid(0f, when(startPosition) {
+        (
+                (0f to 0.2f) / Grid ..
+                when (alliance) {
+                    Alliance.blue -> 90.0
+                    Alliance.red -> -90.0
+                } / Yaw ..
+                (0f to when(startPosition) {
                     StartPosition.backstage -> 2f
                     StartPosition.front -> 5f
-                })
-        ))
+                }) / Grid
+        ).run(driveBase, Unit)
     }
 
     fun runFull() {
@@ -196,24 +190,28 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         waitForStart()
 
         log("detecting a duck")
-        val recognition = detect(vision)
-        if (recognition == null) {
-            log("No duck detected, running only with parking")
-            runParkOnly()
-            return
-        }
+        val duckPosition = runDetection(vision).run(driveBase, Unit)
 
-        log("detected a duck at ${recognitionPosition(recognition)}, delivering purple pixel")
-        placePurplePixel(driveBase, arm, recognitionPosition(recognition))
+        log("detected a duck at ${duckPosition}, delivering purple pixel")
+
+        (
+            when(duckPosition) {
+                DuckPosition.left -> -135.0
+                DuckPosition.center -> -45.0
+                DuckPosition.right -> 45.0
+            } / Yaw
+        ).run(driveBase, Unit)
+
+        placePurplePixel(arm)
 
         log("delivered the purple pixel, now moving on to yellow")
-        placeYellowPixel(driveBase, arm, vision, recognitionPosition(recognition))
+        placeYellowPixel(arm, vision, duckPosition).run(driveBase, Unit)
 
         log("parking in the parking area")
-        park(driveBase)
+        park(duckPosition).run(driveBase, Unit)
     }
 
     override fun runOpMode() {
-        runFull()
+        runParkOnly()
     }
 }

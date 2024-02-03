@@ -205,7 +205,7 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
                     arrayOf(1.0, -1.0, 1.0, -1.0)
                 }
 
-        PID.runPID(0.0, degrees, 5.0, 0.8, 0.8, 0.8) { pid, initial, current, target, error ->
+        PID.runPID(0.0, degrees, 5.0, 1.0, 0.9, 0.9) { pid, initial, current, target, error ->
             setPower(corrections.map { it * pid.calculateCorrection() }.toTypedArray())
             Thread.sleep(10)
             imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
