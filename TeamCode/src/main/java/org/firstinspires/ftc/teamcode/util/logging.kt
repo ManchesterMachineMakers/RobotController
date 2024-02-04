@@ -8,4 +8,5 @@ fun OpMode.log(message: String) {
 
     telemetry.addLine(message)
     RobotLog.i("($tag) $message")
+    telemetry.update()
 }

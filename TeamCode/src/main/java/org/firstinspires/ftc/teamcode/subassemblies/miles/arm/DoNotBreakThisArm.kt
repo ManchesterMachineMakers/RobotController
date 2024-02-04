@@ -146,7 +146,7 @@ class DoNotBreakThisArm(private val opMode: OpMode, private val gamepad: Gamepad
 
     companion object {
         // Constants for arm control
-        public const val ARM_SPEED = 0.5
-        public const val ARM_OVERCURRENT_THRESHOLD = 4.0
+        private const val ARM_SPEED = 0.5
+        const val ARM_OVERCURRENT_THRESHOLD = 4.0
     }
 }

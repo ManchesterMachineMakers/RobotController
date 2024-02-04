@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.autonomous.pathfinder
 
 import android.util.Log
 import com.qualcomm.robotcore.hardware.DcMotor
-import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase.*
 import kotlin.math.hypot
@@ -16,20 +15,19 @@ const val motorEncoderEventsPerMM = motorEncoderEventsPerRevolution / wheelCircu
 internal const val strafingCoefficient = 0.7071 // speed difference between normal running and strafing - 1/sqrt(2), approximately
 
 
-interface Segment {
+interface Segment<I, R> {
     val name: String
-    fun run(driveBase: DriveBase)
+    fun run(driveBase: DriveBase, input: I): R
 
-    /**
-     * @param x Horizontal (strafing) distance in MM
-     * @param y Vertical (forward/back) distance in MM
-     */
-    data class Grid(val x: Float, val y: Float) : Segment {
-        val xTicks get() = x * squareSize * motorEncoderEventsPerMM
-        val yTicks get() = y * squareSize * motorEncoderEventsPerMM
+    /** Input: (x to y), where x is horizontal (strafing) and y is forward/backward */
+    object Grid : Segment<Pair<Float, Float>, Unit> {
         override val name = "Grid"
 
-        override fun run(driveBase: DriveBase) {
+        override fun run(driveBase: DriveBase, input: Pair<Float, Float>) {
+            val x = input.first
+            val y = input.second
+            val xTicks = x * squareSize * motorEncoderEventsPerMM
+            val yTicks = y * squareSize * motorEncoderEventsPerMM
             val segment = this
             driveBase.run {
                 setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
@@ -54,35 +52,64 @@ interface Segment {
                         TravelDirection.base
                     }
                 })
-                Log.i("Pathfinder/Segment:Grid", "X: ${segment.xTicks}, Y: ${segment.yTicks} - total ticks: ${hypot(segment.xTicks, segment.yTicks)}")
-                go(0.5, coefficients.map { coefficient -> (coefficient * hypot(segment.xTicks, segment.yTicks)).toInt() }.toTypedArray(), 1)
+                Log.i("Pathfinder/Segment:Grid", "X: $xTicks, Y: $yTicks - total ticks: ${hypot(xTicks, yTicks)}")
+                go(0.5, coefficients.map { coefficient -> (coefficient * hypot(xTicks, yTicks)).toInt() }.toTypedArray(), 1)
                 while(motors.any { it.isBusy }) {}
             }
         }
     }
 
-    data class Yaw(val degrees: Double) : Segment {
+    object Yaw : Segment<Double, Unit> {
         override val name = "Yaw"
-        override fun run(driveBase: DriveBase) {
-            driveBase.yaw(degrees, 0.2)
+        override fun run(driveBase: DriveBase, input: Double) {
+            driveBase.yaw(input, 0.2)
         }
     }
 
-    class Noop : Segment {
+    class Run<I, R>(val closure: (DriveBase, I) -> R) : Segment<I, R> {
+        override val name = "Run"
+        override fun run(driveBase: DriveBase, input: I) = closure(driveBase, input)
+    }
+
+    object Noop : Segment<Unit, Unit> {
         override val name = "No-op"
-        override fun run(driveBase: DriveBase) {
+        override fun run(driveBase: DriveBase, input: Unit) {
 
         }
     }
 }
 
-class Path(private vararg val segments: Segment) : Iterable<Segment> {
-    override fun iterator() = segments.iterator()
+operator fun <I, R, N> Segment<I, R>.div(other: Segment<R, N>): Segment<I, N> {
+    val self = this
+    return object : Segment<I, N> {
+        override val name: String
+            get() = "${self.name} -> ${other.name}"
+
+        override fun run(driveBase: DriveBase, input: I): N
+            = other.run(driveBase, self.run(driveBase, input))
+    }
 }
 
-fun DriveBase.runPath(path: Path) {
-    for (segment in path) {
-        Log.i("Pathfinder", "Running step: ${segment.name}")
-        segment.run(this)
+operator fun <I, R> I.div(segment: Segment<I, R>): Segment<Unit, R> {
+    val self = this
+    return object : Segment<Unit, R> {
+        override val name: String
+            get() = "=> ${segment.name}"
+
+        override fun run(driveBase: DriveBase, input: Unit) =
+            segment.run(driveBase, self)
+    }
+}
+
+operator fun <I, N> Segment<I, Unit>.rangeTo(other: Segment<Unit, N>) : Segment<I, N> {
+    val self = this
+    return object : Segment<I, N> {
+        override val name: String
+            get() = "${self.name}; ${other.name}"
+
+        override fun run(driveBase: DriveBase, input: I): N {
+            self.run(driveBase, input)
+            return other.run(driveBase, Unit)
+        }
     }
 }

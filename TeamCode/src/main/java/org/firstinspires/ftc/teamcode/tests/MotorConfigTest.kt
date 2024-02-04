@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.tests
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.util.config
 
 @Autonomous(name = "Motor Configuration Test", group = "tests")
@@ -16,16 +17,19 @@ class MotorConfigTest : LinearOpMode() {
 
         val motors = listOf(leftFront, rightFront, leftRear, rightRear)
 
-        for (motor in motors) motor.config()
+        for (motor in motors) motor.config(DcMotorSimple.Direction.FORWARD, DcMotor.RunMode.RUN_USING_ENCODER)
 
         waitForStart()
 
         if (opModeIsActive()) {
-            while (opModeIsActive()) {
-                telemetry.addLine("Motor Ports")
-                for (motor in motors) telemetry.addData(motor.deviceName, motor.portNumber)
-                telemetry.update()
+            telemetry.addLine("Ports")
+            telemetry.addData("left front ", leftFront.portNumber)
+            telemetry.addData("right front", rightFront.portNumber)
+            telemetry.addData("left rear  ", leftRear.portNumber)
+            telemetry.addData("right rear ", rightRear.portNumber)
+            telemetry.update()
 
+            while (opModeIsActive()) {
                 for (motor in motors) motor.runFor(2000)
                 sleep(2000)
             }

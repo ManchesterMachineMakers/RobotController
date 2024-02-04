@@ -64,9 +64,6 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
     }
 
     // TODO: run the drivebase in the right direction
-    // PR: the arm should not need to know about the drivebase.  The calling class
-    // should worry about that and pass in the distance info rather than having the
-    // arm run the wheels.
     fun placePixel(driveBase: DriveBase, placementInfo: PlacementInfo) {
         // math from matlab (armcode.mlx)
         val ticksToBase = placementInfo.distToBase * motorEncoderEventsPerMM
@@ -89,7 +86,7 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
     enum class RelativeDropTarget {
         easel, floor
     }
-/* PR (post-season): Can we please make this the preferred version of relativeWristPosition for all semi-auto wrist motion? */
+
     fun relativeWristPosition(target: RelativeDropTarget): Double {
         val theta = when(target) {
             RelativeDropTarget.easel -> 60
@@ -111,12 +108,9 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
             opMode.telemetry.addData("Touch Sensor", touchSensor.isPressed)
             opMode.telemetry.addData("Arm Motor", armMotor.currentPosition)
             opMode.telemetry.update()
-//          Thread.sleep(10) // should not need this, we are not doing anything meanwhile
+            Thread.sleep(10)
         }
         armMotor.power = 0.0
-        opMode.telemetry.addData("Touch Sensor", touchSensor.isPressed)
-        opMode.telemetry.addData("Arm Motor", armMotor.currentPosition)
-        opMode.telemetry.update()
 
         return DropCorrection(armMotor.currentPosition, initialWristPos)
     }
@@ -156,7 +150,6 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
                     if (armMotor.getCurrent(CurrentUnit.AMPS) > DoNotBreakThisArm.ARM_OVERCURRENT_THRESHOLD * 1.4) {
                         opMode.requestOpModeStop()
                     } else {
-                        // PR:  RUN TO 0?  ARE YOU SURE?
                         armMotor.targetPosition = 0
                         armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
                     }
