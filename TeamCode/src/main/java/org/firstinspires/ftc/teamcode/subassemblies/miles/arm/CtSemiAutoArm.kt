@@ -12,6 +12,8 @@ import kotlin.math.*
 class CtSemiAutoArm(opMode: OpMode) : BaseArm(opMode, "Continuous Semi-Auto Arm") {
     private var theta = 60 // degrees
     /** Position of the wrist to stay level with the floor or easel. */
+
+    /* PR (post-season): Can we please integrate the relativeWristPosition from Arm.kt, with the RelativeDropTarget enum functionality? */
     private val relativeWristPosition: Double
         get() {
             val armAngle = 360 * arm.currentPosition / ARM_ENCODER_RES

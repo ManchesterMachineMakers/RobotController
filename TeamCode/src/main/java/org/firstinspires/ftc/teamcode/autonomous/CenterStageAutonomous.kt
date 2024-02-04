@@ -29,6 +29,13 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         left, center, right
     }
 
+    /*******/
+    /*******/
+    /*******/
+    /***** PR: ALEKS, PLEASE PLEASE PLEASE ADD TELEMETRY EVERYWHERE! *****/
+    /*******/
+    /*******/
+    /*******/
     /** Detect a [Recognition] with a [label][Recognition.getLabel] of "Pixel" and a [confidence][Recognition.getConfidence] of 75% or above (takes the most confident one). THIS FUNCTION WILL CONTINUE TO RUN FOREVER IF NOTHING IS DETECTED. */
     // TODO: use the custom element
     private fun detect(vision: Vision) = detect(vision, 0)
@@ -49,6 +56,8 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
     private fun recognitionPosition(recognition: Recognition): DuckPosition {
         val center = (recognition.left + recognition.right) / 2
 
+        // PR: we are only looking for two positions now, please use half the view
+        val half = recognition.imageWidth / 2
         val third = recognition.imageWidth / 3
 
         // camera view is backwards
@@ -70,8 +79,8 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
                 Segment.Grid(0f, 1f),
                 when (duckPosition) {
                     DuckPosition.left -> Segment.Yaw(-90.0)
-                    DuckPosition.center -> Segment.Noop()
-                    DuckPosition.right -> Segment.Yaw(90.0)
+                    DuckPosition.center -> Segment.Yaw(-45.0)
+                    DuckPosition.right -> Segment.Noop()
                 }
         ))
 
@@ -80,6 +89,9 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         val dropCorrection = arm.drop()
         // place the pixel
         arm.leftRelease.release()
+        // PR: As lovely as this idea of "put it back where you found it" is,
+        // that's not really what we want to do here.  We just want the arm
+        // to raise enough to place the next pixel on the backdrop.
         arm.raise(dropCorrection)
     }
 
@@ -88,9 +100,11 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
      * Drive to a place in front of the provided apriltag.
      * @return true if the robot is within tolerance of the desired position
      */
-    private fun driveToAprilTag(driveBase: DriveBase, desiredTag: AprilTagDetection, desiredDistance: Double): Boolean {
+    private fun driveToAprilTag(driveBase: DriveBase, desiredTag: AprilTagDetection, desiredMMFromTag: Double): Boolean {
         //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
         //  applied to the drive motors to correct the error.
+        //  https://ftc-docs.firstinspires.org/en/latest/apriltag/understanding_apriltag_detection_values/understanding-apriltag-detection-values.html
+        //  Distance returned from the AprilTag pose is initialized to MM in the Builder.
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
         val SPEED_GAIN = 0.02  //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
         val STRAFE_GAIN = 0.015 //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
@@ -100,9 +114,9 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         val MAX_AUTO_STRAFE = 0.7   //  Clip the approach speed to this max value (adjust for your robot)
         val MAX_AUTO_TURN = 0.3   //  Clip the turn speed to this max value (adjust for your robot)
 
-        val ACCEPTABLE_ERROR = 10    //  Acceptable distance error
+        val ACCEPTABLE_ERROR = 30    //  Acceptable distance error
         // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-        val rangeError = (desiredTag.ftcPose.range - desiredDistance)
+        val rangeError = (desiredTag.ftcPose.range - desiredMMFromTag)
         val headingError = desiredTag.ftcPose.bearing
         val yawError = desiredTag.ftcPose.yaw
         // Use the speed and turn "gains" to calculate how we want the robot to move.
@@ -118,18 +132,27 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
     }
 
     /**
+     * Return the distance from an April Tag in MM
+     */
+    private fun getMMDistanceFromTag(aprilTagDetection: AprilTagDetection): Double {
+        return aprilTagDetection.ftcPose.range
+    }
+    /**
      * Place the yellow pixel (which should be preloaded into the right dropper) on the correct position on the backdrop.
      * @param duckPosition the position returned by [recognitionPosition]
      */
     private fun placeYellowPixel(driveBase: DriveBase, arm: Arm, vision: Vision, duckPosition: DuckPosition) {
+        // PR: If we are placing the purple pixel on the left spike mark,
+        // we will want to navigate around the pixel we placed to avoid descoring it.
+        // shouldn't this position correction be in the placePurplePixel routine?
         // run to backdrop
         // determine the path based on the duck position, because placePurplePixel already moved the bot
         driveBase.runPath(Path(
                 // rotate to get out of purple pixel placement
                 when (duckPosition) {
-                    DuckPosition.left -> Segment.Noop()
+                    DuckPosition.left -> Segment.Yaw(-45.0)
                     DuckPosition.center -> Segment.Yaw(-90.0)
-                    DuckPosition.right -> Segment.Yaw(-180.0)
+                    DuckPosition.right -> Segment.Yaw(-135.0)
                 },
 
                 // run to backdrop
@@ -155,6 +178,10 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         }
 
 
+        // PR: Any drivebase location adjustments should happen in this scope, not
+        // within the scope of the arm.  This would be a good opportunity to use
+        // the relative wrist position calculations within the arm class based on the position of the
+        // robot, since we know that distance by the relative pose from the AprilTags and can pass it in.
         // put the pixel on the backdrop
         arm.placePixel(driveBase, arm.getPlacementInfo(1))
     }
