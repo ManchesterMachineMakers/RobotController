@@ -256,6 +256,6 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         }
     }
 
-    private fun curveDouble(num: Double): Double {
-        return if (num > 0) num.pow(2) else -num.pow(2)
+    private fun curveDouble(num: Double): Double =
+        if (num > 0) num.pow(2) else -num.pow(2)
 }
