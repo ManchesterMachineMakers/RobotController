@@ -42,7 +42,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
     private fun detect(vision: Vision, iteration: Int): Recognition? =
             vision.tfod.recognitions
                     .filter { r ->
-                        r.label == "Pixel" && r.confidence > 0.75
+                        r.label == "duck" && r.confidence > 0.75
                     }
                     .sortedBy(Recognition::getConfidence)
                     .reversed()
