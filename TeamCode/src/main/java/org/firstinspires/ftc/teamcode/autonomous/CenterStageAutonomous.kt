@@ -75,10 +75,10 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
     private fun placePurplePixel(arm: Arm) {
 
         // drop the arm
-        val dropCorrection = arm.drop()
+        arm.drop()
         // place the pixel
         arm.leftRelease.release()
-        arm.raise(dropCorrection)
+        arm.raise()
     }
 
 
