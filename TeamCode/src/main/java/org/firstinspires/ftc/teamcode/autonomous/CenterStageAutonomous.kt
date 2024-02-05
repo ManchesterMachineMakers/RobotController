@@ -65,9 +65,13 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
     private fun runDetection(vision: Vision) =
         (0f to 0.9f) / Grid ..
         -45.0 / Yaw ..
-        Run { driveBase, input ->
-            recognitionPosition(detect(vision))
-        }
+                Run { driveBase, input ->
+                    recognitionPosition(detect(vision))
+                    }
+    // TODO: Make it look for the center first, then turn to the right, then give up.
+    // OR: Make it wait until a motor is not busy before detecting.
+    // The routine is detecting the center duck early and then is confused as to which
+    // position it is in, as it's in the center of the frame.
 
     /**
      * Place the purple pixel (which should be preloaded into the left dropper) next to the duck
@@ -198,9 +202,9 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
 
         (
             when(duckPosition) {
-                DuckPosition.left -> -135.0
-                DuckPosition.center -> -45.0
-                DuckPosition.right -> 45.0
+                DuckPosition.left -> 90.0
+                DuckPosition.center -> 45.0
+                DuckPosition.right -> 0.0
             } / Yaw
         ).run(driveBase, Unit)
 
@@ -211,9 +215,11 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
 
         log("parking in the parking area")
         park(duckPosition).run(driveBase, Unit)
+
     }
 
     override fun runOpMode() {
-        runParkOnly()
+//        runParkOnly()
+        runFull()
     }
 }

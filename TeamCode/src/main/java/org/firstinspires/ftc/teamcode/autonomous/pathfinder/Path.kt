@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autonomous.pathfinder
 
 import android.util.Log
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase.*
 import kotlin.math.hypot
@@ -29,6 +30,7 @@ interface Segment<I, R> {
             val xTicks = x * squareSize * motorEncoderEventsPerMM
             val yTicks = y * squareSize * motorEncoderEventsPerMM
             val segment = this
+            RobotLog.i("Running a Segment")
             driveBase.run {
                 setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
                 val coefficients = mecanumCoefficientsForDirection(with(segment) {
@@ -52,7 +54,7 @@ interface Segment<I, R> {
                         TravelDirection.base
                     }
                 })
-                Log.i("Pathfinder/Segment:Grid", "X: $xTicks, Y: $yTicks - total ticks: ${hypot(xTicks, yTicks)}")
+                RobotLog.i("Pathfinder/Segment:Grid", "X: $xTicks, Y: $yTicks - total ticks: ${hypot(xTicks, yTicks)}")
                 go(0.5, coefficients.map { coefficient -> (coefficient * hypot(xTicks, yTicks)).toInt() }.toTypedArray(), 1)
                 while(motors.any { it.isBusy }) {}
             }

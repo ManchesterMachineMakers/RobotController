@@ -84,18 +84,41 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
 
     fun relativeWristPosition(target: RelativeDropTarget): Double {
         val theta = when(target) {
-            RelativeDropTarget.easel -> 60
-            RelativeDropTarget.floor -> 120
+            RelativeDropTarget.easel -> 30
+            RelativeDropTarget.floor -> 45 // 0.25 servo position (or 130?)
         }
         val armAngle = 360 * armMotor.currentPosition / BaseArm.ARM_ENCODER_RES
-        val servoAngle = 90 + theta - CtSemiAutoArm.GAMMA - armAngle // degrees?
-        return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53 // from degrees? to servo range
+        val servoAngle = 90 + theta - CtSemiAutoArm.GAMMA - armAngle // degrees
+        return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53 // from degrees to servo range
     }
 
     fun drop() {
         armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        armMotor.targetPosition = -3130 // horizontal from stowed
+        armMotor.targetPositionTolerance = 20
+        armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+        while(!touchSensor.isPressed && armMotor.isBusy) {
+            armMotor.power = -0.2
+            opMode.telemetry.addData("Touch Sensor", touchSensor.isPressed)
+            opMode.telemetry.addData("Arm Motor", armMotor.currentPosition)
+            opMode.telemetry.addData("Wrist Servo", wrist.position)
+            opMode.telemetry.update()
+        }
+        armMotor.power = 0.0
+        armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        // go again, zeroed so the wrist position calculates correctly
+        opMode.telemetry.addLine("Zeroed the Arm Motor")
+        opMode.telemetry.update()
+        Thread.sleep(10)
+
+        armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
-        val initialWristPos = wrist.position
+        opMode.telemetry.addData("Touch Sensor", touchSensor.isPressed)
+        opMode.telemetry.addData("Arm Motor", armMotor.currentPosition)
+        opMode.telemetry.addData("Wrist Servo", wrist.position)
+        opMode.telemetry.update()
 
         while(!touchSensor.isPressed) {
             armMotor.power = -0.2

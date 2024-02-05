@@ -21,7 +21,7 @@ class Vision(opMode: OpMode) : Subject {
     //
     val tfod = TfodProcessor.Builder()
         .setModelAssetName("model_20240130_212636.tflite")
-            .setModelAspectRatio(1.0)
+            .setModelAspectRatio(16.0/9.0)
             .setModelLabels(listOf("duck"))
             .build()
 
