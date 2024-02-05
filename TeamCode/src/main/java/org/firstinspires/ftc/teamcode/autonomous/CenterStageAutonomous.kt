@@ -33,12 +33,12 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         left, center, right
     }
 
-    /** Detect a [Recognition] with a [label][Recognition.getLabel] of "Pixel" and a [confidence][Recognition.getConfidence] greater than 75% (takes the most confident one). THIS FUNCTION WILL CONTINUE TO RUN FOREVER IF NOTHING IS DETECTED. */
+    /** Detect a [Recognition] with a [label][Recognition.getLabel] of "duck" and a [confidence][Recognition.getConfidence] greater than 75% (takes the most confident one). THIS FUNCTION WILL CONTINUE TO RUN FOREVER IF NOTHING IS DETECTED. */
     private fun detect(vision: Vision) = detect(vision, 0)
     private fun detect(vision: Vision, iteration: Int): Recognition? =
             vision.tfod.recognitions
                     .filter { r ->
-                        r.label == "Pixel" && r.confidence > 0.75
+                        r.label == "duck" && r.confidence > 0.75
                     }
                     .sortedBy(Recognition::getConfidence)
                     .reversed()
@@ -83,7 +83,8 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
 
 
     /**
-     * Drive to a place in front of the provided apriltag.
+     * Drive to a place in front of the provided apriltag.\
+     * @param desiredDistance The desired final distance from the AprilTag in millimetres.
      * @return true if the robot is within tolerance of the desired position
      */
     private fun driveToAprilTag(driveBase: DriveBase, desiredTag: AprilTagDetection, desiredDistance: Double): Boolean {
@@ -143,9 +144,10 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
                             DuckPosition.center -> aprilTags[1]
                             DuckPosition.right -> aprilTags[2]
                         }
-                        while (!driveToAprilTag(driveBase, correctTag, 1000.0));
+                        val placementInfo = arm.getPlacementInfo(1)
+                        while (!driveToAprilTag(driveBase, correctTag, placementInfo.distToBase));
                         // put the pixel on the backdrop
-                        arm.placePixel(driveBase, arm.getPlacementInfo(1))
+                        arm.placePixel(placementInfo)
                         arm.rightRelease.release()
                     } else {
                         log("Incorrect number of AprilTags detected on the backdrop, is the robot drunk?")
