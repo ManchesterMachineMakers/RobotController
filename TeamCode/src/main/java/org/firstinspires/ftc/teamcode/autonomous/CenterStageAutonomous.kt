@@ -21,6 +21,11 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection
 @Autonomous
 open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val startPosition: StartPosition = StartPosition.backstage) : LinearOpMode() {
 
+    // Turn the other way if we're on the red alliance!
+    public var allianceDirectionCoefficient = if (alliance == Alliance.blue) 1.0 else -1.0
+    public var allianceDirectionDegrees = if (alliance == Alliance.blue) 0.0 else -180.0
+    // our backdrop april tag value will be 1-3 or 4-6 depending on alliance.
+    public var allianceAprilTagIndexBoost = if (alliance == Alliance.blue) 1 else 3
     enum class Alliance {
         blue, red
     }
@@ -125,51 +130,86 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
      * @param duckPosition the position returned by [recognitionPosition]
      */
     private fun placeYellowPixel(arm: Arm, vision: Vision, duckPosition: DuckPosition) =
-                // run to backdrop
-                // determine the path based on the duck position, because we already moved the bot
-                // rotate to get out of purple pixel placement
-                when (duckPosition) {
-                    DuckPosition.left -> Noop
-                    DuckPosition.center -> 90.0 / Yaw
-                    DuckPosition.right -> 180.0 / Yaw
-                } ..
 
-                // run to backdrop
-                (0f to 1.5f) / Grid ..
+        // would love to log here??
+        // log("running to backdrop")
+        // run to backdrop
+        (0f to when(startPosition) {
+            StartPosition.backstage -> 1.5f
+            StartPosition.front -> 4.5f
+        }) / Grid ..
 
-                // now that we're at the backdrop, align to the correct apriltag
-                // TODO: use the apriltag value to at least try to get to the correct spot
-                Run { driveBase, input ->
-                    val aprilTags = vision.aprilTag.detections.sortedBy { it.center.x }
+        // now that we're at the backdrop, align to the correct apriltag
+        // use the apriltag value to at least try to get to the correct spot
+        Run { driveBase, input ->
+            log ("looking for AprilTags on the backdrop")
 
+            var correctTag: AprilTagDetection? = null
+            var tagValue = 0
+            var tries = 1
+            while (this.isStopRequested == false and (tries < 3) and ((correctTag == null) or (tagValue < 1) or (tagValue > 6))) {
+                // make sure we are detecting fresh AprilTags
+                val aprilTags = vision.aprilTag.freshDetections.sortedBy { it.center.x }
+                if (aprilTags.size > 0) {
+                    // if we only found three, assume they are correct
                     if (aprilTags.size == 3) {
-                        val correctTag = when (duckPosition) {
+                        log("found three AprilTags, assume these are good")
+                        correctTag = when (duckPosition) {
                             DuckPosition.left -> aprilTags[0]
                             DuckPosition.center -> aprilTags[1]
                             DuckPosition.right -> aprilTags[2]
                         }
-                        val placementInfo = arm.getPlacementInfo(1)
-                        while (!driveToAprilTag(driveBase, correctTag, placementInfo.distToBase));
-                        // put the pixel on the backdrop
-                        arm.placePixel(placementInfo)
-                        arm.rightRelease.release()
                     } else {
-                        log("Incorrect number of AprilTags detected on the backdrop, is the robot drunk?")
-                        log("Continuing to next stage")
+                        // we found some other number of tags, filter to see if we have what we need
+                        log("filtering AprilTags to look for the correct one")
+                        val aprilTagWeAreLookingFor = when (duckPosition) {
+                            DuckPosition.left -> 1
+                            DuckPosition.center -> 2
+                            DuckPosition.right -> 3
+                        } + allianceAprilTagIndexBoost
+                        correctTag = aprilTags.filter { it.id == aprilTagWeAreLookingFor }[0]
+                        // if we haven't found the correct tag, just use the first one we've found.
+                        log("we don't have the correct tag, we'll just go to the first we found!")
+                        if (correctTag == null) correctTag = aprilTags[0]
+                        tagValue = correctTag.id
+                        if ((tagValue >= 1) and (tagValue <= 6)) {
+                            log("we found something on the backdrop. going there!")
+                        } else {
+                            log("the AprilTag we found was not on the backdrop. That means we are turned around!")
+                            180.0 / Yaw
+                            log("turning around and trying again, once.")
+                            tries++
+                        }
                     }
                 }
+            }
+            if (correctTag != null) {
+                log ("getting placement info for pixelRow 1 on the backdrop")
+                val placementInfo = arm.getPlacementInfo(1)
+                while (!driveToAprilTag(driveBase, correctTag, placementInfo.distToBase));
+                // put the pixel on the backdrop
+                arm.placePixel(placementInfo)
+                arm.rightRelease.release()
+            } else {
+                log("No AprilTags detected on the backdrop, is the robot drunk?")
+                // drop the pixel where we are, it will likely end up backstage which is 3 points.
+                arm.drop()
+                arm.rightRelease.release()
+                arm.raise()
+            }
+        }
 
     /**
      * Park in the parking area.
      */
     private fun park(duckPosition: DuckPosition) =
-        90.0 / Yaw ..
+        (90.0 * allianceDirectionCoefficient)/ Yaw ..
         (0f to when(duckPosition) {
             DuckPosition.left -> 0.75f
             DuckPosition.center -> 1f
             DuckPosition.right -> 1.25f
         }) / Grid ..
-        -90.0 / Yaw ..
+        (-90.0 * allianceDirectionCoefficient) / Yaw ..
         (0f to 0.5f) / Grid
 
     fun runParkOnly() {
@@ -177,10 +217,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         waitForStart()
         (
                 (0f to 0.2f) / Grid ..
-                when (alliance) {
-                    Alliance.blue -> 90.0
-                    Alliance.red -> -90.0
-                } / Yaw ..
+                        (90.0 * allianceDirectionCoefficient ) / Yaw ..
                 (0f to when(startPosition) {
                     StartPosition.backstage -> 2f
                     StartPosition.front -> 5f
@@ -200,6 +237,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
 
         log("detected a duck at ${duckPosition}, delivering purple pixel")
 
+        // Orient to place the purple pixel on the spike mark
         (
             when(duckPosition) {
                 DuckPosition.left -> 90.0
@@ -209,8 +247,21 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         ).run(driveBase, Unit)
 
         placePurplePixel(arm)
-
         log("delivered the purple pixel, now moving on to yellow")
+
+        // Orient toward the backdrop
+        (
+            ((allianceDirectionDegrees) + (when(duckPosition) {
+                DuckPosition.left -> 45.0
+                DuckPosition.center -> 90.0
+                DuckPosition.right -> 135.0
+            })) / Yaw
+        ).run(driveBase, Unit)
+        log("oriented toward the backdrop, now driving to it")
+
+        // placeYellowPixel drives most of the way to the backdrop,
+        // then looks for AprilTags in order to place the pixel correctly.
+        // if none are found, it drops the pixel on the floor.
         placeYellowPixel(arm, vision, duckPosition).run(driveBase, Unit)
 
         log("parking in the parking area")
