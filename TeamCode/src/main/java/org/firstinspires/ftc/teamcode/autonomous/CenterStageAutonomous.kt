@@ -149,7 +149,12 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
             var tries = 1
             while (this.isStopRequested == false and (tries < 3) and ((correctTag == null) or (tagValue < 1) or (tagValue > 6))) {
                 // make sure we are detecting fresh AprilTags
-                val aprilTags = vision.aprilTag.freshDetections.sortedBy { it.center.x }
+                var aprilTags: List<AprilTagDetection>
+                if (tries > 1) {
+                    aprilTags = vision.aprilTag.freshDetections.sortedBy { it.center.x }
+                } else {
+                    aprilTags = vision.aprilTag.detections.sortedBy { it.center.x }
+                }
                 if (aprilTags.size > 0) {
                     // if we only found three, assume they are correct
                     if (aprilTags.size == 3) {
@@ -162,18 +167,20 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
                     } else {
                         // we found some other number of tags, filter to see if we have what we need
                         log("filtering AprilTags to look for the correct one")
-                        val aprilTagWeAreLookingFor = when (duckPosition) {
+                        var aprilTagWeAreLookingFor = when (duckPosition) {
                             DuckPosition.left -> 1
                             DuckPosition.center -> 2
                             DuckPosition.right -> 3
                         } + allianceAprilTagIndexBoost
-                        correctTag = aprilTags.filter { it.id == aprilTagWeAreLookingFor }[0]
+                        var correctTags = aprilTags.filter { it.id == aprilTagWeAreLookingFor }
+                        if (correctTags.size > 0) { correctTag = correctTags[0] }
                         // if we haven't found the correct tag, just use the first one we've found.
                         log("we don't have the correct tag, we'll just go to the first we found!")
                         if (correctTag == null) correctTag = aprilTags[0]
                         tagValue = correctTag.id
                         if ((tagValue >= 1) and (tagValue <= 6)) {
                             log("we found something on the backdrop. going there!")
+                            tries = 3 // don't keep trying, stop here!
                         } else {
                             log("the AprilTag we found was not on the backdrop. That means we are turned around!")
                             180.0 / Yaw
