@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autonomous
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.Range
 import com.qualcomm.robotcore.util.RobotLog
@@ -24,7 +25,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
 
     // Turn the other way if we're on the red alliance!
     public var allianceDirectionCoefficient = if (alliance == Alliance.blue) 1.0 else -1.0
-    public var allianceDirectionDegrees = if (alliance == Alliance.blue) 0.0 else -180.0
+    public var  allianceDirectionDegrees = if (alliance == Alliance.blue) 0.0 else -180.0
     // our backdrop april tag value will be 1-3 or 4-6 depending on alliance.
     public var allianceAprilTagIndexBoost = if (alliance == Alliance.blue) 1 else 3
     private var correctTag: AprilTagDetection? = null
@@ -77,11 +78,15 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
     }
 
     private fun runDetection(vision: Vision) =
-        (0f to 0.9f) / Grid ..
-        -45.0 / Yaw ..
-                Run { driveBase, input ->
-                    recognitionPosition(detect(vision))
-                    }
+        (0f to 1.2f) / Grid ..
+                Run { driveBase, i ->
+                    if(detect(vision) != null) DuckPosition.center
+                    else ((allianceDirectionDegrees - 45.0)  / Yaw ..
+                            Run { _driveBase, input ->
+                                if(detect(vision) != null) DuckPosition.right
+                                else DuckPosition.left
+                            }).run(driveBase, Unit)
+                }
     // TODO: Make it look for the center first, then turn to the right, then give up.
     // OR: Make it wait until a motor is not busy before detecting.
     // The routine is detecting the center duck early and then is confused as to which
@@ -240,6 +245,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
     /**
      * Park in the parking area.
      */
+    @Deprecated("We don't need to park entirely in the area in order to score")
     private fun park(duckPosition: DuckPosition) =
         (90.0 * allianceDirectionCoefficient)/ Yaw ..
         (0f to when(duckPosition) {
@@ -267,6 +273,8 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         val vision = Vision(this)
         val driveBase = DriveBase(this)
         val arm = Arm(this)
+        telemetryActionLine.setValue("Initialized")
+        telemetry.update()
 
         waitForStart()
 
@@ -282,11 +290,22 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         // Orient to place the purple pixel on the spike mark
         (
             when(duckPosition) {
-                DuckPosition.left -> 90.0
-                DuckPosition.center -> 45.0
+                DuckPosition.left -> 155.0
+                DuckPosition.center -> 0.0
                 DuckPosition.right -> 0.0
             } / Yaw
         ).run(driveBase, Unit)
+
+        arm.run {
+            armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+            armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+            armMotor.targetPosition = -3130 // horizontal from stowed
+            armMotor.targetPositionTolerance = 20
+            armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+            armMotor.power = 0.5
+            while (armMotor.isBusy) {}
+            armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        }
 
         placePurplePixel(arm)
         telemetryActionLine.setValue("delivered the purple pixel, now moving on to yellow")
@@ -297,9 +316,9 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         telemetry.update()
         // Orient toward the backdrop
         (
-            ((allianceDirectionDegrees) + (when(duckPosition) {
-                DuckPosition.left -> 45.0
-                DuckPosition.center -> 90.0
+            ((allianceDirectionCoefficient) * (when(duckPosition) {
+                DuckPosition.left -> 0.0
+                DuckPosition.center -> 45.0
                 DuckPosition.right -> 135.0
             })) / Yaw
         ).run(driveBase, Unit)
@@ -313,11 +332,9 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
 
         telemetryActionLine.setValue("parking in the parking area")
         telemetry.update()
-        park(duckPosition).run(driveBase, Unit)
-
     }
 
-    override fun runOpMode() {
+    fun initTelemetry() {
         telemetry.isAutoClear = false
         telemetrySetupLine = telemetry.addData("Setup", "Alliance: $alliance, Position: $startPosition")
         telemetryActionLine = telemetry.addData("Action", "Initializing")
@@ -325,7 +342,11 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         telemetryDuckPosition = telemetry.addData("Duck Position", "Not Yet Detected")
         telemetryTagTries = telemetry.addData("April Tag Detection Tries", "Not Yet Detected")
         telemetryTagValue = telemetry.addData("April Tag Value", correctTag?.id?:"Not Yet Detected")
-       telemetry.update()
+        telemetry.update()
+    }
+
+    override fun runOpMode() {
+        initTelemetry()
 
         //runParkOnly()
         runFull()

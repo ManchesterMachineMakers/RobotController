@@ -11,8 +11,8 @@ class IMUManager(opMode: OpMode) : Subassembly(opMode, "IMU Manager") {
     val imuParameters =
             IMU.Parameters(
                     RevHubOrientationOnRobot(
-                            RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
-                            RevHubOrientationOnRobot.UsbFacingDirection.UP
+                            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                            RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
                     )
             )
     val imu = hardwareMap.get(IMU::class.java, "imu")

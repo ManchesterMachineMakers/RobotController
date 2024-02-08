@@ -93,12 +93,6 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
     }
 
     fun drop() {
-        armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        armMotor.targetPosition = -3130 // horizontal from stowed
-        armMotor.targetPositionTolerance = 20
-        armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-
         while(!touchSensor.isPressed && armMotor.isBusy) {
             armMotor.power = -0.2
             opMode.telemetry.addData("Touch Sensor", touchSensor.isPressed)
@@ -106,8 +100,8 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
             opMode.telemetry.addData("Wrist Servo", wrist.position)
             opMode.telemetry.update()
         }
-        armMotor.power = 0.0
         armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        armMotor.power = 0.0
         // go again, zeroed so the wrist position calculates correctly
         opMode.telemetry.addLine("Zeroed the Arm Motor")
         opMode.telemetry.update()
@@ -137,7 +131,6 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
     }
 
     fun raise() {
-        armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         armMotor.targetPosition = 200
         armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
         armMotor.power = 0.2
