@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.Range
+import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 import org.firstinspires.ftc.teamcode.autonomous.pathfinder.Segment
 import org.firstinspires.ftc.teamcode.autonomous.pathfinder.Segment.*
@@ -28,12 +29,12 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
     public var allianceAprilTagIndexBoost = if (alliance == Alliance.blue) 1 else 3
     private var correctTag: AprilTagDetection? = null
 
-    private val telemetrySetupLine = telemetry.addData("Setup", "Alliance: $alliance, Position: $startPosition")
-    private val telemetryActionLine = telemetry.addData("Action", "Initializing")
-    private val telemetryPixelLine = telemetry.addData("Pixel", "Both preloaded")
-    private val telemetryDuckPosition = telemetry.addData("Duck Position", "Not Yet Detected")
-    private val telemetryTagTries = telemetry.addData("April Tag Detection Tries", "Not Yet Detected")
-    private val telemetryTagValue = telemetry.addData("April Tag Value", correctTag?.id?:"Not Yet Detected")
+    private var telemetrySetupLine = telemetry.addData("Setup", "Alliance: $alliance, Position: $startPosition")
+    private var telemetryActionLine = telemetry.addData("Action", "Initializing")
+    private var telemetryPixelLine = telemetry.addData("Pixel", "Both preloaded")
+    private var telemetryDuckPosition = telemetry.addData("Duck Position", "Not Yet Detected")
+    private var telemetryTagTries = telemetry.addData("April Tag Detection Tries", "Not Yet Detected")
+    private var telemetryTagValue = telemetry.addData("April Tag Value", correctTag?.id?:"Not Yet Detected")
     enum class Alliance {
         blue, red
     }
@@ -214,7 +215,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
             if (correctTag != null) {
                 telemetryActionLine.setValue("placing pixel on pixelRow 1")
                 telemetry.update()
-                log ("getting placement info for pixelRow 1 on the backdrop")
+                RobotLog.i ("getting placement info for pixelRow 1 on the backdrop")
                 val placementInfo = arm.getPlacementInfo(1)
                 while (!isStopRequested and !driveToAprilTag(driveBase, correctTag!!, placementInfo.distToBase)) {
                     telemetryActionLine.setValue("Driving to AprilTag")
@@ -226,7 +227,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
                 arm.placePixel(placementInfo)
                 arm.rightRelease.release()
             } else {
-                log("No AprilTags detected on the backdrop, is the robot drunk?")
+                RobotLog.i("No AprilTags detected on the backdrop, is the robot drunk?")
                 telemetryActionLine.setValue("Dropping a pixel where we are.")
                 telemetry.update()
                 // drop the pixel where we are, it will likely end up backstage which is 3 points.
@@ -317,7 +318,14 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
     }
 
     override fun runOpMode() {
-        telemetry.update()
+        telemetry.isAutoClear = false
+        telemetrySetupLine = telemetry.addData("Setup", "Alliance: $alliance, Position: $startPosition")
+        telemetryActionLine = telemetry.addData("Action", "Initializing")
+        telemetryPixelLine = telemetry.addData("Pixel", "Both preloaded")
+        telemetryDuckPosition = telemetry.addData("Duck Position", "Not Yet Detected")
+        telemetryTagTries = telemetry.addData("April Tag Detection Tries", "Not Yet Detected")
+        telemetryTagValue = telemetry.addData("April Tag Value", correctTag?.id?:"Not Yet Detected")
+       telemetry.update()
 
         //runParkOnly()
         runFull()
