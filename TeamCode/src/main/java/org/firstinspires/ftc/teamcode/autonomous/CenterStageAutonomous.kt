@@ -26,6 +26,14 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
     public var allianceDirectionDegrees = if (alliance == Alliance.blue) 0.0 else -180.0
     // our backdrop april tag value will be 1-3 or 4-6 depending on alliance.
     public var allianceAprilTagIndexBoost = if (alliance == Alliance.blue) 1 else 3
+    private var correctTag: AprilTagDetection? = null
+
+    private val telemetrySetupLine = telemetry.addData("Setup", "Alliance: $alliance, Position: $startPosition")
+    private val telemetryActionLine = telemetry.addData("Action", "Initializing")
+    private val telemetryPixelLine = telemetry.addData("Pixel", "Both preloaded")
+    private val telemetryDuckPosition = telemetry.addData("Duck Position", "Not Yet Detected")
+    private val telemetryTagTries = telemetry.addData("April Tag Detection Tries", "Not Yet Detected")
+    private val telemetryTagValue = telemetry.addData("April Tag Value", correctTag?.id?:"Not Yet Detected")
     enum class Alliance {
         blue, red
     }
@@ -84,9 +92,16 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
     private fun placePurplePixel(arm: Arm) {
 
         // drop the arm
+        telemetryActionLine.setValue("Placing on the floor")
+        telemetry.update()
         arm.drop()
         // place the pixel
+        telemetryActionLine.setValue("Releasing the left pixel")
+        telemetry.update()
         arm.leftRelease.release()
+
+        telemetryActionLine.setValue("Raising the arm")
+        telemetry.update()
         arm.raise()
     }
 
@@ -142,63 +157,78 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         // now that we're at the backdrop, align to the correct apriltag
         // use the apriltag value to at least try to get to the correct spot
         Run { driveBase, input ->
-            log ("looking for AprilTags on the backdrop")
+            telemetryActionLine.setValue("looking for AprilTags on the backdrop")
+            telemetry.update()
 
-            var correctTag: AprilTagDetection? = null
             var tagValue = 0
-            var tries = 1
-            while (this.isStopRequested == false and (tries < 3) and ((correctTag == null) or (tagValue < 1) or (tagValue > 6))) {
-                // make sure we are detecting fresh AprilTags
-                var aprilTags: List<AprilTagDetection>
-                if (tries > 1) {
-                    aprilTags = vision.aprilTag.freshDetections.sortedBy { it.center.x }
-                } else {
-                    aprilTags = vision.aprilTag.detections.sortedBy { it.center.x }
-                }
-                if (aprilTags.size > 0) {
-                    // if we only found three, assume they are correct
-                    if (aprilTags.size == 3) {
-                        log("found three AprilTags, assume these are good")
-                        correctTag = when (duckPosition) {
-                            DuckPosition.left -> aprilTags[0]
-                            DuckPosition.center -> aprilTags[1]
-                            DuckPosition.right -> aprilTags[2]
-                        }
-                    } else {
-                        // we found some other number of tags, filter to see if we have what we need
-                        log("filtering AprilTags to look for the correct one")
-                        var aprilTagWeAreLookingFor = when (duckPosition) {
-                            DuckPosition.left -> 1
-                            DuckPosition.center -> 2
-                            DuckPosition.right -> 3
-                        } + allianceAprilTagIndexBoost
-                        var correctTags = aprilTags.filter { it.id == aprilTagWeAreLookingFor }
-                        if (correctTags.size > 0) { correctTag = correctTags[0] }
-                        // if we haven't found the correct tag, just use the first one we've found.
-                        log("we don't have the correct tag, we'll just go to the first we found!")
-                        if (correctTag == null) correctTag = aprilTags[0]
-                        tagValue = correctTag.id
-                        if ((tagValue >= 1) and (tagValue <= 6)) {
-                            log("we found something on the backdrop. going there!")
-                            tries = 3 // don't keep trying, stop here!
+            for (tries in 1..2) {
+                if (this.isStopRequested == false and ((tagValue < 1) or (tagValue > 6))) {
+                    log("April Tag Tries: " + tries)
+                    // make sure we are detecting fresh AprilTags
+                    telemetryActionLine.setValue("Detecting April Tags, try $tries")
+                    var aprilTags = vision.aprilTag.detections.sortedBy { it.center.x }
+                    if (aprilTags.size > 0) {
+                        // if we only found three, assume they are correct
+                        if (aprilTags.size == 3) {
+                            telemetryTagTries.setValue("found three AprilTags, assume these are good, try $tries")
+                            correctTag = when (duckPosition) {
+                                DuckPosition.left -> aprilTags[0]
+                                DuckPosition.center -> aprilTags[1]
+                                DuckPosition.right -> aprilTags[2]
+                            }
+                            tagValue = correctTag?.id ?: 0
+                            telemetryTagValue.setValue(tagValue)
+                            telemetry.update()
                         } else {
-                            log("the AprilTag we found was not on the backdrop. That means we are turned around!")
-                            180.0 / Yaw
-                            log("turning around and trying again, once.")
-                            tries++
+                            // we found some other number of tags, filter to see if we have what we need
+                            log("filtering AprilTags to look for the correct one")
+                            var aprilTagWeAreLookingFor = when (duckPosition) {
+                                DuckPosition.left -> 1
+                                DuckPosition.center -> 2
+                                DuckPosition.right -> 3
+                            } + allianceAprilTagIndexBoost
+                            var correctTags = aprilTags.filter { it.id == aprilTagWeAreLookingFor }
+                            if (correctTags.size > 0) {
+                                correctTag = correctTags[0]
+                            }
+                            // if we haven't found the correct tag, just use the first one we've found.
+                            log("we don't have the correct tag, we'll just go to the first we found!")
+                            if (correctTag == null) correctTag = aprilTags[0]
+                            tagValue = correctTag?.id ?: 0
+                            telemetryTagValue.setValue(tagValue)
+                            if ((tagValue >= 1) and (tagValue <= 6)) {
+                                telemetryActionLine.setValue("we found something on the backdrop. going there!")
+                                telemetry.update()
+                                log("we found something on the backdrop. going there!")
+                            } else {
+                                telemetryTagTries.setValue("the AprilTag we found was not on the backdrop. That means we are turned around!")
+                                telemetry.update()
+                                180.0 / Yaw
+                                log("turning around and trying again, once.")
+                            }
+                            telemetry.update()
                         }
                     }
                 }
             }
             if (correctTag != null) {
+                telemetryActionLine.setValue("placing pixel on pixelRow 1")
+                telemetry.update()
                 log ("getting placement info for pixelRow 1 on the backdrop")
                 val placementInfo = arm.getPlacementInfo(1)
-                while (!driveToAprilTag(driveBase, correctTag, placementInfo.distToBase));
+                while (!isStopRequested and !driveToAprilTag(driveBase, correctTag!!, placementInfo.distToBase)) {
+                    telemetryActionLine.setValue("Driving to AprilTag")
+                    telemetry.update()
+                }
                 // put the pixel on the backdrop
+                telemetryActionLine.setValue("Placing the pixel on the backdrop")
+                telemetry.update()
                 arm.placePixel(placementInfo)
                 arm.rightRelease.release()
             } else {
                 log("No AprilTags detected on the backdrop, is the robot drunk?")
+                telemetryActionLine.setValue("Dropping a pixel where we are.")
+                telemetry.update()
                 // drop the pixel where we are, it will likely end up backstage which is 3 points.
                 arm.drop()
                 arm.rightRelease.release()
@@ -239,10 +269,14 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
 
         waitForStart()
 
-        log("detecting a duck")
+        telemetryActionLine.setValue("detecting a duck")
+        telemetry.update()
+
         val duckPosition = runDetection(vision).run(driveBase, Unit)
 
-        log("detected a duck at ${duckPosition}, delivering purple pixel")
+        telemetryDuckPosition.setValue(duckPosition)
+        telemetryPixelLine.setValue("Purple")
+        telemetry.update()
 
         // Orient to place the purple pixel on the spike mark
         (
@@ -254,8 +288,12 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         ).run(driveBase, Unit)
 
         placePurplePixel(arm)
-        log("delivered the purple pixel, now moving on to yellow")
+        telemetryActionLine.setValue("delivered the purple pixel, now moving on to yellow")
+        telemetry.update()
 
+
+        telemetryPixelLine.setValue("Yellow")
+        telemetry.update()
         // Orient toward the backdrop
         (
             ((allianceDirectionDegrees) + (when(duckPosition) {
@@ -264,20 +302,24 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
                 DuckPosition.right -> 135.0
             })) / Yaw
         ).run(driveBase, Unit)
-        log("oriented toward the backdrop, now driving to it")
+        telemetryActionLine.setValue("oriented toward the backdrop, now driving to it")
+        telemetry.update()
 
         // placeYellowPixel drives most of the way to the backdrop,
         // then looks for AprilTags in order to place the pixel correctly.
         // if none are found, it drops the pixel on the floor.
         placeYellowPixel(arm, vision, duckPosition).run(driveBase, Unit)
 
-        log("parking in the parking area")
+        telemetryActionLine.setValue("parking in the parking area")
+        telemetry.update()
         park(duckPosition).run(driveBase, Unit)
 
     }
 
     override fun runOpMode() {
-//        runParkOnly()
+        telemetry.update()
+
+        //runParkOnly()
         runFull()
     }
 }

@@ -195,6 +195,7 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     fun yaw(degrees: Double, power: Double) {
+        val telemetryYaw = opMode.telemetry.addData("Yaw", imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES))
         setMode(RunMode.RUN_WITHOUT_ENCODER)
         imu.imu.resetYaw()
 
@@ -208,10 +209,12 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         PID.runPID(0.0, degrees, 5.0, 1.0, 0.9, 0.9) { pid, initial, current, target, error ->
             setPower(corrections.map { it * pid.calculateCorrection() }.toTypedArray())
             Thread.sleep(10)
+            opMode.telemetry.update()
             imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
         }
 
         setPower(0.0, 0.0, 0.0, 0.0)
+        opMode.telemetry.update()
     }
 
     enum class TravelDirection {
