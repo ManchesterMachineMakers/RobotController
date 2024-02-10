@@ -63,10 +63,8 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
         return PlacementInfo(distToBase, alpha, beta)
     }
 
-    // TODO: run the drivebase in the right direction
-    fun placePixel(driveBase: DriveBase, placementInfo: PlacementInfo) {
+    fun placePixel(placementInfo: PlacementInfo) {
         // math from matlab (armcode.mlx)
-        val ticksToBase = placementInfo.distToBase * motorEncoderEventsPerMM
 
         val servoDegreesMax = 300.0
         val servoDegrees = clamp(((placementInfo.alpha - PI/2) / (2*PI)) * 360, 0.0, servoDegreesMax)
@@ -76,9 +74,6 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
         armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
 
         wrist.position = servoDegrees
-
-        driveBase.runToPosition(ticksToBase.roundToInt())
-
     }
 
     data class DropCorrection(val armPosition: Int, val wristPosition: Double)
@@ -89,38 +84,56 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
 
     fun relativeWristPosition(target: RelativeDropTarget): Double {
         val theta = when(target) {
-            RelativeDropTarget.easel -> 60
-            RelativeDropTarget.floor -> 120
+            RelativeDropTarget.easel -> 30
+            RelativeDropTarget.floor -> 45 // 0.25 servo position (or 130?)
         }
         val armAngle = 360 * armMotor.currentPosition / BaseArm.ARM_ENCODER_RES
-        val servoAngle = 90 + theta - CtSemiAutoArm.GAMMA - armAngle // degrees?
-        return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53 // from degrees? to servo range
+        val servoAngle = 90 + theta - CtSemiAutoArm.GAMMA - armAngle // degrees
+        return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53 // from degrees to servo range
     }
 
-    fun drop(): DropCorrection {
-        armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
-        val initialWristPos = wrist.position
-
-        wrist.position = 0.25
-        while(!touchSensor.isPressed) {
+    fun drop() {
+        while(!touchSensor.isPressed && armMotor.isBusy) {
             armMotor.power = -0.2
             opMode.telemetry.addData("Touch Sensor", touchSensor.isPressed)
             opMode.telemetry.addData("Arm Motor", armMotor.currentPosition)
+            opMode.telemetry.addData("Wrist Servo", wrist.position)
+            opMode.telemetry.update()
+        }
+        armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        armMotor.power = 0.0
+        // go again, zeroed so the wrist position calculates correctly
+        opMode.telemetry.addLine("Zeroed the Arm Motor")
+        opMode.telemetry.update()
+        Thread.sleep(10)
+
+        armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
+        opMode.telemetry.addData("Touch Sensor", touchSensor.isPressed)
+        opMode.telemetry.addData("Arm Motor", armMotor.currentPosition)
+        opMode.telemetry.addData("Wrist Servo", wrist.position)
+        opMode.telemetry.update()
+
+        while(!touchSensor.isPressed) {
+            armMotor.power = -0.2
+            wrist.position = relativeWristPosition(RelativeDropTarget.floor)
+            opMode.telemetry.addData("Touch Sensor", touchSensor.isPressed)
+            opMode.telemetry.addData("Arm Motor", armMotor.currentPosition)
+            opMode.telemetry.addData("Wrist Servo", wrist.position)
             opMode.telemetry.update()
             Thread.sleep(10)
         }
         armMotor.power = 0.0
-
-        return DropCorrection(armMotor.currentPosition, initialWristPos)
+        opMode.telemetry.addData("Touch Sensor", touchSensor.isPressed)
+        opMode.telemetry.addData("Arm Motor", armMotor.currentPosition)
+        opMode.telemetry.addData("Wrist Servo", wrist.position)
+        opMode.telemetry.update()
     }
 
-    fun raise(correction: DropCorrection) {
-        armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        armMotor.targetPosition = -correction.armPosition
+    fun raise() {
+        armMotor.targetPosition = 200
         armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
         armMotor.power = 0.2
-        wrist.position = correction.wristPosition
     }
 
     override fun controller(gamepad: GamepadManager) {
