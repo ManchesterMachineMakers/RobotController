@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
-import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
-import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerMM
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerRevolution
 import org.firstinspires.ftc.teamcode.contracts.Controllable
 import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.CtSemiAutoArm
@@ -16,7 +13,6 @@ import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.DoNotBreakThisArm
 import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.bases.BaseArm
 import org.firstinspires.ftc.teamcode.util.clamp
-import org.firstinspires.ftc.teamcode.util.log
 import kotlin.math.PI
 import kotlin.math.asin
 import kotlin.math.atan2

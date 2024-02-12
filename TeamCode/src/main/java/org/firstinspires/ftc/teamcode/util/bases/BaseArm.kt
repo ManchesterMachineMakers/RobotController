@@ -26,7 +26,7 @@ abstract class BaseArm(opMode: OpMode, name: String) : Subassembly(opMode, name)
     protected val leftRelease: Servo = hardwareMap.servo.get("left_release")
     protected val rightRelease: Servo = hardwareMap.servo.get("right_release")
 
-    protected val intakeTouch: TouchSensor = hardwareMap.touchSensor.get("intake")
+//    protected val intakeTouch: TouchSensor = hardwareMap.touchSensor.get("intake")
 
     // Arm state variables
     private var airplaneLauncherToggle = false // false = closed, true = open

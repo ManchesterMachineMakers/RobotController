@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode.opmodes.teleop.armTeleOps
+package org.firstinspires.ftc.teamcode.backlog
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
-import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.IncSemiAutoArm
+import org.firstinspires.ftc.teamcode.backlog.IncSemiAutoArm
 import org.firstinspires.ftc.teamcode.util.bases.BaseArmTeleOp
 
 @TeleOp(name = "Semi-Auto Inc Arm TeleOp", group = "arm")
