@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.contracts.Controllable
 import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.CtSemiAutoArm
 import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.DoNotBreakThisArm
 import org.firstinspires.ftc.teamcode.util.GamepadManager
-import org.firstinspires.ftc.teamcode.util.bases.BaseArm
 import org.firstinspires.ftc.teamcode.util.clamp
 import kotlin.math.PI
 import kotlin.math.asin
@@ -20,9 +19,8 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-fun Servo.release() {
-
-}
+fun Servo.open() { position = 1.0 }
+fun Servo.close() { position = 0.0 }
 
 // Arm subassembly control
 class Arm(private val opMode: OpMode) : Controllable, Subject {
@@ -41,8 +39,6 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
         // Wrist servo configuration
         wrist.scaleRange(0.25, 0.78) // 53% of 300-degree range
         wrist.direction = Servo.Direction.FORWARD
-
-        handleOvercurrentProtection()
     }
 
 
@@ -53,9 +49,9 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
     )
 
     fun getPlacementInfo(pixelRow: Int): PlacementInfo {
-        val beta = asin(((d1 + pixelRow * d2 - l3) * sin(Math.PI / 3) + l2 * cos(Math.PI / 3) - h) / r)
-        val alpha = Math.PI / 2 + Math.PI / 3 - gamma - beta
-        val distToBase = r * cos(beta) + l2 * sin(Math.PI / 3) + cos(Math.PI / 3) * (l3 - d1 - pixelRow * d2)
+        val beta = asin(((D1 + pixelRow * D2 - L3) * sin(Math.PI / 3) + L2 * cos(Math.PI / 3) - H) / R)
+        val alpha = Math.PI / 2 + Math.PI / 3 - GAMMA - beta
+        val distToBase = R * cos(beta) + L2 * sin(Math.PI / 3) + cos(Math.PI / 3) * (L3 - D1 - pixelRow * D2)
         return PlacementInfo(distToBase, alpha, beta)
     }
 
@@ -80,10 +76,10 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
 
     fun relativeWristPosition(target: RelativeDropTarget): Double {
         val theta = when(target) {
-            RelativeDropTarget.easel -> 30
-            RelativeDropTarget.floor -> 45 // 0.25 servo position (or 130?)
+            RelativeDropTarget.easel -> 60
+            RelativeDropTarget.floor -> 120 // 0.25 servo position (or 130?)
         }
-        val armAngle = 360 * armMotor.currentPosition / BaseArm.ARM_ENCODER_RES
+        val armAngle = 360 * armMotor.currentPosition / ARM_ENCODER_RES
         val servoAngle = 90 + theta - CtSemiAutoArm.GAMMA - armAngle // degrees
         return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53 // from degrees to servo range
     }
@@ -100,29 +96,18 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
         armMotor.power = 0.0
         // go again, zeroed so the wrist position calculates correctly
         opMode.telemetry.addLine("Zeroed the Arm Motor")
-        opMode.telemetry.update()
+        opMode.telemetry.log()
         Thread.sleep(10)
 
         armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
-        opMode.telemetry.addData("Touch Sensor", touchSensor.isPressed)
-        opMode.telemetry.addData("Arm Motor", armMotor.currentPosition)
-        opMode.telemetry.addData("Wrist Servo", wrist.position)
-        opMode.telemetry.update()
 
         while(!touchSensor.isPressed) {
             armMotor.power = -0.2
             wrist.position = relativeWristPosition(RelativeDropTarget.floor)
-            opMode.telemetry.addData("Touch Sensor", touchSensor.isPressed)
-            opMode.telemetry.addData("Arm Motor", armMotor.currentPosition)
-            opMode.telemetry.addData("Wrist Servo", wrist.position)
-            opMode.telemetry.update()
             Thread.sleep(10)
         }
         armMotor.power = 0.0
-        opMode.telemetry.addData("Touch Sensor", touchSensor.isPressed)
-        opMode.telemetry.addData("Arm Motor", armMotor.currentPosition)
-        opMode.telemetry.addData("Wrist Servo", wrist.position)
         opMode.telemetry.update()
     }
 
@@ -152,7 +137,15 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
         }
     }
 
-    fun handleOvercurrentProtection() {
+    fun telemetry() {
+        val telemetry = opMode.telemetry
+        telemetry.addData("Touch Sensor", touchSensor.isPressed)
+        telemetry.addData("Arm Motor", armMotor.currentPosition)
+        telemetry.addData("Wrist Servo", wrist.position)
+        telemetry.update()
+    }
+
+    fun startOvercurrentProtection() {
         Thread {
             while(true) {
                 if (armMotor.isOverCurrent) {
@@ -168,14 +161,29 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
         }.start()
     }
 
-    companion object {
-        // Constants
-        val gamma = atan2(16.0, 283.0)
-        val l2 = 67.88
-        val l3 = 59.56
-        val r = 336.0
-        val h = 287.75
-        val d1 = 220.0
-        val d2 = 88.9
+    val overcurrentProtection = Thread {
+        while(true) {
+            if (armMotor.isOverCurrent) {
+                if (armMotor.getCurrent(CurrentUnit.AMPS) > DoNotBreakThisArm.ARM_OVERCURRENT_THRESHOLD * 1.4) {
+                    opMode.requestOpModeStop()
+                } else {
+                    armMotor.targetPosition = 0
+                    armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+                }
+            }
+            Thread.sleep(20)
+        }
+    }
+
+    companion object { // constants
+        const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
+        // math
+        val GAMMA = atan2(16.0, 283.0)
+        const val L2 = 67.88
+        const val L3 = 59.56
+        const val R = 336.0
+        const val H = 287.75
+        const val D1 = 220.0
+        const val D2 = 88.9
     }
 }

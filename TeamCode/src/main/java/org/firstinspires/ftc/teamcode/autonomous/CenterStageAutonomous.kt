@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.subassemblies.Arm
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.Vision
 import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.CtSemiAutoArm
-import org.firstinspires.ftc.teamcode.subassemblies.release
+import org.firstinspires.ftc.teamcode.subassemblies.open
 import org.firstinspires.ftc.teamcode.util.bases.BaseArm
 import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection
@@ -104,7 +104,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         // place the pixel
         telemetryActionLine.setValue("Releasing the left pixel")
         telemetry.update()
-        arm.leftRelease.release()
+        arm.leftRelease.open()
 
         telemetryActionLine.setValue("Raising the arm")
         telemetry.update()
@@ -230,14 +230,14 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
                 telemetryActionLine.setValue("Placing the pixel on the backdrop")
                 telemetry.update()
                 arm.placePixel(placementInfo)
-                arm.rightRelease.release()
+                arm.rightRelease.open()
             } else {
                 RobotLog.i("No AprilTags detected on the backdrop, is the robot drunk?")
                 telemetryActionLine.setValue("Dropping a pixel where we are.")
                 telemetry.update()
                 // drop the pixel where we are, it will likely end up backstage which is 3 points.
                 arm.drop()
-                arm.rightRelease.release()
+                arm.rightRelease.open()
                 arm.raise()
             }
         }
@@ -278,6 +278,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
 
         waitForStart()
 
+        arm.overcurrentProtection.start()
         telemetryActionLine.setValue("detecting a duck")
         telemetry.update()
 

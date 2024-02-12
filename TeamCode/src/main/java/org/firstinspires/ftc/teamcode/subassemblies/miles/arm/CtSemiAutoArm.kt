@@ -44,8 +44,8 @@ class CtSemiAutoArm(opMode: OpMode) : BaseArm(opMode, "Continuous Semi-Auto Arm"
         if (gamepad.b) arm.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
 
         // Wrist alignment
-        if (gamepad.a) theta = 120
-        else if (gamepad.y) theta = 60
+        if (gamepad.a) theta = 120 // floor
+        else if (gamepad.y) theta = 60 // easel
 
         handleAllRobotBits(gamepad)
     }
