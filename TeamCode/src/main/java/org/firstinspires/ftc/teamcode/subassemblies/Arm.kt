@@ -12,6 +12,8 @@ import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.CtSemiAutoArm
 import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.DoNotBreakThisArm
 import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.clamp
+import org.firstinspires.ftc.teamcode.util.degreesToServoPosition
+import org.firstinspires.ftc.teamcode.util.encoderPositionToDegrees
 import kotlin.math.PI
 import kotlin.math.asin
 import kotlin.math.atan2
@@ -37,7 +39,7 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
         armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         // Wrist servo configuration
-        wrist.scaleRange(0.25, 0.78) // 53% of 300-degree range
+        wrist.scaleRange(WRIST_SCALE_RANGE.first, WRIST_SCALE_RANGE.second) // 53% of 300-degree range
         wrist.direction = Servo.Direction.FORWARD
     }
 
@@ -79,9 +81,9 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
             RelativeDropTarget.easel -> 60
             RelativeDropTarget.floor -> 120 // 0.25 servo position (or 130?)
         }
-        val armAngle = 360 * armMotor.currentPosition / ARM_ENCODER_RES
-        val servoAngle = 90 + theta - CtSemiAutoArm.GAMMA - armAngle // degrees
-        return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53 // from degrees to servo range
+        val armAngle = encoderPositionToDegrees(armMotor.currentPosition, ARM_ENCODER_RES) // in degrees
+        val servoAngle = theta - CtSemiAutoArm.GAMMA - armAngle // degrees
+        return degreesToServoPosition(servoAngle, WRIST_SCALE_RANGE) // servo position value
     }
 
     fun drop() {
@@ -175,7 +177,10 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
         }
     }
 
-    companion object { // constants
+    companion object {
+        // config values
+        val WRIST_SCALE_RANGE = Pair(0.25, 0.78)
+        // constants
         const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
         // math
         val GAMMA = atan2(16.0, 283.0)
