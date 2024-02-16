@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.subassemblies.Arm
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
+import org.firstinspires.ftc.teamcode.subassemblies.DroneLauncher
 import org.firstinspires.ftc.teamcode.subassemblies.PixelReleases
 import org.firstinspires.ftc.teamcode.subassemblies.Winch
 
@@ -14,8 +15,9 @@ class SemiAutoTeleOp: LinearOpMode() {
     val arm = Arm(this)
     val pixelReleases = PixelReleases(this)
     val winch = Winch(this)
+    val droneLauncher = DroneLauncher(this)
 
-    val subassemblyList = listOf(driveBase, arm, pixelReleases, winch)
+    val subassemblyList = listOf(driveBase, arm, pixelReleases, winch, droneLauncher)
 
     override fun runOpMode() {
         // init, no movement allowed
@@ -31,7 +33,8 @@ class SemiAutoTeleOp: LinearOpMode() {
                 driveBase.control(gamepad1)
                 //arm.control(gamepad2)
                 pixelReleases.control(gamepad2)
-                winch.control(gamepad2)
+                winch.control(gamepad2.right_stick_y)
+                droneLauncher.control(gamepad2.x)
 
                 runAllTelemetries()
             }

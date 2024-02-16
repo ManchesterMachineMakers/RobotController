@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.subassemblies
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
-import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.curveJoystickVal
 
@@ -19,5 +18,5 @@ class Winch(opMode: OpMode): Subassembly(opMode, "Winch") {
         telemetry.addData(">", "Winch Subassembly Ready")
     }
 
-    fun control(gamepad: Gamepad) { winchMotor.power = curveJoystickVal(gamepad.right_stick_y) }
+    fun control(joystick: Float) { winchMotor.power = curveJoystickVal(joystick) }
 }

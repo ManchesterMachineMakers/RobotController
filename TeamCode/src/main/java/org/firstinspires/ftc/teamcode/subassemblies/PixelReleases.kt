@@ -8,18 +8,15 @@ import org.firstinspires.ftc.teamcode.util.Subassembly
 
 class PixelReleases(opMode: OpMode): Subassembly(opMode, "Pixel Droppers") {
 
-    val leftReleaseServo = opMode.hardwareMap.servo.get("left_release")
-    val rightReleaseServo = opMode.hardwareMap.servo.get("right_release")
-
-    val leftRelease = ReleaseServo(leftReleaseServo)
-    val rightRelease = ReleaseServo(rightReleaseServo)
+    val leftRelease = ReleaseServo(hardwareMap.servo.get("left_release"))
+    val rightRelease = ReleaseServo(hardwareMap.servo.get("right_release"))
 
     init {
-        leftReleaseServo.scaleRange(0.15, 0.40) // 22.5% of 300-degree range
-        leftReleaseServo.direction = Servo.Direction.FORWARD
+        leftRelease.scaleRange = Pair(0.15, 0.40) // 22.5% of 300-degree range
+        leftRelease.direction = Servo.Direction.FORWARD
 
-        rightReleaseServo.scaleRange(0.6, 1.0) // 22.5% of 300-degree range
-        rightReleaseServo.direction = Servo.Direction.REVERSE
+        rightRelease.scaleRange = Pair(0.6, 1.0) // 22.5% of 300-degree range
+        rightRelease.direction = Servo.Direction.REVERSE
 
         telemetry.addData(">", "Pixel Droppers Subassembly Ready")
     }
