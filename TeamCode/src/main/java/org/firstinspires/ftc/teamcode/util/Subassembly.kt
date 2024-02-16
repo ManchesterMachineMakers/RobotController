@@ -19,7 +19,4 @@ abstract class Subassembly(protected val opMode: OpMode, protected val name: Str
         telemetry.addData("runtime (s)", "%.1f", opMode.runtime)
         telemetry.addData("loop time (ms)", "%.1f", loopTime.milliseconds())
     }
-
-    /** Make sure this starts with "loopTime.reset()" */
-    abstract fun loop(gamepad: Gamepad)
 }

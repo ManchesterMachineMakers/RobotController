@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.contracts.Controllable
 import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.CtSemiAutoArm
 import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.DoNotBreakThisArm
 import org.firstinspires.ftc.teamcode.util.GamepadManager
+import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.clamp
 import org.firstinspires.ftc.teamcode.util.degreesToServoPosition
 import org.firstinspires.ftc.teamcode.util.encoderPositionToDegrees
@@ -25,8 +26,7 @@ fun Servo.open() { position = 1.0 }
 fun Servo.close() { position = 0.0 }
 
 // Arm subassembly control
-class Arm(private val opMode: OpMode) : Controllable, Subject {
-    private val hardwareMap = opMode.hardwareMap
+class Arm(opMode: OpMode) : Controllable, Subject, Subassembly(opMode, "Arm") {
     val armMotor = hardwareMap.dcMotor.get("arm") as DcMotorEx
     val wrist = hardwareMap.servo.get("wrist")
     val rightRelease = hardwareMap.servo.get("right_release")
@@ -139,8 +139,8 @@ class Arm(private val opMode: OpMode) : Controllable, Subject {
         }
     }
 
-    fun telemetry() {
-        val telemetry = opMode.telemetry
+    override fun telemetry() {
+        super.telemetry()
         telemetry.addData("Touch Sensor", touchSensor.isPressed)
         telemetry.addData("Arm Motor", armMotor.currentPosition)
         telemetry.addData("Wrist Servo", wrist.position)

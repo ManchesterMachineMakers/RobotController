@@ -13,7 +13,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.config
-import org.firstinspires.ftc.teamcode.util.equalsTolerance
 
 class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
 
@@ -36,7 +35,7 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         rightRear.config(DcMotorSimple.Direction.REVERSE)
     }
 
-    override fun loop(gamepad: Gamepad) {
+    fun control(gamepad: Gamepad) {
         loopTime.reset()
 
         val r = hypot(gamepad.left_stick_x.toDouble(), -gamepad.left_stick_y.toDouble())
@@ -104,7 +103,7 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     val motors = listOf(leftFront, rightFront, leftRear, rightRear)
-    fun List<DcMotor>.setMode(mode: DcMotor.RunMode) {
+    fun List<DcMotor>.setMode(mode: RunMode) {
         map { it.mode = mode }
     }
 
