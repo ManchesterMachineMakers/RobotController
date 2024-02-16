@@ -7,10 +7,8 @@ import com.qualcomm.robotcore.hardware.Servo
 import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerRevolution
-import org.firstinspires.ftc.teamcode.contracts.Controllable
 import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.CtSemiAutoArm
 import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.DoNotBreakThisArm
-import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.clamp
 import org.firstinspires.ftc.teamcode.util.degreesToServoPosition
@@ -26,7 +24,7 @@ fun Servo.open() { position = 1.0 }
 fun Servo.close() { position = 0.0 }
 
 // Arm subassembly control
-class Arm(opMode: OpMode) : Controllable, Subject, Subassembly(opMode, "Arm") {
+class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     val armMotor = hardwareMap.dcMotor.get("arm") as DcMotorEx
     val wrist = hardwareMap.servo.get("wrist")
     val rightRelease = hardwareMap.servo.get("right_release")
@@ -73,13 +71,13 @@ class Arm(opMode: OpMode) : Controllable, Subject, Subassembly(opMode, "Arm") {
     data class DropCorrection(val armPosition: Int, val wristPosition: Double)
 
     enum class RelativeDropTarget {
-        easel, floor
+        EASEL, FLOOR
     }
 
     fun relativeWristPosition(target: RelativeDropTarget): Double {
         val theta = when(target) {
-            RelativeDropTarget.easel -> 60
-            RelativeDropTarget.floor -> 120 // 0.25 servo position (or 130?)
+            RelativeDropTarget.EASEL -> 60
+            RelativeDropTarget.FLOOR -> 120 // 0.25 servo position (or 130?)
         }
         val armAngle = encoderPositionToDegrees(armMotor.currentPosition, ARM_ENCODER_RES) // in degrees
         val servoAngle = theta - CtSemiAutoArm.GAMMA - armAngle // degrees
@@ -89,16 +87,16 @@ class Arm(opMode: OpMode) : Controllable, Subject, Subassembly(opMode, "Arm") {
     fun drop() {
         while(!touchSensor.isPressed && armMotor.isBusy) {
             armMotor.power = -0.2
-            opMode.telemetry.addData("Touch Sensor", touchSensor.isPressed)
-            opMode.telemetry.addData("Arm Motor", armMotor.currentPosition)
-            opMode.telemetry.addData("Wrist Servo", wrist.position)
-            opMode.telemetry.update()
+            telemetry.addData("Touch Sensor", touchSensor.isPressed)
+            telemetry.addData("Arm Motor", armMotor.currentPosition)
+            telemetry.addData("Wrist Servo", wrist.position)
+            telemetry.update()
         }
         armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         armMotor.power = 0.0
         // go again, zeroed so the wrist position calculates correctly
-        opMode.telemetry.addLine("Zeroed the Arm Motor")
-        opMode.telemetry.log()
+        telemetry.addLine("Zeroed the Arm Motor")
+        telemetry.log()
         Thread.sleep(10)
 
         armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
@@ -106,37 +104,17 @@ class Arm(opMode: OpMode) : Controllable, Subject, Subassembly(opMode, "Arm") {
 
         while(!touchSensor.isPressed) {
             armMotor.power = -0.2
-            wrist.position = relativeWristPosition(RelativeDropTarget.floor)
+            wrist.position = relativeWristPosition(RelativeDropTarget.FLOOR)
             Thread.sleep(10)
         }
         armMotor.power = 0.0
-        opMode.telemetry.update()
+        telemetry.update()
     }
 
     fun raise() {
         armMotor.targetPosition = 200
         armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
         armMotor.power = 0.2
-    }
-
-    override fun controller(gamepad: GamepadManager) {
-        armMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        armMotor.power = gamepad.gamepad.left_stick_y * 0.25
-        //parallel.power = gamepad.gamepad.right_stick_y * 0.25
-        if (gamepad.gamepad.left_bumper) {
-            //leftDropper.power = -0.25
-        } else if (gamepad.gamepad.left_trigger > 0.05) {
-            //leftDropper.power = 0.25
-        } else {
-            //leftDropper.power = 0.0
-        }
-        if (gamepad.gamepad.right_bumper) {
-            //rightDropper.power = 0.25
-        } else if (gamepad.gamepad.right_trigger > 0.05) {
-            //rightDropper.power = -0.25
-        } else {
-            //rightDropper.power = 0.0
-        }
     }
 
     override fun telemetry() {
@@ -161,6 +139,7 @@ class Arm(opMode: OpMode) : Controllable, Subject, Subassembly(opMode, "Arm") {
                 Thread.sleep(20)
             }
         }.start()
+        overcurrentProtection.start()
     }
 
     val overcurrentProtection = Thread {

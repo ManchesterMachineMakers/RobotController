@@ -12,7 +12,8 @@ import kotlin.math.*
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.Subassembly
-import org.firstinspires.ftc.teamcode.util.config
+import org.firstinspires.ftc.teamcode.util.configDriveMotor
+import org.firstinspires.ftc.teamcode.util.powerCurve
 
 class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
 
@@ -29,10 +30,10 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     init {
-        leftFront.config(DcMotorSimple.Direction.REVERSE)
-        rightFront.config(DcMotorSimple.Direction.FORWARD)
-        leftRear.config(DcMotorSimple.Direction.FORWARD)
-        rightRear.config(DcMotorSimple.Direction.REVERSE)
+        leftFront.configDriveMotor(DcMotorSimple.Direction.REVERSE)
+        rightFront.configDriveMotor(DcMotorSimple.Direction.FORWARD)
+        leftRear.configDriveMotor(DcMotorSimple.Direction.FORWARD)
+        rightRear.configDriveMotor(DcMotorSimple.Direction.REVERSE)
     }
 
     fun control(gamepad: Gamepad) {
@@ -48,10 +49,10 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         val v3 = r * cos(robotAngle) + rightX
         val v4 = r * sin(robotAngle) - rightX
 
-        leftFront.power = curveDouble(v1) * FRONT_POWER
-        rightFront.power = curveDouble(v2) * FRONT_POWER
-        leftRear.power = curveDouble(v3) * REAR_POWER
-        rightRear.power = curveDouble(v4) * REAR_POWER
+        leftFront.power = powerCurve(v1) * FRONT_POWER
+        rightFront.power = powerCurve(v2) * FRONT_POWER
+        leftRear.power = powerCurve(v3) * REAR_POWER
+        rightRear.power = powerCurve(v4) * REAR_POWER
     }
 
     override fun telemetry() {
@@ -194,7 +195,7 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     fun yaw(degrees: Double, power: Double) {
-        val telemetryYaw = opMode.telemetry.addData("Yaw", imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES))
+        val telemetryYaw = telemetry.addData("Yaw", imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES))
         setMode(RunMode.RUN_WITHOUT_ENCODER)
         imu.imu.resetYaw()
 
@@ -208,15 +209,15 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         PID.runPID(0.0, degrees, 5.0, 1.0, 0.9, 0.9) { pid, initial, current, target, error ->
             setPower(corrections.map { it * pid.calculateCorrection() }.toTypedArray())
             Thread.sleep(10)
-            opMode.telemetry.update()
+            telemetry.update()
             imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
         }
 
         setPower(0.0, 0.0, 0.0, 0.0)
-        opMode.telemetry.update()
+        telemetry.update()
     }
 
-    enum class TravelDirection {
+    enum class TravelDirection { // @Aleks TODO: see this link on enum naming convention: https://kotlinlang.org/docs/coding-conventions.html#names-for-backing-properties
         base,
         forward,
         reverse,
@@ -256,9 +257,5 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
             RobotLog.i(e.message)
             false
         }
-    }
-
-    private fun curveDouble(num: Double): Double {
-        return if (num > 0) num.pow(2) else -num.pow(2)
     }
 }
