@@ -33,6 +33,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
     init {
         armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER // Resets the encoder (distance tracking)
+        Thread.sleep(10)
         armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
@@ -47,6 +48,12 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
             val alpha: Double,
             val beta: Double
     )
+
+    data class DropCorrection(val armPosition: Int, val wristPosition: Double)
+
+    enum class RelativeWristAlignment {
+        EASEL, FLOOR
+    }
 
     fun getPlacementInfo(pixelRow: Int): PlacementInfo {
         val beta = asin(((D1 + pixelRow * D2 - L3) * sin(Math.PI / 3) + L2 * cos(Math.PI / 3) - H) / R)
@@ -68,18 +75,12 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         wrist.position = servoDegrees
     }
 
-    data class DropCorrection(val armPosition: Int, val wristPosition: Double)
-
-    enum class RelativeDropTarget {
-        EASEL, FLOOR
-    }
-
-    fun relativeWristPosition(target: RelativeDropTarget): Double {
+    fun relativeWristPosition(armPosition: Int, target: RelativeWristAlignment): Double {
         val theta = when(target) {
-            RelativeDropTarget.EASEL -> 60
-            RelativeDropTarget.FLOOR -> 120 // 0.25 servo position (or 130?)
+            RelativeWristAlignment.EASEL -> 60
+            RelativeWristAlignment.FLOOR -> 120
         }
-        val armAngle = encoderPositionToDegrees(armMotor.currentPosition, ARM_ENCODER_RES) // in degrees
+        val armAngle = encoderPositionToDegrees(armPosition, ARM_ENCODER_RES) // in degrees
         val servoAngle = theta - CtSemiAutoArm.GAMMA - armAngle // degrees
         return degreesToServoPosition(servoAngle, WRIST_SCALE_RANGE) // servo position value
     }
@@ -104,18 +105,15 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
         while(!touchSensor.isPressed) {
             armMotor.power = -0.2
-            wrist.position = relativeWristPosition(RelativeDropTarget.FLOOR)
+            wrist.position = relativeWristPosition(armMotor.currentPosition, RelativeWristAlignment.FLOOR)
             Thread.sleep(10)
         }
         armMotor.power = 0.0
         telemetry.update()
     }
 
-    fun raise() {
-        armMotor.targetPosition = 200
-        armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-        armMotor.power = 0.2
-    }
+    fun raise() = armMotor.moveTo(200)
+
 
     override fun telemetry() {
         super.telemetry()
@@ -125,35 +123,10 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         telemetry.update()
     }
 
-    fun startOvercurrentProtection() {
-        Thread {
-            while(true) {
-                if (armMotor.isOverCurrent) {
-                    if (armMotor.getCurrent(CurrentUnit.AMPS) > DoNotBreakThisArm.ARM_OVERCURRENT_THRESHOLD * 1.4) {
-                        opMode.requestOpModeStop()
-                    } else {
-                        armMotor.targetPosition = 0
-                        armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-                    }
-                }
-                Thread.sleep(20)
-            }
-        }.start()
-        overcurrentProtection.start()
-    }
-
-    val overcurrentProtection = Thread {
-        while(true) {
-            if (armMotor.isOverCurrent) {
-                if (armMotor.getCurrent(CurrentUnit.AMPS) > DoNotBreakThisArm.ARM_OVERCURRENT_THRESHOLD * 1.4) {
-                    opMode.requestOpModeStop()
-                } else {
-                    armMotor.targetPosition = 0
-                    armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-                }
-            }
-            Thread.sleep(20)
-        }
+    fun DcMotor.moveTo(encoderPosition: Int) {
+        targetPosition = encoderPosition
+        mode = DcMotor.RunMode.RUN_TO_POSITION
+        power = 0.2
     }
 
     companion object {

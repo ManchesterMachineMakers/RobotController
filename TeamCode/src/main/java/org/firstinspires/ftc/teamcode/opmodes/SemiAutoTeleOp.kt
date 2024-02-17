@@ -17,6 +17,9 @@ class SemiAutoTeleOp: LinearOpMode() {
 
     init { telemetry.isAutoClear = false } // ensure subassembly ready messages aren't cleared
 
+    // control
+    var relativeWristAlignment = Arm.RelativeWristAlignment.EASEL
+
     // subassemblies
     val driveBase = DriveBase(this)
     val arm = Arm(this)
@@ -56,6 +59,7 @@ class SemiAutoTeleOp: LinearOpMode() {
                 pixelReleaseControl(gamepad2)
                 winchControl(gamepad2.right_stick_y)
                 droneLauncherControl(gamepad2.x)
+                armControl(gamepad2)
 
                 runAllTelemetries()
                 telemetry.update()
@@ -84,5 +88,24 @@ class SemiAutoTeleOp: LinearOpMode() {
 
         if (gamepad.right_bumper) pixelReleases.right.open()
         else if (gamepad.right_trigger > 0.05) pixelReleases.right.close()
+    }
+
+    fun armControl(gamepad: Gamepad) {
+        val armMotor = arm.armMotor
+
+        if (!armMotor.isOverCurrent) // lock out controls if overcurrent
+            armMotor.power = powerCurve(gamepad.left_stick_y.toDouble())
+
+        armMotor.mode = // arm calibration
+            if (gamepad.b) DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            else DcMotor.RunMode.RUN_USING_ENCODER
+
+        relativeWristAlignment = when {
+            gamepad.y -> Arm.RelativeWristAlignment.EASEL
+            gamepad.a -> Arm.RelativeWristAlignment.FLOOR
+            else -> relativeWristAlignment
+        }
+
+        arm.wrist.position = arm.relativeWristPosition(armMotor.currentPosition, relativeWristAlignment)
     }
 }
