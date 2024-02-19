@@ -5,31 +5,25 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.Servo
 import com.rutins.aleks.diagonal.Subject
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerRevolution
 import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.CtSemiAutoArm
-import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.DoNotBreakThisArm
+import org.firstinspires.ftc.teamcode.util.OvercurrentProtection
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.clamp
 import org.firstinspires.ftc.teamcode.util.degreesToServoPosition
 import org.firstinspires.ftc.teamcode.util.encoderPositionToDegrees
-import kotlin.math.PI
-import kotlin.math.asin
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.roundToInt
-import kotlin.math.sin
-
-fun Servo.open() { position = 1.0 }
-fun Servo.close() { position = 0.0 }
+import kotlin.math.*
 
 // Arm subassembly control
 class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     val armMotor = hardwareMap.dcMotor.get("arm") as DcMotorEx
     val wrist = hardwareMap.servo.get("wrist")
-    val rightRelease = hardwareMap.servo.get("right_release")
-    val leftRelease = hardwareMap.servo.get("left_release")
     val touchSensor = hardwareMap.touchSensor.get("intake")
+
+    @Deprecated("This is now deprecated, use the Subassembly `PixelReleases.kt`")
+    val rightRelease = hardwareMap.servo.get("right_release")
+    @Deprecated("This is now deprecated, use the Subassembly `PixelReleases.kt`")
+    val leftRelease = hardwareMap.servo.get("left_release")
 
     init {
         armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER // Resets the encoder (distance tracking)
@@ -51,7 +45,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
     data class DropCorrection(val armPosition: Int, val wristPosition: Double)
 
-    enum class RelativeWristAlignment {
+    enum class WristAlignment {
         EASEL, FLOOR
     }
 
@@ -75,10 +69,10 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         wrist.position = servoDegrees
     }
 
-    fun relativeWristPosition(armPosition: Int, target: RelativeWristAlignment): Double {
+    fun relativeWristPosition(armPosition: Int, target: WristAlignment): Double {
         val theta = when(target) {
-            RelativeWristAlignment.EASEL -> 60
-            RelativeWristAlignment.FLOOR -> 120
+            WristAlignment.EASEL -> 60
+            WristAlignment.FLOOR -> 120
         }
         val armAngle = encoderPositionToDegrees(armPosition, ARM_ENCODER_RES) // in degrees
         val servoAngle = theta - CtSemiAutoArm.GAMMA - armAngle // degrees
@@ -105,7 +99,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
         while(!touchSensor.isPressed) {
             armMotor.power = -0.2
-            wrist.position = relativeWristPosition(armMotor.currentPosition, RelativeWristAlignment.FLOOR)
+            wrist.position = relativeWristPosition(armMotor.currentPosition, WristAlignment.FLOOR)
             Thread.sleep(10)
         }
         armMotor.power = 0.0
@@ -114,13 +108,16 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
     fun raise() = armMotor.moveTo(200)
 
+    val overcurrentProtection = OvercurrentProtection(armMotor, 5.0, {
+        armMotor.targetPosition = 0
+        armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+    }, { armMotor.setMotorDisable() })
 
     override fun telemetry() {
         super.telemetry()
         telemetry.addData("Touch Sensor", touchSensor.isPressed)
         telemetry.addData("Arm Motor", armMotor.currentPosition)
         telemetry.addData("Wrist Servo", wrist.position)
-        telemetry.update()
     }
 
     fun DcMotor.moveTo(encoderPosition: Int) {

@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.DroneLauncher
 import org.firstinspires.ftc.teamcode.subassemblies.PixelReleases
 import org.firstinspires.ftc.teamcode.subassemblies.Winch
-import org.firstinspires.ftc.teamcode.util.OvercurrentProtection
 import org.firstinspires.ftc.teamcode.util.powerCurve
 
 @TeleOp(name = "Semi-Automatic TeleOp", group = "arm")
@@ -18,7 +17,7 @@ class SemiAutoTeleOp: LinearOpMode() {
     init { telemetry.isAutoClear = false } // ensure subassembly ready messages aren't cleared
 
     // control
-    var relativeWristAlignment = Arm.RelativeWristAlignment.EASEL
+    var relativeWristAlignment = Arm.WristAlignment.EASEL
 
     // subassemblies
     val driveBase = DriveBase(this)
@@ -28,18 +27,19 @@ class SemiAutoTeleOp: LinearOpMode() {
     val droneLauncher = DroneLauncher(this)
 
     val subassemblyList = listOf(driveBase, arm, pixelReleases, winch, droneLauncher)
+    var subassemblyStatuses = "unknown"
+        set(value) {
+            for (subassembly in subassemblyList) subassembly.status = value
+            field = value
+        }
 
-    val overcurrentProtection = OvercurrentProtection(arm.armMotor, 5.0, {
-        arm.armMotor.targetPosition = 0
-        arm.armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-    }, {
-        requestOpModeStop()
-    })
+
 
     // control variables
     val register = mutableSetOf<String>()
     override fun runOpMode() {
         // init, no movement allowed
+        subassemblyStatuses = "init"
 
         runAllTelemetries()
         telemetry.update()
@@ -48,13 +48,13 @@ class SemiAutoTeleOp: LinearOpMode() {
 
         if (opModeIsActive()) {
             // start
-            overcurrentProtection.start()
+            subassemblyStatuses = "start"
+            arm.overcurrentProtection.start()
             telemetry.isAutoClear = true
             while (opModeIsActive()) {
+                subassemblyStatuses = "loop"
 
-                // TODO: ARM CODE HERE
-
-                // Subassembly control (except arm)
+                // Subassembly control
                 driveBase.control(gamepad1)
                 pixelReleaseControl(gamepad2)
                 winchControl(gamepad2.right_stick_y)
@@ -100,11 +100,8 @@ class SemiAutoTeleOp: LinearOpMode() {
             if (gamepad.b) DcMotor.RunMode.STOP_AND_RESET_ENCODER
             else DcMotor.RunMode.RUN_USING_ENCODER
 
-        relativeWristAlignment = when {
-            gamepad.y -> Arm.RelativeWristAlignment.EASEL
-            gamepad.a -> Arm.RelativeWristAlignment.FLOOR
-            else -> relativeWristAlignment
-        }
+        if (gamepad.a) relativeWristAlignment = Arm.WristAlignment.FLOOR
+        if (gamepad.y) relativeWristAlignment = Arm.WristAlignment.EASEL
 
         arm.wrist.position = arm.relativeWristPosition(armMotor.currentPosition, relativeWristAlignment)
     }

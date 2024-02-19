@@ -22,7 +22,10 @@ class OvercurrentProtection(val motor: DcMotorEx, val activationThreshold: Doubl
             when (fallbackStage) {
                 2 -> fallback2() // severe
                 1 -> fallback1() // mild
-                0 -> timer.reset() // none
+                0 -> { // none
+                    timer.reset()
+                    if (!motor.isMotorEnabled) motor.setMotorEnable()
+                }
             }
         }
     }

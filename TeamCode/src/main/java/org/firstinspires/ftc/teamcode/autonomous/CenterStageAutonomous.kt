@@ -3,31 +3,30 @@ package org.firstinspires.ftc.teamcode.autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.Range
 import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition
-import org.firstinspires.ftc.teamcode.autonomous.pathfinder.Segment
 import org.firstinspires.ftc.teamcode.autonomous.pathfinder.Segment.*
 import org.firstinspires.ftc.teamcode.autonomous.pathfinder.div
 import org.firstinspires.ftc.teamcode.autonomous.pathfinder.rangeTo
 import org.firstinspires.ftc.teamcode.subassemblies.Arm
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
+import org.firstinspires.ftc.teamcode.subassemblies.PixelReleases
 import org.firstinspires.ftc.teamcode.subassemblies.Vision
-import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.CtSemiAutoArm
-import org.firstinspires.ftc.teamcode.subassemblies.open
-import org.firstinspires.ftc.teamcode.util.bases.BaseArm
 import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection
 
 @Autonomous
-open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val startPosition: StartPosition = StartPosition.backstage) : LinearOpMode() {
+open class CenterStageAutonomous(val alliance: Alliance = Alliance.BLUE, val startPosition: StartPosition = StartPosition.BACKSTAGE) : LinearOpMode() {
+
+    val arm = Arm(this)
+    val pixelReleases = PixelReleases(this)
 
     // Turn the other way if we're on the red alliance!
-    public var allianceDirectionCoefficient = if (alliance == Alliance.blue) 1.0 else -1.0
-    public var  allianceDirectionDegrees = if (alliance == Alliance.blue) 0.0 else -180.0
+    public var allianceDirectionCoefficient = if (alliance == Alliance.BLUE) 1.0 else -1.0
+    public var  allianceDirectionDegrees = if (alliance == Alliance.BLUE) 0.0 else -180.0
     // our backdrop april tag value will be 1-3 or 4-6 depending on alliance.
-    public var allianceAprilTagIndexBoost = if (alliance == Alliance.blue) 1 else 3
+    public var allianceAprilTagIndexBoost = if (alliance == Alliance.BLUE) 1 else 3
     private var correctTag: AprilTagDetection? = null
 
     private var telemetrySetupLine = telemetry.addData("Setup", "Alliance: $alliance, Position: $startPosition")
@@ -37,15 +36,15 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
     private var telemetryTagTries = telemetry.addData("April Tag Detection Tries", "Not Yet Detected")
     private var telemetryTagValue = telemetry.addData("April Tag Value", correctTag?.id?:"Not Yet Detected")
     enum class Alliance {
-        blue, red
+        BLUE, RED
     }
 
     enum class StartPosition {
-        backstage, front
+        BACKSTAGE, FRONT
     }
 
     private enum class DuckPosition {
-        left, center, right
+        LEFT, CENTER, RIGHT
     }
 
     /** Detect a [Recognition] with a [label][Recognition.getLabel] of "duck" and a [confidence][Recognition.getConfidence] greater than 75% (takes the most confident one). THIS FUNCTION WILL CONTINUE TO RUN FOREVER IF NOTHING IS DETECTED. */
@@ -65,26 +64,26 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
 
     /** Get the [DuckPosition] of a TFOD [Recognition] returned by [detect]. */
     private fun recognitionPosition(recognition: Recognition?): DuckPosition {
-        if(recognition == null) return DuckPosition.left
+        if(recognition == null) return DuckPosition.LEFT
         val center = (recognition.left + recognition.right) / 2
 
         val half = recognition.imageWidth / 2
 
         // camera view is backwards
         return (
-                if (center < half) DuckPosition.center
-                else DuckPosition.right
+                if (center < half) DuckPosition.CENTER
+                else DuckPosition.RIGHT
                 )
     }
 
     private fun runDetection(vision: Vision) =
         (0f to 1.2f) / Grid ..
                 Run { driveBase, i ->
-                    if(detect(vision) != null) DuckPosition.center
+                    if(detect(vision) != null) DuckPosition.CENTER
                     else ((allianceDirectionDegrees - 45.0)  / Yaw ..
                             Run { _driveBase, input ->
-                                if(detect(vision) != null) DuckPosition.right
-                                else DuckPosition.left
+                                if(detect(vision) != null) DuckPosition.RIGHT
+                                else DuckPosition.LEFT
                             }).run(driveBase, Unit)
                 }
     // TODO: Make it look for the center first, then turn to the right, then give up.
@@ -104,7 +103,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         // place the pixel
         telemetryActionLine.setValue("Releasing the left pixel")
         telemetry.update()
-        arm.leftRelease.open()
+        pixelReleases.left.open()
 
         telemetryActionLine.setValue("Raising the arm")
         telemetry.update()
@@ -156,8 +155,8 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         // log("running to backdrop")
         // run to backdrop
         (0f to when(startPosition) {
-            StartPosition.backstage -> 1.5f
-            StartPosition.front -> 4.5f
+            StartPosition.BACKSTAGE -> 1.5f
+            StartPosition.FRONT -> 4.5f
         }) / Grid ..
 
         // now that we're at the backdrop, align to the correct apriltag
@@ -178,9 +177,9 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
                         if (aprilTags.size == 3) {
                             telemetryTagTries.setValue("found three AprilTags, assume these are good, try $tries")
                             correctTag = when (duckPosition) {
-                                DuckPosition.left -> aprilTags[0]
-                                DuckPosition.center -> aprilTags[1]
-                                DuckPosition.right -> aprilTags[2]
+                                DuckPosition.LEFT -> aprilTags[0]
+                                DuckPosition.CENTER -> aprilTags[1]
+                                DuckPosition.RIGHT -> aprilTags[2]
                             }
                             tagValue = correctTag?.id ?: 0
                             telemetryTagValue.setValue(tagValue)
@@ -189,9 +188,9 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
                             // we found some other number of tags, filter to see if we have what we need
                             log("filtering AprilTags to look for the correct one")
                             var aprilTagWeAreLookingFor = when (duckPosition) {
-                                DuckPosition.left -> 1
-                                DuckPosition.center -> 2
-                                DuckPosition.right -> 3
+                                DuckPosition.LEFT -> 1
+                                DuckPosition.CENTER -> 2
+                                DuckPosition.RIGHT -> 3
                             } + allianceAprilTagIndexBoost
                             var correctTags = aprilTags.filter { it.id == aprilTagWeAreLookingFor }
                             if (correctTags.size > 0) {
@@ -230,14 +229,14 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
                 telemetryActionLine.setValue("Placing the pixel on the backdrop")
                 telemetry.update()
                 arm.placePixel(placementInfo)
-                arm.rightRelease.open()
+                pixelReleases.right.open()
             } else {
                 RobotLog.i("No AprilTags detected on the backdrop, is the robot drunk?")
                 telemetryActionLine.setValue("Dropping a pixel where we are.")
                 telemetry.update()
                 // drop the pixel where we are, it will likely end up backstage which is 3 points.
                 arm.drop()
-                arm.rightRelease.open()
+                pixelReleases.right.open()
                 arm.raise()
             }
         }
@@ -249,9 +248,9 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
     private fun park(duckPosition: DuckPosition) =
         (90.0 * allianceDirectionCoefficient)/ Yaw ..
         (0f to when(duckPosition) {
-            DuckPosition.left -> 0.75f
-            DuckPosition.center -> 1f
-            DuckPosition.right -> 1.25f
+            DuckPosition.LEFT -> 0.75f
+            DuckPosition.CENTER -> 1f
+            DuckPosition.RIGHT -> 1.25f
         }) / Grid ..
         (-90.0 * allianceDirectionCoefficient) / Yaw ..
         (0f to 0.5f) / Grid
@@ -263,8 +262,8 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
                 (0f to 0.2f) / Grid ..
                         (90.0 * allianceDirectionCoefficient ) / Yaw ..
                 (0f to when(startPosition) {
-                    StartPosition.backstage -> 2f
-                    StartPosition.front -> 5f
+                    StartPosition.BACKSTAGE -> 2f
+                    StartPosition.FRONT -> 5f
                 }) / Grid
         ).run(driveBase, Unit)
     }
@@ -291,9 +290,9 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         // Orient to place the purple pixel on the spike mark
         (
             when(duckPosition) {
-                DuckPosition.left -> 155.0
-                DuckPosition.center -> 0.0
-                DuckPosition.right -> 0.0
+                DuckPosition.LEFT -> 155.0
+                DuckPosition.CENTER -> 0.0
+                DuckPosition.RIGHT -> 0.0
             } / Yaw
         ).run(driveBase, Unit)
 
@@ -318,9 +317,9 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.blue, val sta
         // Orient toward the backdrop
         (
             ((allianceDirectionCoefficient) * (when(duckPosition) {
-                DuckPosition.left -> 0.0
-                DuckPosition.center -> 45.0
-                DuckPosition.right -> 135.0
+                DuckPosition.LEFT -> 0.0
+                DuckPosition.CENTER -> 45.0
+                DuckPosition.RIGHT -> 135.0
             })) / Yaw
         ).run(driveBase, Unit)
         telemetryActionLine.setValue("oriented toward the backdrop, now driving to it")
