@@ -116,7 +116,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     override fun telemetry() {
         super.telemetry()
         telemetry.addData("Touch Sensor", touchSensor.isPressed)
-        telemetry.addData("Arm Motor", armMotor.currentPosition)
+        telemetry.addData("Arm Motor","target %.2f, actual %.2f", armMotor.targetPosition, armMotor.currentPosition)
         telemetry.addData("Wrist Servo", wrist.position)
     }
 

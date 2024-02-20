@@ -24,7 +24,7 @@ class CtSemiAutoArm(opMode: OpMode) : BaseArm(opMode, "Continuous Semi-Auto Arm"
     /**
      * Main loop for controlling the semi-auto arm.
      */
-    override fun loop(gamepad: Gamepad) {
+    fun loop(gamepad: Gamepad) {
         loopTime.reset()
 
         // Arm movement

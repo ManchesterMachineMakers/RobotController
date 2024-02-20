@@ -16,7 +16,5 @@ abstract class Subassembly(protected val opMode: OpMode, protected val name: Str
     open fun telemetry() {
         telemetry.addLine(name)
         telemetry.addData("status", status)
-        telemetry.addData("runtime (s)", "%.1f", opMode.runtime)
-        telemetry.addData("loop time (ms)", "%.1f", loopTime.milliseconds())
     }
 }

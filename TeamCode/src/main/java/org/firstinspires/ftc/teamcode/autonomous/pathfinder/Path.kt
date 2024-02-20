@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.autonomous.pathfinder
 
-import android.util.Log
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
@@ -35,23 +34,23 @@ interface Segment<I, R> {
                 setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
                 val coefficients = mecanumCoefficientsForDirection(with(segment) {
                     if(x < 0 && y < 0) {
-                        TravelDirection.strafeLeftBackward
+                        TravelDirection.STRAFE_LEFT_BACKWARD
                     } else if(x < 0 && y > 0) {
-                        TravelDirection.strafeLeftForward
+                        TravelDirection.STRAFE_LEFT_FORWARD
                     } else if(x > 0 && y < 0) {
-                        TravelDirection.strafeRightBackward
+                        TravelDirection.STRAFE_RIGHT_BACKWARD
                     } else if(x > 0 && y > 0) {
-                        TravelDirection.strafeRightForward
+                        TravelDirection.STRAFE_RIGHT_FORWARD
                     } else if(x > 0) {
-                        TravelDirection.strafeRight
+                        TravelDirection.STRAFE_RIGHT
                     } else if(x < 0) {
-                        TravelDirection.strafeLeft
+                        TravelDirection.STRAFE_LEFT
                     } else if(y > 0) {
-                        TravelDirection.forward
+                        TravelDirection.FORWARD
                     } else if(y < 0) {
-                        TravelDirection.reverse
+                        TravelDirection.REVERSE
                     } else {
-                        TravelDirection.base
+                        TravelDirection.BASE
                     }
                 })
                 RobotLog.i("Pathfinder/Segment:Grid", "X: $xTicks, Y: $yTicks - total ticks: ${hypot(xTicks, yTicks)}")

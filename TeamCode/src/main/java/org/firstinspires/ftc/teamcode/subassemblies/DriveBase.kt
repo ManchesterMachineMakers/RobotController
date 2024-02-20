@@ -218,33 +218,33 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     enum class TravelDirection { // @Aleks TODO: see this link on enum naming convention: https://kotlinlang.org/docs/coding-conventions.html#names-for-backing-properties
-        base,
-        forward,
-        reverse,
-        pivotLeft,
-        pivotRight,
-        strafeLeft,
-        strafeLeftForward,
-        strafeLeftBackward,
-        strafeRight,
-        strafeRightForward,
-        strafeRightBackward,
-        @Deprecated("Newer drive bases do not support pitching") pitch
+        BASE,
+        FORWARD,
+        REVERSE,
+        PIVOT_LEFT,
+        PIVOT_RIGHT,
+        STRAFE_LEFT,
+        STRAFE_LEFT_FORWARD,
+        STRAFE_LEFT_BACKWARD,
+        STRAFE_RIGHT,
+        STRAFE_RIGHT_FORWARD,
+        STRAFE_RIGHT_BACKWARD,
+        @Deprecated("Newer drive bases do not support pitching") PITCH
     }
 
     fun mecanumCoefficientsForDirection(direction: TravelDirection) =
             when (direction) {
-                TravelDirection.base, TravelDirection.forward -> arrayOf(1, 1, 1, 1)
-                TravelDirection.reverse -> arrayOf(-1, -1, -1, -1)
-                TravelDirection.pivotLeft -> arrayOf(-1, 1, -1, 1)
-                TravelDirection.pivotRight -> arrayOf(1, -1, 1, -1)
-                TravelDirection.strafeLeft -> arrayOf(-1, 1, 1, -1)
-                TravelDirection.strafeLeftForward -> arrayOf(0, 1, 1, 0)
-                TravelDirection.strafeLeftBackward -> arrayOf(-1, 0, 0, -1)
-                TravelDirection.strafeRight -> arrayOf(1, -1, -1, 1)
-                TravelDirection.strafeRightForward -> arrayOf(1, 0, 0, 1)
-                TravelDirection.strafeRightBackward -> arrayOf(0, -1, -1, 0)
-                TravelDirection.pitch -> arrayOf(0, 0, 0, 0)
+                TravelDirection.BASE, TravelDirection.FORWARD -> arrayOf(1, 1, 1, 1)
+                TravelDirection.REVERSE -> arrayOf(-1, -1, -1, -1)
+                TravelDirection.PIVOT_LEFT -> arrayOf(-1, 1, -1, 1)
+                TravelDirection.PIVOT_RIGHT -> arrayOf(1, -1, 1, -1)
+                TravelDirection.STRAFE_LEFT -> arrayOf(-1, 1, 1, -1)
+                TravelDirection.STRAFE_LEFT_FORWARD -> arrayOf(0, 1, 1, 0)
+                TravelDirection.STRAFE_LEFT_BACKWARD -> arrayOf(-1, 0, 0, -1)
+                TravelDirection.STRAFE_RIGHT -> arrayOf(1, -1, -1, 1)
+                TravelDirection.STRAFE_RIGHT_FORWARD -> arrayOf(1, 0, 0, 1)
+                TravelDirection.STRAFE_RIGHT_BACKWARD -> arrayOf(0, -1, -1, 0)
+                TravelDirection.PITCH -> arrayOf(0, 0, 0, 0)
             }
 
     fun setRunMode(runMode: RunMode?): Boolean {
