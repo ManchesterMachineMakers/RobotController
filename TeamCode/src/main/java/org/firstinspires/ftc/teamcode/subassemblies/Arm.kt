@@ -3,15 +3,16 @@ package org.firstinspires.ftc.teamcode.subassemblies
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
+import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.Servo
 import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerRevolution
-import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.CtSemiAutoArm
 import org.firstinspires.ftc.teamcode.util.OvercurrentProtection
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.clamp
 import org.firstinspires.ftc.teamcode.util.degreesToServoPosition
 import org.firstinspires.ftc.teamcode.util.encoderPositionToDegrees
+import org.firstinspires.ftc.teamcode.util.powerCurve
 import kotlin.math.*
 
 // Arm subassembly control
@@ -19,6 +20,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     val armMotor = hardwareMap.dcMotor.get("arm") as DcMotorEx
     val wrist = hardwareMap.servo.get("wrist")
     val touchSensor = hardwareMap.touchSensor.get("intake")
+    var wristAlignment: WristAlignment? = null
 
     @Deprecated("This is now deprecated, use the Subassembly `PixelReleases.kt`")
     val rightRelease = hardwareMap.servo.get("right_release")
@@ -49,6 +51,22 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         EASEL, FLOOR
     }
 
+    fun control(gamepad: Gamepad) {
+        val armMotor = armMotor
+
+        if (!armMotor.isOverCurrent) // lock out controls if overcurrent
+            armMotor.power = powerCurve(gamepad.left_stick_y.toDouble())
+
+        armMotor.mode = // arm calibration
+            if (gamepad.b) DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            else DcMotor.RunMode.RUN_USING_ENCODER
+
+        if (gamepad.a) wristAlignment = WristAlignment.FLOOR
+        if (gamepad.y) wristAlignment = WristAlignment.EASEL
+
+        if (wristAlignment != null) wrist.position = relativeWristPosition(armMotor.currentPosition, wristAlignment!!)
+    }
+
     fun getPlacementInfo(pixelRow: Int): PlacementInfo {
         val beta = asin(((D1 + pixelRow * D2 - L3) * sin(Math.PI / 3) + L2 * cos(Math.PI / 3) - H) / R)
         val alpha = Math.PI / 2 + Math.PI / 3 - GAMMA - beta
@@ -70,12 +88,13 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     }
 
     fun relativeWristPosition(armPosition: Int, target: WristAlignment): Double {
+        wristAlignment ?: return wrist.position
         val theta = when(target) {
             WristAlignment.EASEL -> 60
             WristAlignment.FLOOR -> 120
         }
         val armAngle = encoderPositionToDegrees(armPosition, ARM_ENCODER_RES) // in degrees
-        val servoAngle = theta - CtSemiAutoArm.GAMMA - armAngle // degrees
+        val servoAngle = theta - GAMMA - armAngle // degrees
         return degreesToServoPosition(servoAngle, WRIST_SCALE_RANGE) // servo position value
     }
 
@@ -129,6 +148,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     companion object {
         // config values
         val WRIST_SCALE_RANGE = Pair(0.25, 0.78)
+        val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
         // constants
         const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
         // math

@@ -37,8 +37,6 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     fun control(gamepad: Gamepad) {
-        loopTime.reset()
-
         val r = hypot(gamepad.left_stick_x.toDouble(), -gamepad.left_stick_y.toDouble())
         val robotAngle =
                 atan2(-gamepad.left_stick_y.toDouble(), gamepad.left_stick_x.toDouble()) - PI / 4

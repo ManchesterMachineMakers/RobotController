@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 
-class OvercurrentProtection(val motor: DcMotorEx, val activationThreshold: Double, fallback1: () -> Unit, fallback2: () -> Unit) {
+class OvercurrentProtection(val motor: DcMotorEx, val activationThreshold: Double, fallbackWarn: () -> Unit, fallbackError: () -> Unit) {
 
     var isActive = false
     var fallbackStage = 0
@@ -20,8 +20,8 @@ class OvercurrentProtection(val motor: DcMotorEx, val activationThreshold: Doubl
                 else -> 0 // none
             }
             when (fallbackStage) {
-                2 -> fallback2() // severe
-                1 -> fallback1() // mild
+                2 -> fallbackError() // severe
+                1 -> fallbackWarn() // mild
                 0 -> { // none
                     timer.reset()
                     if (!motor.isMotorEnabled) motor.setMotorEnable()

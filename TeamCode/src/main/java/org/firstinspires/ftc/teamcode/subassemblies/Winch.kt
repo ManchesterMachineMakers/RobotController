@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.util.Subassembly
+import org.firstinspires.ftc.teamcode.util.powerCurve
 
 class Winch(opMode: OpMode): Subassembly(opMode, "Winch") {
 
@@ -17,4 +18,6 @@ class Winch(opMode: OpMode): Subassembly(opMode, "Winch") {
         telemetry.addData(">", "Winch Subassembly Ready")
         telemetry.update()
     }
+
+    fun control(joystick: Float) { winchMotor.power = powerCurve(joystick.toDouble()) }
 }

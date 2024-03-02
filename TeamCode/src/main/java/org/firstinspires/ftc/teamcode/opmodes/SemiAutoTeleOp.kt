@@ -2,15 +2,12 @@ package org.firstinspires.ftc.teamcode.opmodes
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.subassemblies.Arm
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.DroneLauncher
 import org.firstinspires.ftc.teamcode.subassemblies.PixelReleases
 import org.firstinspires.ftc.teamcode.subassemblies.Winch
-import org.firstinspires.ftc.teamcode.util.powerCurve
 
 @TeleOp(name = "Semi-Automatic TeleOp", group = "arm")
 class SemiAutoTeleOp: LinearOpMode() {
@@ -19,8 +16,6 @@ class SemiAutoTeleOp: LinearOpMode() {
 
     // misc
     val loopTime = ElapsedTime()
-    var relativeWristAlignment = Arm.WristAlignment.EASEL
-    val register = mutableSetOf<String>()
     // subassemblies
     val driveBase = DriveBase(this)
     val arm = Arm(this)
@@ -47,7 +42,7 @@ class SemiAutoTeleOp: LinearOpMode() {
         if (opModeIsActive()) {
             // start
             subassemblyStatuses = "start"
-            arm.overcurrentProtection.start()
+//            arm.overcurrentProtection.start()
             telemetry.isAutoClear = true
             while (opModeIsActive()) {
                 subassemblyStatuses = "loop"
@@ -55,10 +50,10 @@ class SemiAutoTeleOp: LinearOpMode() {
 
                 // Subassembly control
                 driveBase.control(gamepad1)
-                pixelReleaseControl(gamepad2)
-                winchControl(gamepad2.right_stick_y)
-                droneLauncherControl(gamepad2.x)
-                armControl(gamepad2)
+                pixelReleases.control(gamepad2)
+                winch.control(gamepad2.right_stick_y)
+                droneLauncher.control(gamepad2.x)
+                arm.control(gamepad2)
 
                 runAllTelemetries()
                 telemetry.update()
@@ -75,39 +70,5 @@ class SemiAutoTeleOp: LinearOpMode() {
     fun runAllTelemetries() {
         for (subassembly in subassemblyList) subassembly.telemetry()
         telemetry.update()
-    }
-
-    fun droneLauncherControl(button: Boolean) { // I need to figure out GamepadManager, but this'll have to do.
-        if (button && !register.contains("droneLauncher")) {
-            register.add("droneLauncher")
-            droneLauncher.launcher.toggle()
-        }
-        else if (!button) register.remove("droneLauncher")
-    }
-
-    fun winchControl(joystick: Float) { winch.winchMotor.power = powerCurve(joystick.toDouble()) }
-
-    fun pixelReleaseControl(gamepad: Gamepad) {
-        if (gamepad.left_bumper) pixelReleases.left.open()
-        else if (gamepad.left_trigger > 0.05) pixelReleases.left.close()
-
-        if (gamepad.right_bumper) pixelReleases.right.open()
-        else if (gamepad.right_trigger > 0.05) pixelReleases.right.close()
-    }
-
-    fun armControl(gamepad: Gamepad) {
-        val armMotor = arm.armMotor
-
-        if (!armMotor.isOverCurrent) // lock out controls if overcurrent
-            armMotor.power = powerCurve(gamepad.left_stick_y.toDouble())
-
-        armMotor.mode = // arm calibration
-            if (gamepad.b) DcMotor.RunMode.STOP_AND_RESET_ENCODER
-            else DcMotor.RunMode.RUN_USING_ENCODER
-
-        if (gamepad.a) relativeWristAlignment = Arm.WristAlignment.FLOOR
-        if (gamepad.y) relativeWristAlignment = Arm.WristAlignment.EASEL
-
-        arm.wrist.position = arm.relativeWristPosition(armMotor.currentPosition, relativeWristAlignment)
     }
 }
