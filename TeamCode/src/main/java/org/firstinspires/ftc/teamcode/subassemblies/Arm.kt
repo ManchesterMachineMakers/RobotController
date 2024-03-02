@@ -5,7 +5,9 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.util.ElapsedTime
 import com.rutins.aleks.diagonal.Subject
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerRevolution
 import org.firstinspires.ftc.teamcode.util.OvercurrentProtection
 import org.firstinspires.ftc.teamcode.util.Subassembly
@@ -21,6 +23,11 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     val wrist = hardwareMap.servo.get("wrist")
     val touchSensor = hardwareMap.touchSensor.get("intake")
     var wristAlignment: WristAlignment? = null
+
+    val overcurrentProtection = OvercurrentProtection(armMotor, 5.0, {
+        armMotor.targetPosition = 0
+        armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+    }, { armMotor.setMotorDisable() })
 
     @Deprecated("This is now deprecated, use the Subassembly `PixelReleases.kt`")
     val rightRelease = hardwareMap.servo.get("right_release")
@@ -54,7 +61,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     fun control(gamepad: Gamepad) {
         val armMotor = armMotor
 
-        if (!armMotor.isOverCurrent) // lock out controls if overcurrent
+        if (!armMotor.isBusy) // lock out controls if busy
             armMotor.power = powerCurve(gamepad.left_stick_y.toDouble())
 
         armMotor.mode = // arm calibration
@@ -63,6 +70,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
         if (gamepad.a) wristAlignment = WristAlignment.FLOOR
         if (gamepad.y) wristAlignment = WristAlignment.EASEL
+        if (gamepad.back) stow()
 
         if (wristAlignment != null) wrist.position = relativeWristPosition(armMotor.currentPosition, wristAlignment!!)
     }
@@ -127,10 +135,13 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
     fun raise() = armMotor.moveTo(200)
 
-    val overcurrentProtection = OvercurrentProtection(armMotor, 5.0, {
-        armMotor.targetPosition = 0
-        armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-    }, { armMotor.setMotorDisable() })
+    fun stow() {
+        val timer = ElapsedTime()
+        wristAlignment = null
+        wrist.position = WRIST_STOW_POSITION
+        while(armMotor.getCurrent(CurrentUnit.AMPS) < 2.0 || timer.seconds() < 5 /*TODO: adjust if necessary*/) armMotor.power = 0.2
+        armMotor.power = 0.0
+    }
 
     override fun telemetry() {
         super.telemetry()
@@ -148,7 +159,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     companion object {
         // config values
         val WRIST_SCALE_RANGE = Pair(0.25, 0.78)
-        val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
+        const val WRIST_STOW_POSITION = 0.5 // TODO: find value
         // constants
         const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
         // math
