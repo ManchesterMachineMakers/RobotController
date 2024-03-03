@@ -83,18 +83,7 @@
 //     * Check for overcurrent condition and take appropriate action.
 //     */
 //    private fun handleOvercurrentProtection() {
-//        if (arm.isOverCurrent) {
-//            // Display warning message
-//            telemetry.addData("WARNING", "arm motor is overcurrent, reduce load or the arm may break")
-//
-//            // Stop opMode if overcurrent is severe
-//            if (arm.getCurrent(CurrentUnit.AMPS) > ARM_OVERCURRENT_THRESHOLD * 1.4) {
-//                opMode.requestOpModeStop()
-//            } else {
-//                arm.targetPosition = 0
-//                arm.mode = DcMotor.RunMode.RUN_TO_POSITION
-//            }
-//        }
+
 //    }
 //
 //    /**
