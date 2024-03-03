@@ -12,7 +12,9 @@ import kotlin.math.*
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.Subassembly
+import org.firstinspires.ftc.teamcode.util.clamp
 import org.firstinspires.ftc.teamcode.util.configDriveMotor
+import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.teamcode.util.powerCurve
 
 class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
@@ -23,13 +25,9 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     private val rightRear = hardwareMap.dcMotor.get("right_rear")
     private val imu = IMUManager(opMode)
 
-    companion object {
-        const val strafeCoeff = 0.5
-        const val FRONT_POWER = 0.6
-        const val REAR_POWER = 0.8
-    }
-
     init {
+        hardwareMap ?: opMode.log("WARNING: hardwareMap is NULL")
+
         leftFront.configDriveMotor(DcMotorSimple.Direction.REVERSE)
         rightFront.configDriveMotor(DcMotorSimple.Direction.FORWARD)
         leftRear.configDriveMotor(DcMotorSimple.Direction.FORWARD)
@@ -37,9 +35,18 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     fun control(gamepad: Gamepad) {
-        val r = hypot(gamepad.left_stick_x.toDouble(), -gamepad.left_stick_y.toDouble())
+        var r = hypot(gamepad.left_stick_x.toDouble(), -gamepad.left_stick_y.toDouble())
+        // sam told me to do this stuff
+        val leftX =
+            if(r >  1.0) gamepad.left_stick_x / r
+            else gamepad.left_stick_x.toDouble()
+        val leftY =
+            if(r >  1.0) gamepad.left_stick_y / r
+            else gamepad.left_stick_y.toDouble()
+        r = clamp(r, 0.0, 1.0)
+
         val robotAngle =
-                atan2(-gamepad.left_stick_y.toDouble(), gamepad.left_stick_x.toDouble()) - PI / 4
+                atan2(-leftY, leftX) - PI / 4
         val rightX = gamepad.right_stick_x.toDouble()
 
         val v1 = r * sin(robotAngle) + rightX
@@ -47,10 +54,10 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         val v3 = r * cos(robotAngle) + rightX
         val v4 = r * sin(robotAngle) - rightX
 
-        leftFront.power = powerCurve(v1) * FRONT_POWER
-        rightFront.power = powerCurve(v2) * FRONT_POWER
-        leftRear.power = powerCurve(v3) * REAR_POWER
-        rightRear.power = powerCurve(v4) * REAR_POWER
+        leftFront.power = powerCurve(v1)
+        rightFront.power = powerCurve(v2)
+        leftRear.power = powerCurve(v3)
+        rightRear.power = powerCurve(v4)
     }
 
     override fun telemetry() {
@@ -64,7 +71,7 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
             val yaw: Double,
             val leftFront: Double = x - y - yaw,
             val rightFront: Double = x + y + yaw,
-            val leftRear: Double = strafeCoeff * (x + y - yaw),
+            val leftRear: Double = (x + y - yaw),
             val rightRear: Double = x - y + yaw
     )
 
@@ -107,7 +114,7 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     fun setMode(mode: RunMode) {
-        motors.setMode(mode)
+//        motors.setMode(mode)
     }
 
     fun setTargetPositions(lf: Int, rf: Int, lr: Int, rr: Int) {
@@ -245,7 +252,7 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
                 TravelDirection.PITCH -> arrayOf(0, 0, 0, 0)
             }
 
-    fun setRunMode(runMode: RunMode?): Boolean {
+    fun setRunMode(runMode: RunMode): Boolean {
         return try {
             for (motor in motors) {
                 motor.mode = runMode

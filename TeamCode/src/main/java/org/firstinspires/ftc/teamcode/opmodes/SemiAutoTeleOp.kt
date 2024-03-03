@@ -8,44 +8,39 @@ import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.DroneLauncher
 import org.firstinspires.ftc.teamcode.subassemblies.PixelReleases
 import org.firstinspires.ftc.teamcode.subassemblies.Winch
+import org.firstinspires.ftc.teamcode.util.log
 
 @TeleOp(name = "Semi-Automatic TeleOp", group = "arm")
 class SemiAutoTeleOp: LinearOpMode() {
 
-    init { telemetry.isAutoClear = false } // ensure subassembly ready messages aren't cleared
-
-    // misc
-    val loopTime = ElapsedTime()
-    // subassemblies
-    val driveBase = DriveBase(this)
-    val arm = Arm(this)
-    val pixelReleases = PixelReleases(this)
-    val winch = Winch(this)
-    val droneLauncher = DroneLauncher(this)
-
-    val subassemblyList = listOf(driveBase, arm, pixelReleases, winch, droneLauncher)
-    var subassemblyStatuses = "unknown"
-        set(value) {
-            for (subassembly in subassemblyList) subassembly.status = value
-            field = value
-        }
+    init {
+        telemetry.isAutoClear = false
+    } // ensure subassembly ready messages aren't cleared
 
     override fun runOpMode() {
         // init, no movement allowed
-        subassemblyStatuses = "init"
+
+        val driveBase = DriveBase(this)
+        val arm = Arm(this)
+        val pixelReleases = PixelReleases(this)
+        val winch = Winch(this)
+        val droneLauncher = DroneLauncher(this)
+
+        val loopTime = ElapsedTime()
+
+        val subassemblyList = listOf(driveBase, arm, pixelReleases, winch, droneLauncher)
 
         runAllTelemetries()
         telemetry.update()
+
 
         waitForStart()
 
         if (opModeIsActive()) {
             // start
-            subassemblyStatuses = "start"
 //            arm.overcurrentProtection.start()
             telemetry.isAutoClear = true
             while (opModeIsActive()) {
-                subassemblyStatuses = "loop"
                 loopTime.reset()
 
                 // Subassembly control
@@ -62,13 +57,13 @@ class SemiAutoTeleOp: LinearOpMode() {
     }
 
     fun telemetry() {
-        telemetry.addData("runtime (s)", runtime)
-        telemetry.addData("looptime (ms)", loopTime.milliseconds())
-        runAllTelemetries()
+//        telemetry.addData("runtime (s)", runtime)
+//        telemetry.addData("looptime (ms)", loopTime.milliseconds())
+//        runAllTelemetries()
     }
 
     fun runAllTelemetries() {
-        for (subassembly in subassemblyList) subassembly.telemetry()
-        telemetry.update()
+//        for (subassembly in subassemblyList) subassembly?.telemetry()
+//        telemetry.update()
     }
 }

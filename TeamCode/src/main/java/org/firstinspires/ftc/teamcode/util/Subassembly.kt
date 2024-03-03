@@ -13,11 +13,5 @@ abstract class Subassembly(protected val opMode: OpMode, protected val name: Str
 
     open fun telemetry() {
         telemetry.addLine(name)
-        /*
-        Pixel Releases:
-        isOpen : true, false
-        Wrist:
-        position: target: 1, actual: 0.98
-         */
     }
 }

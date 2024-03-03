@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.qualcomm.robotcore.hardware.AnalogInput
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
+import com.qualcomm.robotcore.hardware.DistanceSensor
 import com.qualcomm.robotcore.hardware.Gamepad
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor
 import com.qualcomm.robotcore.hardware.Servo
 import com.rutins.aleks.diagonal.Subject
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerRevolution
 import org.firstinspires.ftc.teamcode.util.OvercurrentProtection
 import org.firstinspires.ftc.teamcode.util.Subassembly
@@ -18,8 +22,8 @@ import kotlin.math.*
 // Arm subassembly control
 class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     val armMotor = hardwareMap.dcMotor.get("arm") as DcMotorEx
+    val distanceSensor = hardwareMap.get(DistanceSensor::class.java, "intake_distance")
     val wrist = hardwareMap.servo.get("wrist")
-    val touchSensor = hardwareMap.touchSensor.get("intake")
     var wristAlignment: WristAlignment? = null
 
     @Deprecated("This is now deprecated, use the Subassembly `PixelReleases.kt`")
@@ -98,31 +102,31 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         return degreesToServoPosition(servoAngle, WRIST_SCALE_RANGE) // servo position value
     }
 
-    fun drop() {
-        while(!touchSensor.isPressed && armMotor.isBusy) {
-            armMotor.power = -0.2
-            telemetry.addData("Touch Sensor", touchSensor.isPressed)
-            telemetry.addData("Arm Motor", armMotor.currentPosition)
-            telemetry.addData("Wrist Servo", wrist.position)
-            telemetry.update()
-        }
-        armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        armMotor.power = 0.0
-        // go again, zeroed so the wrist position calculates correctly
-        telemetry.addLine("Zeroed the Arm Motor")
-        telemetry.log()
-        Thread.sleep(10)
-
-        armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-        armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
-
-        while(!touchSensor.isPressed) {
-            armMotor.power = -0.2
-            wrist.position = relativeWristPosition(armMotor.currentPosition, WristAlignment.FLOOR)
-            Thread.sleep(10)
-        }
-        armMotor.power = 0.0
-        telemetry.update()
+    fun drop() { // TODO: ALEKS PLEASE MAKE THIS WORK WITH DISTANCE SENSOR
+//        while(!touchSensor.isPressed && armMotor.isBusy) {
+//            armMotor.power = -0.2
+//            telemetry.addData("Touch Sensor", touchSensor.isPressed)
+//            telemetry.addData("Arm Motor", armMotor.currentPosition)
+//            telemetry.addData("Wrist Servo", wrist.position)
+//            telemetry.update()
+//        }
+//        armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+//        armMotor.power = 0.0
+//        // go again, zeroed so the wrist position calculates correctly
+//        telemetry.addLine("Zeroed the Arm Motor")
+//        telemetry.log()
+//        Thread.sleep(10)
+//
+//        armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+//        armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
+//
+//        while(!touchSensor.isPressed) {
+//            armMotor.power = -0.2
+//            wrist.position = relativeWristPosition(armMotor.currentPosition, WristAlignment.FLOOR)
+//            Thread.sleep(10)
+//        }
+//        armMotor.power = 0.0
+//        telemetry.update()
     }
 
     fun raise() = armMotor.moveTo(200)
@@ -134,7 +138,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
     override fun telemetry() {
         super.telemetry()
-        telemetry.addData("Touch Sensor", touchSensor.isPressed)
+        telemetry.addData("Distance Sensor", distanceSensor.getDistance(DistanceUnit.CM))
         telemetry.addData("Arm Motor","target %.2f, actual %.2f", armMotor.targetPosition, armMotor.currentPosition)
         telemetry.addData("Wrist Servo", wrist.position)
     }
