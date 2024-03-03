@@ -10,15 +10,12 @@ import org.firstinspires.ftc.teamcode.subassemblies.PixelReleases
 import org.firstinspires.ftc.teamcode.subassemblies.Winch
 import org.firstinspires.ftc.teamcode.util.log
 
-@TeleOp(name = "Semi-Automatic TeleOp", group = "arm")
+@TeleOp(name = "Semi-Automatic TeleOp (preferred)", group = "arm")
 class SemiAutoTeleOp: LinearOpMode() {
-
-    init {
-        telemetry.isAutoClear = false
-    } // ensure subassembly ready messages aren't cleared
 
     override fun runOpMode() {
         // init, no movement allowed
+        telemetry.isAutoClear = false
 
         val driveBase = DriveBase(this)
         val arm = Arm(this)
@@ -30,16 +27,12 @@ class SemiAutoTeleOp: LinearOpMode() {
 
         val subassemblyList = listOf(driveBase, arm, pixelReleases, winch, droneLauncher)
 
-        runAllTelemetries()
-        telemetry.update()
-
-
         waitForStart()
 
         if (opModeIsActive()) {
-            // start
-//            arm.overcurrentProtection.start()
+            log("Starting OpMode loop")
             telemetry.isAutoClear = true
+            telemetry.clear()
             while (opModeIsActive()) {
                 loopTime.reset()
 

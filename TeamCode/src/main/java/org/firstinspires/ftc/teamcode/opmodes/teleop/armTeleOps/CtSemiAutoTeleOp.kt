@@ -7,7 +7,7 @@
 //import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.CtSemiAutoArm
 //import org.firstinspires.ftc.teamcode.util.bases.BaseArmTeleOp
 //
-//@TeleOp(name = "Semi-Auto Ct Arm TeleOp (Preferred)", group = "arm")
+//@TeleOp(name = "Semi-Auto Ct Arm TeleOp", group = "arm")
 //class CtSemiAutoTeleOp : LinearOpMode() {
 //    override fun runOpMode() {
 //        val driveBase = DriveBase(this)
