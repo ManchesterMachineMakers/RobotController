@@ -8,6 +8,7 @@ import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.PtzControl
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.vision.tfod.TfodProcessor
 
 class Vision(opMode: OpMode) : Subject {
@@ -34,5 +35,7 @@ class Vision(opMode: OpMode) : Subject {
         while(visionPortal.cameraState != VisionPortal.CameraState.STREAMING) {}
         val ptzControl = visionPortal.getCameraControl(PtzControl::class.java)
         ptzControl.setZoom(150)
+
+        opMode.log("Vision successfully initialized")
     }
 }

@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.hardware.AnalogInput
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DistanceSensor
 import com.qualcomm.robotcore.hardware.Gamepad
-import com.qualcomm.robotcore.hardware.OpticalDistanceSensor
 import com.qualcomm.robotcore.hardware.Servo
 import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
@@ -16,6 +14,7 @@ import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.clamp
 import org.firstinspires.ftc.teamcode.util.degreesToServoPosition
 import org.firstinspires.ftc.teamcode.util.encoderPositionToDegrees
+import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.teamcode.util.powerCurve
 import kotlin.math.*
 
@@ -40,6 +39,8 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         // Wrist servo configuration
         wrist.scaleRange(WRIST_SCALE_RANGE.first, WRIST_SCALE_RANGE.second) // 53% of 300-degree range
         wrist.direction = Servo.Direction.FORWARD
+
+        opMode.log("Arm successfully initialized")
     }
 
 
@@ -55,9 +56,12 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         EASEL, FLOOR
     }
 
-    fun control(gamepad: Gamepad) {
-        val armMotor = armMotor
+    val overcurrentProtection = OvercurrentProtection(armMotor, 5.0, {
+        armMotor.targetPosition = 0
+        armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+    }, { armMotor.setMotorDisable() })
 
+    fun control(gamepad: Gamepad) {
         if (!armMotor.isOverCurrent) // lock out controls if overcurrent
             armMotor.power = powerCurve(gamepad.left_stick_y.toDouble())
 
@@ -67,6 +71,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
         if (gamepad.a) wristAlignment = WristAlignment.FLOOR
         if (gamepad.y) wristAlignment = WristAlignment.EASEL
+        if (gamepad.back)
 
         if (wristAlignment != null) wrist.position = relativeWristPosition(armMotor.currentPosition, wristAlignment!!)
     }
@@ -131,16 +136,17 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
     fun raise() = armMotor.moveTo(200)
 
-    val overcurrentProtection = OvercurrentProtection(armMotor, 5.0, {
-        armMotor.targetPosition = 0
-        armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
-    }, { armMotor.setMotorDisable() })
-
     override fun telemetry() {
         super.telemetry()
         telemetry.addData("Distance Sensor", distanceSensor.getDistance(DistanceUnit.CM))
         telemetry.addData("Arm Motor","target %.2f, actual %.2f", armMotor.targetPosition, armMotor.currentPosition)
         telemetry.addData("Wrist Servo", wrist.position)
+    }
+
+    fun stow() {
+        wristAlignment = null
+        wrist.position = WRIST_STOW_POSITION
+
     }
 
     fun DcMotor.moveTo(encoderPosition: Int) {

@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.util.ReleaseServo
 import org.firstinspires.ftc.teamcode.util.Subassembly
+import org.firstinspires.ftc.teamcode.util.log
 
 class DroneLauncher(opMode: OpMode): Subassembly(opMode, "Drone Launcher") {
 
@@ -14,8 +15,7 @@ class DroneLauncher(opMode: OpMode): Subassembly(opMode, "Drone Launcher") {
         launcher.scaleRange = Pair(0.7, 0.78)
         launcher.direction = Servo.Direction.REVERSE
 
-        telemetry.addData(">", "Drone Launcher Subassembly Ready")
-        telemetry.update()
+        opMode.log("DroneLauncher successfully initialized")
     }
     
     fun control(button: Boolean) { // I need to figure out GamepadManager, but this'll have to do.

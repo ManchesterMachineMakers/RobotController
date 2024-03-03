@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.IMU
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.util.Subassembly
+import org.firstinspires.ftc.teamcode.util.log
 
 class IMUManager(opMode: OpMode) : Subassembly(opMode, "IMU Manager") {
     val imuParameters =
@@ -18,6 +19,7 @@ class IMUManager(opMode: OpMode) : Subassembly(opMode, "IMU Manager") {
 
     init {
         imu.initialize(imuParameters)
+        opMode.log("IMUManager successfully initialized")
     }
 
     override fun telemetry() {

@@ -5,15 +5,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode
 import com.qualcomm.robotcore.hardware.DcMotorEx
-import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.util.RobotLog
 import kotlin.math.*
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
-import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.clamp
-import org.firstinspires.ftc.teamcode.util.configDriveMotor
 import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.teamcode.util.powerCurve
 
@@ -26,12 +23,8 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     private val imu = IMUManager(opMode)
 
     init {
-        hardwareMap ?: opMode.log("WARNING: hardwareMap is NULL")
-
-        leftFront.configDriveMotor(DcMotorSimple.Direction.REVERSE)
-        rightFront.configDriveMotor(DcMotorSimple.Direction.FORWARD)
-        leftRear.configDriveMotor(DcMotorSimple.Direction.FORWARD)
-        rightRear.configDriveMotor(DcMotorSimple.Direction.REVERSE)
+        setRunMode(RunMode.RUN_WITHOUT_ENCODER)
+        opMode.log("DriveBase successfully initialized")
     }
 
     fun control(gamepad: Gamepad) {
@@ -152,28 +145,6 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         runToPosition(ticks, ticks, ticks, ticks)
     }
 
-    fun controller(gamepad: GamepadManager) {
-        val r =
-                Math.hypot(
-                        gamepad.gamepad.left_stick_x.toDouble(),
-                        -gamepad.gamepad.left_stick_y.toDouble()
-                )
-        val robotAngle =
-                Math.atan2(
-                        -gamepad.gamepad.left_stick_y.toDouble(),
-                        gamepad.gamepad.left_stick_x.toDouble()
-                ) - Math.PI / 4
-        val rightX = gamepad.gamepad.right_stick_x.toDouble()
-        val v1 = r * Math.cos(robotAngle) + rightX
-        val v2 = r * Math.sin(robotAngle) - rightX
-        val v3 = r * Math.sin(robotAngle) + rightX
-        val v4 = r * Math.cos(robotAngle) - rightX
-        leftFront.power = v1 / 1.2
-        rightFront.power = v2 / 1.2
-        leftRear.power = v3 / 1.2
-        rightRear.power = v4 / 1.2
-    }
-
     /**
      * Drive a number of ticks in a particular direction. Stops on exception.
      * @param power the power to each motor (we can make this a list if needed)
@@ -222,7 +193,7 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         telemetry.update()
     }
 
-    enum class TravelDirection { // @Aleks TODO: see this link on enum naming convention: https://kotlinlang.org/docs/coding-conventions.html#names-for-backing-properties
+    enum class TravelDirection { // see this link on enum naming convention: https://kotlinlang.org/docs/coding-conventions.html#names-for-backing-properties
         BASE,
         FORWARD,
         REVERSE,

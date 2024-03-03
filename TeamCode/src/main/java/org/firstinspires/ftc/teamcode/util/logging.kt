@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.RobotLog
 fun OpMode.log(message: String) {
     val tag = this::class.simpleName ?: "unknown opmode"
 
-    telemetry.addLine(message)
+    telemetry.addLine("> $message")
     RobotLog.i("($tag) $message")
     telemetry.update()
 }

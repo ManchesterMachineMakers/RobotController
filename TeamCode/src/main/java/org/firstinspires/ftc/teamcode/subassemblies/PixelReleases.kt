@@ -22,11 +22,7 @@ class PixelReleases(opMode: OpMode): Subassembly(opMode, "Pixel Droppers") {
         right.scaleRange = Pair(0.6, 1.0) // 22.5% of 300-degree range
         right.direction = Servo.Direction.REVERSE
 
-        telemetry.addData(">", "Pixel Droppers Subassembly Ready")
-        telemetry.update()
-        opMode.log("Pixel Release Subassembly Initialized")
-
-        telemetryData
+        opMode.log("PixelReleases successfully initialized")
     }
     
     fun control(gamepad: Gamepad) {
