@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.subassemblies
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.IMU
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.util.Subassembly
@@ -21,10 +20,11 @@ class IMUManager(opMode: OpMode) : Subassembly(opMode, "IMU Manager") {
         imu.initialize(imuParameters)
     }
 
-    override fun loop(gamepad: Gamepad) {
+    override fun telemetry() {
         val orientation = imu.robotYawPitchRollAngles
         val angularVelocity = imu.getRobotAngularVelocity(AngleUnit.DEGREES)
 
+        super.telemetry()
         telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES))
         telemetry.addData("Pitch (X)", "%.2f Deg.", orientation.getPitch(AngleUnit.DEGREES))
         telemetry.addData("Roll (Y)", "%.2f Deg.\n", orientation.getRoll(AngleUnit.DEGREES))

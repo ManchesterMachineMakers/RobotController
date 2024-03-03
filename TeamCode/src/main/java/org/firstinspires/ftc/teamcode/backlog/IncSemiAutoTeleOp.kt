@@ -1,17 +1,17 @@
 @file:Suppress("PackageDirectoryMismatch")
-//package org.firstinspires.ftc.teamcode.opmodes.teleop.armTeleOps
+//package org.firstinspires.ftc.teamcode.backlog
 //
 //import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 //import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 //import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
-//import org.firstinspires.ftc.teamcode.subassemblies.miles.arm.CtSemiAutoArm
+//import org.firstinspires.ftc.teamcode.backlog.IncSemiAutoArm
 //import org.firstinspires.ftc.teamcode.util.bases.BaseArmTeleOp
 //
-//@TeleOp(name = "Semi-Auto Ct Arm TeleOp (Preferred)", group = "arm")
-//class CtSemiAutoTeleOp : LinearOpMode() {
+//@TeleOp(name = "Semi-Auto Inc Arm TeleOp", group = "arm")
+//class IncSemiAutoTeleOp : LinearOpMode() {
 //    override fun runOpMode() {
 //        val driveBase = DriveBase(this)
-//        val semiAutoArm = CtSemiAutoArm(this)
+//        val semiAutoArm = IncSemiAutoArm(this)
 //        val baseTeleOp = BaseArmTeleOp(this, driveBase, semiAutoArm)
 //
 //        baseTeleOp.init()

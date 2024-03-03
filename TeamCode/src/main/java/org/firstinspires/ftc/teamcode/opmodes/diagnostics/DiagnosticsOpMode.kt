@@ -29,12 +29,12 @@ abstract class DiagnosticsOpMode(
     override fun runOpMode() {
         // create a test runner with all the hardware and a logger
         val runner = Runner(tests.map { it(this) }.toTypedArray(), RobotLogger())
-        RobotLog.i("16221 Diagnostics Opmode: Initialization complete.")
+        RobotLog.i("16221 Diagnostics OpMode: Initialization complete.")
         telemetry.addLine("Initialized.")
         telemetry.update()
         waitForStart()
         if (opModeIsActive()) {
-            RobotLog.i("16221 Diagnostics Opmode: Running all tests.")
+            RobotLog.i("16221 Diagnostics OpMode: Running all tests.")
             telemetry.addLine("Running tests. Please watch the log.")
             telemetry.update()
             runTests(runner)
