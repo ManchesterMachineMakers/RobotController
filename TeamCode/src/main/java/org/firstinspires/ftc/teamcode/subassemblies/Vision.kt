@@ -8,11 +8,11 @@ import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.PtzControl
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.vision.tfod.TfodProcessor
 
-class Vision(opMode: OpMode) : Subject {
-    private val hardwareMap = opMode.hardwareMap
+class Vision(opMode: OpMode) : Subassembly(opMode, "Vision") {
     private val webcam = hardwareMap.get(WebcamName::class.java, "Webcam 1")
 
     // http://localhost:63342/RobotController/Vision-9.0.1-javadoc.jar/org/firstinspires/ftc/vision/apriltag/AprilTagProcessor.Builder.html
