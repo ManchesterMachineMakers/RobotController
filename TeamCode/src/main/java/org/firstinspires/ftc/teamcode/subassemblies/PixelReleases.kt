@@ -13,8 +13,6 @@ class PixelReleases(opMode: OpMode): Subassembly(opMode, "Pixel Droppers") {
     val left = ReleaseServo(hardwareMap.servo.get("left_release"))
     val right = ReleaseServo(hardwareMap.servo.get("right_release"))
 
-    val telemetryData: Telemetry.Item = telemetry.addData("isOpen", "%b, %b", left.isOpen, right.isOpen)
-
     init {
         left.scaleRange = Pair(0.15, 0.40) // 22.5% of 300-degree range
         left.direction = Servo.Direction.FORWARD
