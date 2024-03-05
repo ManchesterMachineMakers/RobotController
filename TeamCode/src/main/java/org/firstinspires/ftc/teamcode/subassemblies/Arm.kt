@@ -169,11 +169,12 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
                 )
                 break
             }
-            if(timer.seconds() > 5.0) {
+            if(timer.seconds() >= 5.0) {
                 armMotor.power = 0.0
                 opMode.log("Aborting arm auto-stow; time exceeded 5.0 seconds")
                 break
             }
+            Thread.sleep(100)
         }
         if(ifAbort()) opMode.log("Aborting arm auto-stow: received command")
         armMotor.power = 0.0
