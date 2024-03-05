@@ -32,6 +32,20 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     @Deprecated("This is now deprecated, use the Subassembly `PixelReleases.kt`")
     val leftRelease = hardwareMap.servo.get("left_release")
 
+    val slowCoefficient: Double
+        get() {
+            val distance = distanceSensor.getDistance(DistanceUnit.CM)
+            return if(distance < ARM_SLOW_DISTANCE_THRESHOLD) {
+                opMode.log(
+                    "Distance from object is less that %.1f at %.1f"
+                        .format( ARM_SLOW_DISTANCE_THRESHOLD, distance)
+                )
+                distance / ARM_SLOW_DISTANCE_THRESHOLD
+            } else {
+                1.0
+            }
+        }
+
     init {
         armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER // Resets the encoder (distance tracking)
         Thread.sleep(10)
@@ -64,8 +78,16 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     }, { armMotor.setMotorDisable() })
 
     fun control(gamepad: Gamepad) {
+        val leftY = gamepad.left_stick_y
+
         if (!armMotor.isOverCurrent) // lock out controls if overcurrent
-            armMotor.power = powerCurve(gamepad.left_stick_y.toDouble())
+            armMotor.power = powerCurve(
+                    if(leftY < 0) { // down
+                        leftY * slowCoefficient
+                    } else { // up/rest
+                        leftY.toDouble()
+                    }
+            )
 
         armMotor.mode = // arm calibration
             if (gamepad.b) DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -191,6 +213,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         val WRIST_SCALE_RANGE = Pair(0.25, 0.78)
         const val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
         const val ARM_AUTOSTOW_CURRENT = 2.0
+        const val ARM_SLOW_DISTANCE_THRESHOLD = 30 // CM at which the arm will begin to slow down
         // constants
         const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
         // math
