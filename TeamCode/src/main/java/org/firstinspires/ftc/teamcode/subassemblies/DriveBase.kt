@@ -53,7 +53,7 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
 
         val leftX = gamepad.left_stick_x.toDouble()
         val leftY = gamepad.left_stick_y.toDouble()
-        val rightX = gamepad.right_stick_x.toDouble()
+        val rightX = -gamepad.right_stick_x.toDouble()
 
         val denominator = max(abs(leftY) + abs(leftX) + abs(rightX), 1.0)
 
