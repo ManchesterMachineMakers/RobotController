@@ -28,29 +28,28 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     fun control(gamepad: Gamepad) {
-        var r = hypot(gamepad.left_stick_x.toDouble(), -gamepad.left_stick_y.toDouble())
-        // sam told me to do this stuff
-        val leftX =
-            if(r >  1.0) gamepad.left_stick_x / r
-            else gamepad.left_stick_x.toDouble()
-        val leftY =
-            if(r >  1.0) gamepad.left_stick_y / r
-            else gamepad.left_stick_y.toDouble()
-        r = clamp(r, 0.0, 1.0)
+        // from https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
+        val leftX = gamepad.left_stick_x.toDouble()
+        val leftY = gamepad.left_stick_y.toDouble()
+        val rightX = -gamepad.right_stick_x.toDouble()
 
-        val robotAngle =
-                atan2(-leftY, leftX) - PI / 4
-        val rightX = gamepad.right_stick_x.toDouble()
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio,
+        // but only if at least one is out of the range [-1, 1]
 
-        val v1 = r * sin(robotAngle) + rightX
-        val v2 = r * cos(robotAngle) - rightX
-        val v3 = r * cos(robotAngle) + rightX
-        val v4 = r * sin(robotAngle) - rightX
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio,
+        // but only if at least one is out of the range [-1, 1]
+        val denominator = max(abs(leftY) + abs(leftX) + abs(rightX), 1.0)
+        val leftFrontPower = (leftY + leftX + rightX) / denominator
+        val rightFrontPower = (leftY - leftX - rightX) / denominator
+        val leftRearPower = (leftY - leftX + rightX) / denominator
+        val rightRearPower = (leftY + leftX - rightX) / denominator
 
-        leftFront.power = powerCurve(v1)
-        rightFront.power = powerCurve(v2)
-        leftRear.power = powerCurve(v3)
-        rightRear.power = powerCurve(v4)
+        leftFront.power = leftFrontPower
+        rightFront.power = rightFrontPower
+        leftRear.power = leftRearPower
+        rightRear.power = rightRearPower
     }
 
     override fun telemetry() {
