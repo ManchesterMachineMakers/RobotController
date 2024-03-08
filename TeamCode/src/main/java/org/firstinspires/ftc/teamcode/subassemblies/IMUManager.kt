@@ -22,6 +22,8 @@ class IMUManager(opMode: OpMode) : Subassembly(opMode, "IMU Manager") {
         opMode.log("IMUManager successfully initialized")
     }
 
+    val yaw: Double
+        get() = imu.robotYawPitchRollAngles.getYaw(AngleUnit.RADIANS)
     override fun telemetry() {
         val orientation = imu.robotYawPitchRollAngles
         val angularVelocity = imu.getRobotAngularVelocity(AngleUnit.DEGREES)
