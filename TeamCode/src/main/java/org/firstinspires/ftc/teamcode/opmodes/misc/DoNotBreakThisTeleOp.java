@@ -16,7 +16,6 @@ public class DoNotBreakThisTeleOp extends LinearOpMode {
         DcMotor leftRear = hardwareMap.dcMotor.get("left_rear");
         DcMotor rightRear = hardwareMap.dcMotor.get("right_rear");
 
-        // Yes, the code is repetitive, but it has better readability and is less work
         configMotor(leftFront, DcMotorSimple.Direction.FORWARD);
         configMotor(rightFront, DcMotorSimple.Direction.REVERSE);
         configMotor(leftRear, DcMotorSimple.Direction.REVERSE);
@@ -50,7 +49,7 @@ public class DoNotBreakThisTeleOp extends LinearOpMode {
 
     // Configures input motor to inputted direction
     public void configMotor(DcMotor motor, DcMotorSimple.Direction direction) {
-        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // Fine for TeleOp
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setDirection(direction);
     }

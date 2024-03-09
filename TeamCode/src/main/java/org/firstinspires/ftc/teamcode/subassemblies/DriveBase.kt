@@ -5,14 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode
 import com.qualcomm.robotcore.hardware.DcMotorEx
+import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.util.RobotLog
-import kotlin.math.*
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.util.Subassembly
-import org.firstinspires.ftc.teamcode.util.clamp
 import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.teamcode.util.powerCurve
+import kotlin.math.*
 
 class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
 
@@ -23,34 +23,44 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     private val imu = IMUManager(opMode)
 
     init {
-        setRunMode(RunMode.RUN_WITHOUT_ENCODER)
+        // direction = FORWARD by default
+
+//        leftFront.direction = DcMotorSimple.Direction.REVERSE
+        rightFront.direction = DcMotorSimple.Direction.REVERSE
+        leftRear.direction = DcMotorSimple.Direction.REVERSE
+//        rightRear.direction = DcMotorSimple.Direction.REVERSE
+
         opMode.log("DriveBase successfully initialized")
     }
 
+    fun opInit() {
+        setRunMode(RunMode.RUN_WITHOUT_ENCODER)
+        setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE)
+    }
+
     fun control(gamepad: Gamepad) {
-        var r = hypot(gamepad.left_stick_x.toDouble(), -gamepad.left_stick_y.toDouble())
-        // sam told me to do this stuff
-        val leftX =
-            if(r >  1.0) gamepad.left_stick_x / r
-            else gamepad.left_stick_x.toDouble()
-        val leftY =
-            if(r >  1.0) gamepad.left_stick_y / r
-            else gamepad.left_stick_y.toDouble()
-        r = clamp(r, 0.0, 1.0)
+        // from https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
+        val leftX: Double = gamepad.left_stick_x.toDouble()
+        val leftY: Double = gamepad.left_stick_y.toDouble()
+        val rightX: Double = -gamepad.right_stick_x.toDouble()
 
-        val robotAngle =
-                atan2(-leftY, leftX) - PI / 4
-        val rightX = gamepad.right_stick_x.toDouble()
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio,
+        // but only if at least one is out of the range [-1, 1]
 
-        val v1 = r * sin(robotAngle) + rightX
-        val v2 = r * cos(robotAngle) - rightX
-        val v3 = r * cos(robotAngle) + rightX
-        val v4 = r * sin(robotAngle) - rightX
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio,
+        // but only if at least one is out of the range [-1, 1]
+        val denominator = max(abs(leftY) + abs(leftX) + abs(rightX), 1.0)
+        val leftFrontPower = (leftY + leftX + rightX) / denominator
+        val rightFrontPower = (leftY - leftX - rightX) / denominator
+        val leftRearPower = (leftY - leftX + rightX) / denominator
+        val rightRearPower = (leftY + leftX - rightX) / denominator
 
-        leftFront.power = powerCurve(v1)
-        rightFront.power = powerCurve(v2)
-        leftRear.power = powerCurve(v3)
-        rightRear.power = powerCurve(v4)
+        leftFront.power = powerCurve(leftFrontPower)
+        rightFront.power = powerCurve(rightFrontPower)
+        leftRear.power = powerCurve(leftRearPower)
+        rightRear.power = powerCurve(rightRearPower)
     }
 
     override fun telemetry() {
@@ -227,6 +237,18 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         return try {
             for (motor in motors) {
                 motor.mode = runMode
+            }
+            true
+        } catch (e: Exception) {
+            RobotLog.i(e.message)
+            false
+        }
+    }
+
+    fun setZeroPowerBehavior(zeroPowerBehavior: DcMotor.ZeroPowerBehavior): Boolean {
+        return try {
+            for (motor in motors) {
+                motor.zeroPowerBehavior = zeroPowerBehavior
             }
             true
         } catch (e: Exception) {
