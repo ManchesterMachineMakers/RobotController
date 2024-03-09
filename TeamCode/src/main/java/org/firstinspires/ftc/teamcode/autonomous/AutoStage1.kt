@@ -18,7 +18,7 @@ class AutoStage1(alliance: CenterStageAutonomous.Alliance, startPosition: Center
         val driveBase = DriveBase(this)
 
         // Run to backdrop
-        driveBase.runPolar(0.7, 1315.0, PI/8)
+        driveBase.runPolar(0.7, 1315.0, 3*PI/8)
         driveBase.yaw(leftTurn, 0.7)
     }
 }
