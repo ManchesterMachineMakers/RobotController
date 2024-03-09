@@ -10,18 +10,20 @@ import org.firstinspires.ftc.teamcode.util.log
 
 class PixelReleases(opMode: OpMode): Subassembly(opMode, "Pixel Droppers") {
 
-    val left = ReleaseServo(hardwareMap.servo.get("left_release"))
-    val right = ReleaseServo(hardwareMap.servo.get("right_release"))
+    val left = ReleaseServo(
+        hardwareMap.servo.get("left_release"),
+        Pair(0.15, 0.40),
+        Servo.Direction.FORWARD
+    )
+    val right = ReleaseServo(
+        hardwareMap.servo.get("right_release"),
+        Pair(0.1, 0.6),
+        Servo.Direction.REVERSE
+    )
 
     val telemetryData: Telemetry.Item = telemetry.addData("isOpen", "%b, %b", left.isOpen, right.isOpen)
 
     init {
-        left.scaleRange = Pair(0.15, 0.40) // 22.5% of 300-degree range
-        left.direction = Servo.Direction.FORWARD
-
-        right.scaleRange = Pair(0.6, 1.0) // 22.5% of 300-degree range
-        right.direction = Servo.Direction.REVERSE
-
         opMode.log("PixelReleases successfully initialized")
     }
     

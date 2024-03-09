@@ -13,12 +13,12 @@ fun encoderPositionToDegrees(encoderPosition: Int, encoderResolution: Double)
 
 /** Assumes use of a 300 degree non-continuous servo */
 fun degreesToServoPosition(degrees: Double, scaleRange: Pair<Double, Double>): Double {
-    val servoPosition = degrees / 300 * abs(scaleRange.second - scaleRange.first)
-    return clamp(servoPosition, 0.0, 1.0)
+    val scale = abs(scaleRange.first - scaleRange.second)
+    return degrees / (scale * 300) - (0.5 * scale)
 }
 
-fun Double.toDegrees() = this * PI / 180
-fun Double.toRadians() = this * 180 / PI
+fun Double.toDegrees() = this * 180 / PI
+fun Double.toRadians() = this * PI / 180
 
 fun powerCurve(value: Double) =
     if (value > 0) value.pow(2) // positive

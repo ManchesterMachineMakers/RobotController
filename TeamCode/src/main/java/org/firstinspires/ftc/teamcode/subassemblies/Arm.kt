@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.DistanceSensor
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.Servo
 import com.rutins.aleks.diagonal.Subject
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerRevolution
 import org.firstinspires.ftc.teamcode.util.OvercurrentProtection
 import org.firstinspires.ftc.teamcode.util.Subassembly
@@ -23,12 +22,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     val armMotor = hardwareMap.dcMotor.get("arm") as DcMotorEx
     val distanceSensor = hardwareMap.get(DistanceSensor::class.java, "intake_distance")
     val wrist = hardwareMap.servo.get("wrist")
-    var wristAlignment: WristAlignment? = null
-
-    @Deprecated("This is now deprecated, use the Subassembly `PixelReleases.kt`")
-    val rightRelease = hardwareMap.servo.get("right_release")
-    @Deprecated("This is now deprecated, use the Subassembly `PixelReleases.kt`")
-    val leftRelease = hardwareMap.servo.get("left_release")
+    var wristAlignment: WristAlignment? = WristAlignment.EASEL
 
     init {
         armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER // Resets the encoder (distance tracking)
@@ -38,7 +32,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
         // Wrist servo configuration
         wrist.scaleRange(WRIST_SCALE_RANGE.first, WRIST_SCALE_RANGE.second) // 53% of 300-degree range
-        wrist.direction = Servo.Direction.FORWARD
+        wrist.direction = Servo.Direction.REVERSE
 
         opMode.log("Arm successfully initialized")
     }
@@ -71,9 +65,19 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
         if (gamepad.a) wristAlignment = WristAlignment.FLOOR
         if (gamepad.y) wristAlignment = WristAlignment.EASEL
-        if (gamepad.back)
+        if (gamepad.back) {}
 
-        if (wristAlignment != null) wrist.position = relativeWristPosition(armMotor.currentPosition, wristAlignment!!)
+        val oldWristPosition = wrist.position
+        val wristTargetPosition =
+            if (wristAlignment != null) relativeWristPosition(armMotor.currentPosition, wristAlignment!!)
+            else wrist.position
+
+        wrist.position = wristTargetPosition
+
+        telemetry.addData("Arm angle (degrees)", encoderPositionToDegrees(armMotor.currentPosition, ARM_ENCODER_RES))
+        telemetry.addData("Arm encoder position", armMotor.currentPosition)
+        telemetry.addData("Wrist alignment", wristAlignment ?: "null")
+        telemetry.addData("Wrist position", "actual %.2f, target %.2f, old %.2f", wrist.position, wristTargetPosition, oldWristPosition)
     }
 
     fun getPlacementInfo(pixelRow: Int): PlacementInfo {
@@ -103,9 +107,19 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
             WristAlignment.FLOOR -> 120
         }
         val armAngle = encoderPositionToDegrees(armPosition, ARM_ENCODER_RES) // in degrees
-        val servoAngle = theta - GAMMA - armAngle // degrees
+        val servoAngle = 90 + theta - GAMMA - armAngle // degrees
         return degreesToServoPosition(servoAngle, WRIST_SCALE_RANGE) // servo position value
     }
+
+//    fun relativeWristPosition(armPosition: Int, target: WristAlignment): Double {
+//        val theta = when(target) {
+//            WristAlignment.EASEL -> 60
+//            WristAlignment.FLOOR -> 0
+//        }
+//        val armAngle = 360 * armMotor.currentPosition / ARM_ENCODER_RES
+//        val servoAngle = 90 + theta - GAMMA - armAngle // degrees?
+//        return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53 // from degrees? to servo range
+//    }
 
     fun drop() { // TODO: ALEKS PLEASE MAKE THIS WORK WITH DISTANCE SENSOR
 //        while(!touchSensor.isPressed && armMotor.isBusy) {
@@ -136,17 +150,9 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
     fun raise() = armMotor.moveTo(200)
 
-    override fun telemetry() {
-        super.telemetry()
-        telemetry.addData("Distance Sensor", distanceSensor.getDistance(DistanceUnit.CM))
-        telemetry.addData("Arm Motor","target %.2f, actual %.2f", armMotor.targetPosition, armMotor.currentPosition)
-        telemetry.addData("Wrist Servo", wrist.position)
-    }
-
     fun stow() {
         wristAlignment = null
         wrist.position = WRIST_STOW_POSITION
-
     }
 
     fun DcMotor.moveTo(encoderPosition: Int) {
