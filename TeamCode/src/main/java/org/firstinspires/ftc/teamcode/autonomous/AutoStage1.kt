@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.autonomous.pathfinder.*
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import kotlin.math.PI
 
-class AutoStage1(alliance: CenterStageAutonomous.Alliance, startPosition: CenterStageAutonomous.StartPosition) : LinearOpMode() {
+open class AutoStage1(alliance: CenterStageAutonomous.Alliance, startPosition: CenterStageAutonomous.StartPosition) : LinearOpMode() {
     val leftTurn = when(alliance) {
         CenterStageAutonomous.Alliance.RED -> -90.0
         CenterStageAutonomous.Alliance.BLUE -> 90.0
@@ -17,8 +17,19 @@ class AutoStage1(alliance: CenterStageAutonomous.Alliance, startPosition: Center
     override fun runOpMode() {
         val driveBase = DriveBase(this)
 
+        waitForStart()
+
         // Run to backdrop
-        driveBase.runPolar(0.7, 1315.0, 3*PI/8)
-        driveBase.yaw(leftTurn, 0.7)
+        driveBase.runPolar(telemetry, 0.7, 0.00, 3*PI/8)
+        telemetry.addData("Motors-Target", driveBase.motors.map { it.targetPosition })
+        telemetry.addData("Motors-Actual", driveBase.motors.map { it.currentPosition })
+        telemetry.update()
+        while(!isStopRequested()) {}
+        while (driveBase.motors.any {it.isBusy}) {
+            telemetry.addData("Motors-Target", driveBase.motors.map { it.targetPosition })
+            telemetry.addData("Motors-Actual", driveBase.motors.map { it.currentPosition })
+            telemetry.update()
+        }
+//        driveBase.yaw(leftTurn, 0.7)
     }
 }
