@@ -27,6 +27,8 @@ class SemiAutoTeleOp: LinearOpMode() {
 
         val subassemblyList = listOf(driveBase, arm, pixelReleases, winch, droneLauncher)
 
+        driveBase.teleOpInit()
+
         waitForStart()
 
         if (opModeIsActive()) {
@@ -43,20 +45,11 @@ class SemiAutoTeleOp: LinearOpMode() {
                 droneLauncher.control(gamepad2.x)
                 arm.control(gamepad2)
 
-                runAllTelemetries()
+                // Telemetry
+                driveBase.telemetry()
+                arm.telemetry()
                 telemetry.update()
             }
         }
-    }
-
-    fun telemetry() {
-//        telemetry.addData("runtime (s)", runtime)
-//        telemetry.addData("looptime (ms)", loopTime.milliseconds())
-//        runAllTelemetries()
-    }
-
-    fun runAllTelemetries() {
-//        for (subassembly in subassemblyList) subassembly?.telemetry()
-//        telemetry.update()
     }
 }

@@ -66,22 +66,20 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         rightFront.power = powerCurve(rightFrontPower) * MAX_POWER
         leftRear.power = powerCurve(leftRearPower) * MAX_POWER
         rightRear.power = powerCurve(rightRearPower) * MAX_POWER
-
-        val telemetryWheelPowers = telemetry.addData(
-            "Wheel Powers",
-            """
-                
-            %.2f, %.2f
-            %.2f, %.2f
-        """.trimIndent(),
-            leftFront.power, rightFront.power,
-            leftRear.power, rightRear.power
-        )
     }
 
     override fun telemetry() {
         super.telemetry()
-        telemetry.addLine()
+        telemetry.addData(
+            "Wheel Powers",
+            """
+                
+                %.2f, %.2f
+                %.2f, %.2f
+            """.trimIndent(),
+            leftFront.power, rightFront.power,
+            leftRear.power, rightRear.power
+        )
     }
 
     data class MoveRobotCalculations(

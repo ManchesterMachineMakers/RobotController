@@ -32,20 +32,6 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     @Deprecated("This is now deprecated, use the Subassembly `PixelReleases.kt`")
     val leftRelease = hardwareMap.servo.get("left_release")
 
-    val slowCoefficient: Double
-        get() {
-            val distance = distanceSensor.getDistance(DistanceUnit.CM)
-            return if(distance < ARM_SLOW_DISTANCE_THRESHOLD) {
-                opMode.log(
-                    "Distance from object is less that %.1f at %.1f"
-                        .format( ARM_SLOW_DISTANCE_THRESHOLD, distance)
-                )
-                distance / ARM_SLOW_DISTANCE_THRESHOLD
-            } else {
-                1.0
-            }
-        }
-
     init {
         armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER // Resets the encoder (distance tracking)
         Thread.sleep(10)
@@ -78,14 +64,14 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     }, { armMotor.setMotorDisable() })
 
     fun control(gamepad: Gamepad) {
-        val leftY = gamepad.left_stick_y
+        val leftY = gamepad.left_stick_y.toDouble()
 
         if (!armMotor.isOverCurrent) // lock out controls if overcurrent
             armMotor.power = powerCurve(
                     if(leftY < 0) { // down
-                        leftY * slowCoefficient
+                        leftY * clamp(getSlowCoefficient(20.0), 0.2, 1.0)
                     } else { // up/rest
-                        leftY.toDouble()
+                        leftY
                     }
             )
 
@@ -131,6 +117,29 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         return degreesToServoPosition(servoAngle, WRIST_SCALE_RANGE) // servo position value
     }
 
+    /**
+     * @return the coefficient to slow down the arm, based on the distance sensor's value
+     * @param distanceThreshold the distance when the arm will start slowing down
+     * @param distanceUnit the unit distanceThreshold uses
+     */
+    fun getSlowCoefficient(distanceThreshold: Double, distanceUnit: DistanceUnit = DistanceUnit.CM): Double {
+        wristAlignment ?: return 1.0
+        val distance = distanceSensor.getDistance(distanceUnit)
+        if(distance == 6553.5) {
+            opMode.log("WARNING: Issue with distance sensor, arm-auto-slowing is not operational")
+            return 1.0
+        }
+        return if(distance < distanceThreshold) {
+            opMode.log(
+                "Distance from object is less that %.1f at %.1f"
+                    .format(distanceThreshold, distance)
+            )
+            distance / distanceThreshold
+        } else {
+            1.0
+        }
+    }
+
     fun drop() { // TODO: ALEKS PLEASE MAKE THIS WORK WITH DISTANCE SENSOR
 //        while(!touchSensor.isPressed && armMotor.isBusy) {
 //            armMotor.power = -0.2
@@ -163,8 +172,8 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     override fun telemetry() {
         super.telemetry()
         telemetry.addData("Distance Sensor", distanceSensor.getDistance(DistanceUnit.CM))
-        telemetry.addData("Arm Motor","target %.2f, actual %.2f", armMotor.targetPosition, armMotor.currentPosition)
-        telemetry.addData("Wrist Servo", wrist.position)
+        telemetry.addData("Arm Motor","target ${armMotor.targetPosition}, actual ${armMotor.currentPosition}")
+        telemetry.addData("Wrist Servo", "%.2f", wrist.position)
     }
 
     /**
@@ -213,7 +222,6 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         val WRIST_SCALE_RANGE = Pair(0.25, 0.78)
         const val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
         const val ARM_AUTOSTOW_CURRENT = 2.0
-        const val ARM_SLOW_DISTANCE_THRESHOLD = 30 // CM at which the arm will begin to slow down
         // constants
         const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
         // math
