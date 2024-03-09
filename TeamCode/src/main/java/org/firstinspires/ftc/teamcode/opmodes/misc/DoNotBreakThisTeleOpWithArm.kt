@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.subassemblies.misc.DoNotBreakThisArm
+import kotlin.math.*
 
 @TeleOp(name = "Do Not Break This TeleOp with Arm", group = "do not break")
 class DoNotBreakThisTeleOpWithArm : LinearOpMode() {
@@ -39,8 +40,7 @@ class DoNotBreakThisTeleOpWithArm : LinearOpMode() {
                 // Denominator is the largest motor power (absolute value) or 1
                 // This ensures all the powers maintain the same ratio,
                 // but only if at least one is out of the range [-1, 1]
-                val denominator =
-                    Math.max(Math.abs(leftY) + Math.abs(leftX) + Math.abs(rightX), 1.0)
+                val denominator = max(abs(leftY) + abs(leftX) + abs(rightX), 1.0)
                 val leftFrontPower = (leftY + leftX + rightX) / denominator
                 val rightFrontPower = (leftY - leftX - rightX) / denominator
                 val leftRearPower = (leftY - leftX + rightX) / denominator
@@ -59,7 +59,7 @@ class DoNotBreakThisTeleOpWithArm : LinearOpMode() {
     }
 
     private fun DcMotor.configure(direction: DcMotorSimple.Direction) {
-        this.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        this.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         this.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
         this.direction = direction
     }
