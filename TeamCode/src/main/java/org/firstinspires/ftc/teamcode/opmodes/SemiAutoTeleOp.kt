@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.util.log
 @TeleOp(name = "Semi-Automatic TeleOp (preferred)", group = "arm")
 class SemiAutoTeleOp: LinearOpMode() {
 
+    val loopTime = ElapsedTime()
+
     override fun runOpMode() {
         // init, no movement allowed
         telemetry.isAutoClear = false
@@ -23,11 +25,8 @@ class SemiAutoTeleOp: LinearOpMode() {
         val winch = Winch(this)
         val droneLauncher = DroneLauncher(this)
 
-        val loopTime = ElapsedTime()
-
         val subassemblyList = listOf(driveBase, arm, pixelReleases, winch, droneLauncher)
-
-        driveBase.teleOpInit()
+        driveBase.opInit()
 
         waitForStart()
 
@@ -51,5 +50,10 @@ class SemiAutoTeleOp: LinearOpMode() {
                 telemetry.update()
             }
         }
+    }
+
+    fun telemetry() {
+        telemetry.addData("runtime (s)", runtime)
+        telemetry.addData("looptime (ms)", loopTime.milliseconds())
     }
 }

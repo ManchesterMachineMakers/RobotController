@@ -15,7 +15,6 @@ import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.teamcode.util.powerCurve
 import kotlin.math.*
 
-
 class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
 
     private val leftFront = hardwareMap.dcMotor.get("left_front")
@@ -24,22 +23,20 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     private val rightRear = hardwareMap.dcMotor.get("right_rear")
     private val imu = IMUManager(opMode)
 
-    companion object {
-        const val MAX_POWER = 0.8
-    }
-
     init {
-        leftFront.direction = DcMotorSimple.Direction.FORWARD
+        // direction = FORWARD by default
+
+//        leftFront.direction = DcMotorSimple.Direction.REVERSE
         rightFront.direction = DcMotorSimple.Direction.REVERSE
         leftRear.direction = DcMotorSimple.Direction.REVERSE
-        rightRear.direction = DcMotorSimple.Direction.FORWARD
+//        rightRear.direction = DcMotorSimple.Direction.REVERSE
 
         opMode.log("DriveBase successfully initialized")
     }
 
-    fun teleOpInit() {
+    fun opInit() {
         setRunMode(RunMode.RUN_WITHOUT_ENCODER)
-        setZeroPowerBehavior(ZeroPowerBehavior.BRAKE)
+        setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE)
     }
 
     fun control(gamepad: Gamepad) {
@@ -83,13 +80,13 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     data class MoveRobotCalculations(
-            val leftX: Double,
+            val x: Double,
             val y: Double,
             val yaw: Double,
-            val leftFront: Double = leftX - y - yaw,
-            val rightFront: Double = leftX + y + yaw,
-            val leftRear: Double = (leftX + y - yaw),
-            val rightRear: Double = leftX - y + yaw
+            val leftFront: Double = x - y - yaw,
+            val rightFront: Double = x + y + yaw,
+            val leftRear: Double = (x + y - yaw),
+            val rightRear: Double = x - y + yaw
     )
 
     /**
@@ -102,10 +99,10 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
      *
      * Positive Yaw is counter-clockwise
      */
-    fun moveRobot(leftX: Double, y: Double, yaw: Double) {
+    fun moveRobot(x: Double, y: Double, yaw: Double) {
         // Calculate wheel powers.
         var (_, _, _, leftFrontPower, rightFrontPower, leftBackPower, rightBackPower) =
-                MoveRobotCalculations(leftX, y, yaw)
+                MoveRobotCalculations(x, y, yaw)
 
         // Normalize wheel powers to be less than 1.0
         var max = max(abs(leftFrontPower), abs(rightFrontPower))
