@@ -59,10 +59,10 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         val leftRearPower = (leftY - leftX + rightX) / denominator
         val rightRearPower = (leftY + leftX - rightX) / denominator
 
-        leftFront.power = powerCurve(leftFrontPower) * MAX_POWER
-        rightFront.power = powerCurve(rightFrontPower) * MAX_POWER
-        leftRear.power = powerCurve(leftRearPower) * MAX_POWER
-        rightRear.power = powerCurve(rightRearPower) * MAX_POWER
+        leftFront.power = powerCurve(leftFrontPower)
+        rightFront.power = powerCurve(rightFrontPower)
+        leftRear.power = powerCurve(leftRearPower)
+        rightRear.power = powerCurve(rightRearPower)
     }
 
     override fun telemetry() {
