@@ -21,8 +21,6 @@ class PixelReleases(opMode: OpMode): Subassembly(opMode, "Pixel Droppers") {
         Servo.Direction.REVERSE
     )
 
-    val telemetryData: Telemetry.Item = telemetry.addData("isOpen", "%b, %b", left.isOpen, right.isOpen)
-
     init {
         opMode.log("PixelReleases successfully initialized")
     }

@@ -6,7 +6,10 @@ import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DistanceSensor
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.util.ElapsedTime
 import com.rutins.aleks.diagonal.Subject
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerRevolution
 import org.firstinspires.ftc.teamcode.util.OvercurrentProtection
 import org.firstinspires.ftc.teamcode.util.Subassembly
@@ -58,8 +61,16 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     }, { armMotor.setMotorDisable() })
 
     fun control(gamepad: Gamepad) {
+        val leftY = gamepad.left_stick_y.toDouble()
+
         if (!armMotor.isOverCurrent) // lock out controls if overcurrent
-            armMotor.power = powerCurve(gamepad.left_stick_y.toDouble())
+            armMotor.power = powerCurve(
+                    if(leftY < 0) { // down
+                        leftY * clamp(getSlowCoefficient(20.0), 0.2, 1.0)
+                    } else { // up/rest
+                        leftY
+                    }
+            )
 
         armMotor.mode = // arm calibration
             if (gamepad.b) DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -67,7 +78,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
         if (gamepad.a) wristAlignment = WristAlignment.FLOOR
         if (gamepad.y) wristAlignment = WristAlignment.EASEL
-        if (gamepad.back) {}
+        if (gamepad.back) stow { !gamepad.atRest() }
 
         val oldWristPosition = wrist.position
         val wristTargetPosition =
@@ -113,6 +124,29 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         return degreesToServoPosition(servoAngle.toDegrees(), WRIST_SCALE_RANGE) // servo position value
     }
 
+    /**
+     * @return the coefficient to slow down the arm, based on the distance sensor's value
+     * @param distanceThreshold the distance when the arm will start slowing down
+     * @param distanceUnit the unit distanceThreshold uses
+     */
+    fun getSlowCoefficient(distanceThreshold: Double, distanceUnit: DistanceUnit = DistanceUnit.CM): Double {
+        wristAlignment ?: return 1.0
+        val distance = distanceSensor.getDistance(distanceUnit)
+        if(distance == 6553.5) {
+            opMode.log("WARNING: Issue with distance sensor, arm-auto-slowing is not operational")
+            return 1.0
+        }
+        return if(distance < distanceThreshold) {
+            opMode.log(
+                "Distance from object is less that %.1f at %.1f"
+                    .format(distanceThreshold, distance)
+            )
+            distance / distanceThreshold
+        } else {
+            1.0
+        }
+    }
+
     fun drop() { // TODO: ALEKS PLEASE MAKE THIS WORK WITH DISTANCE SENSOR
 //        while(!touchSensor.isPressed && armMotor.isBusy) {
 //            armMotor.power = -0.2
@@ -142,9 +176,46 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
     fun raise() = armMotor.moveTo(200)
 
-    fun stow() {
+    override fun telemetry() {
+        super.telemetry()
+        telemetry.addData("Distance Sensor", distanceSensor.getDistance(DistanceUnit.CM))
+        telemetry.addData("Arm Motor","target ${armMotor.targetPosition}, actual ${armMotor.currentPosition}")
+        telemetry.addData("Wrist Servo", "%.2f", wrist.position)
+    }
+
+    /**
+     * @param ifAbort a check that returns true when an abort is necessary
+     */
+    fun stow(ifAbort: () -> Boolean) {
+        opMode.log("Attempting to auto-stow robot arm")
         wristAlignment = null
         wrist.position = WRIST_STOW_POSITION
+        val timer = ElapsedTime()
+        while(!ifAbort()) {
+            val current = armMotor.getCurrent(CurrentUnit.AMPS)
+            if(current < ARM_AUTOSTOW_CURRENT) { // TODO: test on main bot to verify value.
+                armMotor.power = 0.2
+                opMode.log(
+                    "Arm current (AMPS) is below $ARM_AUTOSTOW_CURRENT (at %.2f): continuing auto-stow at time: %.2f"
+                    .format(current, timer.seconds())
+                )
+            } else {
+                armMotor.power = 0.0
+                opMode.log(
+                    "Arm current (AMPS) exceeded $ARM_AUTOSTOW_CURRENT (at %.2f): finishing auto-stow at time: %.2f"
+                    .format(current, timer.seconds())
+                )
+                break
+            }
+            if(timer.seconds() >= 5.0) {
+                armMotor.power = 0.0
+                opMode.log("Aborting arm auto-stow; time exceeded 5.0 seconds")
+                break
+            }
+            Thread.sleep(100)
+        }
+        if(ifAbort()) opMode.log("Aborting arm auto-stow: received command")
+        armMotor.power = 0.0
     }
 
     fun DcMotor.moveTo(encoderPosition: Int) {
@@ -156,11 +227,12 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     companion object {
         // config values
         val WRIST_SCALE_RANGE = Pair(0.25, 0.78)
-        val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
+        const val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
+        const val ARM_AUTOSTOW_CURRENT = 2.0
         // constants
         const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
         // math
-        val GAMMA = atan2(16.0,283.0)
+        val GAMMA = atan2(16.0, 283.0)
         const val L2 = 67.88
         const val L3 = 59.56
         const val R = 336.0

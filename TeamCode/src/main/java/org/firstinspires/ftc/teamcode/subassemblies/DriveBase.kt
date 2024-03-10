@@ -4,6 +4,7 @@ import com.farthergate.ctrlcurve.PID
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode
+import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Gamepad
@@ -39,19 +40,20 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     fun control(gamepad: Gamepad) {
-        // from https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
-        val leftX: Double = gamepad.left_stick_x.toDouble()
-        val leftY: Double = gamepad.left_stick_y.toDouble()
-        val rightX: Double = -gamepad.right_stick_x.toDouble()
-
+        // Taken from: https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio,
+        // but only if at least one is out of the range [-1, 1]
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio,
         // but only if at least one is out of the range [-1, 1]
 
-        // Denominator is the largest motor power (absolute value) or 1
-        // This ensures all the powers maintain the same ratio,
-        // but only if at least one is out of the range [-1, 1]
+        val leftX = gamepad.left_stick_x.toDouble()
+        val leftY = gamepad.left_stick_y.toDouble()
+        val rightX = -gamepad.right_stick_x.toDouble()
+
         val denominator = max(abs(leftY) + abs(leftX) + abs(rightX), 1.0)
+
         val leftFrontPower = (leftY + leftX + rightX) / denominator
         val rightFrontPower = (leftY - leftX - rightX) / denominator
         val leftRearPower = (leftY - leftX + rightX) / denominator
@@ -65,7 +67,16 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
 
     override fun telemetry() {
         super.telemetry()
-        telemetry.addLine()
+        telemetry.addData(
+            "Wheel Powers",
+            """
+                
+                %.2f, %.2f
+                %.2f, %.2f
+            """.trimIndent(),
+            leftFront.power, rightFront.power,
+            leftRear.power, rightRear.power
+        )
     }
 
     data class MoveRobotCalculations(
@@ -117,7 +128,7 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     fun setMode(mode: RunMode) {
-//        motors.setMode(mode)
+        motors.setMode(mode)
     }
 
     fun setTargetPositions(lf: Int, rf: Int, lr: Int, rr: Int) {
@@ -245,7 +256,7 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
         }
     }
 
-    fun setZeroPowerBehavior(zeroPowerBehavior: DcMotor.ZeroPowerBehavior): Boolean {
+    fun setZeroPowerBehavior(zeroPowerBehavior: ZeroPowerBehavior): Boolean {
         return try {
             for (motor in motors) {
                 motor.zeroPowerBehavior = zeroPowerBehavior
