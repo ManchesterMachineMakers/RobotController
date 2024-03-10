@@ -8,8 +8,8 @@ class ReleaseServo(val servo: Servo, val scaleRange: Pair<Double, Double>, val d
         private set
 
     init {
-        servo.scaleRange(scaleRange.first, scaleRange.second)
         servo.direction = direction
+        servo.scaleRange(scaleRange.first, scaleRange.second)
     }
 
     fun open() {

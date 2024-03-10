@@ -15,6 +15,8 @@ import org.firstinspires.ftc.teamcode.util.degreesToServoPosition
 import org.firstinspires.ftc.teamcode.util.encoderPositionToDegrees
 import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.teamcode.util.powerCurve
+import org.firstinspires.ftc.teamcode.util.toDegrees
+import org.firstinspires.ftc.teamcode.util.toRadians
 import kotlin.math.*
 
 // Arm subassembly control
@@ -103,23 +105,13 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     fun relativeWristPosition(armPosition: Int, target: WristAlignment): Double {
         wristAlignment ?: return wrist.position
         val theta = when(target) {
-            WristAlignment.EASEL -> 60
-            WristAlignment.FLOOR -> 120
+            WristAlignment.EASEL -> PI / 3
+            WristAlignment.FLOOR -> 0.0
         }
         val armAngle = encoderPositionToDegrees(armPosition, ARM_ENCODER_RES) // in degrees
-        val servoAngle = 90 + theta - GAMMA - armAngle // degrees
-        return degreesToServoPosition(servoAngle, WRIST_SCALE_RANGE) // servo position value
+        val servoAngle = PI / 2 + theta - GAMMA - armAngle.toRadians() // radians
+        return degreesToServoPosition(servoAngle.toDegrees(), WRIST_SCALE_RANGE) // servo position value
     }
-
-//    fun relativeWristPosition(armPosition: Int, target: WristAlignment): Double {
-//        val theta = when(target) {
-//            WristAlignment.EASEL -> 60
-//            WristAlignment.FLOOR -> 0
-//        }
-//        val armAngle = 360 * armMotor.currentPosition / ARM_ENCODER_RES
-//        val servoAngle = 90 + theta - GAMMA - armAngle // degrees?
-//        return (servoAngle - 90) / (0.53 * 300) - 0.5 * 0.53 // from degrees? to servo range
-//    }
 
     fun drop() { // TODO: ALEKS PLEASE MAKE THIS WORK WITH DISTANCE SENSOR
 //        while(!touchSensor.isPressed && armMotor.isBusy) {
@@ -168,7 +160,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         // constants
         const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
         // math
-        val GAMMA = atan2(16.0, 283.0)
+        val GAMMA = atan2(16.0,283.0)
         const val L2 = 67.88
         const val L3 = 59.56
         const val R = 336.0

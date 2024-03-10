@@ -17,7 +17,7 @@ class PixelReleases(opMode: OpMode): Subassembly(opMode, "Pixel Droppers") {
     )
     val right = ReleaseServo(
         hardwareMap.servo.get("right_release"),
-        Pair(0.1, 0.6),
+        Pair(0.4, 0.85),
         Servo.Direction.REVERSE
     )
 
