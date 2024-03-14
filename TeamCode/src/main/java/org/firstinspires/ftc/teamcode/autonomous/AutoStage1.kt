@@ -9,18 +9,15 @@ import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import kotlin.math.PI
 
 open class AutoStage1(alliance: CenterStageAutonomous.Alliance, startPosition: CenterStageAutonomous.StartPosition) : LinearOpMode() {
+    private lateinit var driveBase: DriveBase
+
     val leftTurn = when(alliance) {
         CenterStageAutonomous.Alliance.RED -> -90.0
         CenterStageAutonomous.Alliance.BLUE -> 90.0
     }
 
-    override fun runOpMode() {
-        val driveBase = DriveBase(this)
-
-        waitForStart()
-
-        // Run to backdrop
-        driveBase.runPolar(telemetry, 0.7, 0.00, 3*PI/8)
+    fun drivePolarAndWait(power: Double, l: Double, theta: Double) {
+        driveBase.runPolar(telemetry, power, l, theta)
         telemetry.addData("Motors-Target", driveBase.motors.map { it.targetPosition })
         telemetry.addData("Motors-Actual", driveBase.motors.map { it.currentPosition })
         telemetry.update()
@@ -30,6 +27,16 @@ open class AutoStage1(alliance: CenterStageAutonomous.Alliance, startPosition: C
             telemetry.addData("Motors-Actual", driveBase.motors.map { it.currentPosition })
             telemetry.update()
         }
+    }
+
+    override fun runOpMode() {
+        driveBase = DriveBase(this)
+
+        waitForStart()
+
+        // Run to backdrop
+        drivePolarAndWait(0.7, 0.00, 3*PI/8)
+
 //        driveBase.yaw(leftTurn, 0.7)
     }
 }
