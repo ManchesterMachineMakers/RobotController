@@ -26,11 +26,12 @@ fun DriveBase.runPolar(telemetry: Telemetry, power: Double, l: Double, theta: Do
         encodersFromPolar(l, theta).let {
             it.forEachIndexed { index, ticks -> telemetry.addData("Ticks $index", ticks) }
             // Standardize power levels based on left front
+            val highestPower = it.maxOrNull() ?: 1.0
             val powerLevels = arrayOf(
-                    1.0,
-                    it[1] / it[0],
-                    it[2] / it[0],
-                    it[3] / it[0]
+                    it[0] / highestPower,
+                    it[1] / highestPower,
+                    it[2] / highestPower,
+                    it[3] / highestPower
             )
                     .map { it * power }
                     .toTypedArray()
