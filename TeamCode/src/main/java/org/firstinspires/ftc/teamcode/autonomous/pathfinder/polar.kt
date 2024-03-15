@@ -32,7 +32,7 @@ fun DriveBase.runPolar(telemetry: Telemetry, power: Double, l: Double, theta: Do
                     it[2] / it[0],
                     it[3] / it[0]
             )
-                    .map { it * 0.6 }
+                    .map { it * power }
                     .toTypedArray()
 
             setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
