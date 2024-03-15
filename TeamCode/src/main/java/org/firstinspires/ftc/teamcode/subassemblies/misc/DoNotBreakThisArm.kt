@@ -25,7 +25,6 @@ class DoNotBreakThisArm(private val opMode: OpMode, private val gamepad: Gamepad
     private val airplaneLauncher = hardwareMap.servo.get("airplane_launcher")
 
     // Variables for tracking arm and wrist positions, release statuses, and button states
-    private var latestArmPosition = 0
     private var wristPosition = 0.0
     private var buttonWasPressed = false
 
@@ -34,7 +33,7 @@ class DoNotBreakThisArm(private val opMode: OpMode, private val gamepad: Gamepad
 
         // Configuring arm motor
         arm.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        arm.direction = DcMotorSimple.Direction.REVERSE
+        arm.direction = DcMotorSimple.Direction.FORWARD
         arm.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
 
         // Configuring servos with appropriate ranges and directions
@@ -51,7 +50,6 @@ class DoNotBreakThisArm(private val opMode: OpMode, private val gamepad: Gamepad
         airplaneLauncher.direction = Servo.Direction.FORWARD // TODO: Get ideal direction
 
         // Initializing variables
-        latestArmPosition = arm.currentPosition
         buttonWasPressed = false
         telemetry.addData(">", "Arm Subassembly Ready.")
     }
@@ -70,7 +68,6 @@ class DoNotBreakThisArm(private val opMode: OpMode, private val gamepad: Gamepad
 
         arm.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         arm.power = -gamepad.left_stick_y * ARM_SPEED
-        latestArmPosition = arm.currentPosition
 
         winch.power = gamepad.right_stick_y.toDouble()
 

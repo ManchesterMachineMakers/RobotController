@@ -59,7 +59,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
     fun control(gamepad: Gamepad) {
         if (!armMotor.isOverCurrent) // lock out controls if overcurrent
-            armMotor.power = powerCurve(gamepad.left_stick_y.toDouble())
+            armMotor.power = powerCurve(-gamepad.left_stick_y.toDouble())
 
         armMotor.mode = // arm calibration
             if (gamepad.b) DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -110,6 +110,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         }
         val armAngle = encoderPositionToDegrees(armPosition, ARM_ENCODER_RES) // in degrees
         val servoAngle = PI / 2 + theta - GAMMA - armAngle.toRadians() // radians
+        opMode.log("servoAngle: ${servoAngle.toDegrees()}")
         return degreesToServoPosition(servoAngle.toDegrees(), WRIST_SCALE_RANGE) // servo position value
     }
 
