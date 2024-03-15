@@ -21,7 +21,7 @@ open class AutoStage1(alliance: CenterStageAutonomous.Alliance, startPosition: C
         telemetry.addData("Motors-Target", driveBase.motors.map { it.targetPosition })
         telemetry.addData("Motors-Actual", driveBase.motors.map { it.currentPosition })
         telemetry.update()
-        while (opModeIsActive() && driveBase.motors.any {it.isBusy}) {
+        while (opModeIsActive() || driveBase.motors.any {it.isBusy}) {
             telemetry.addData("Motors-Target", driveBase.motors.map { it.targetPosition })
             telemetry.addData("Motors-Actual", driveBase.motors.map { it.currentPosition })
             telemetry.update()
