@@ -40,7 +40,7 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
 
     fun control(gamepad: Gamepad) {
         // from https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
-        val leftX: Double = gamepad.left_stick_x.toDouble()
+        val leftX: Double = -gamepad.left_stick_x.toDouble()
         val leftY: Double = gamepad.left_stick_y.toDouble()
         val rightX: Double = -gamepad.right_stick_x.toDouble()
 
