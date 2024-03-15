@@ -26,7 +26,7 @@ public class DoNotBreakThisTeleOp extends LinearOpMode {
         if(opModeIsActive()) {
             while (opModeIsActive()) {
                 // from https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
-                double leftX = gamepad1.left_stick_x;
+                double leftX = -gamepad1.left_stick_x;
                 double leftY = gamepad1.left_stick_y;
                 double rightX = -gamepad1.right_stick_x;
 
