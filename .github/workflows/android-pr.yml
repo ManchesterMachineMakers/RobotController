@@ -26,6 +26,10 @@ jobs:
       
       - uses: actions/upload-artifact@v4
         with:
-          name: teamcode
-          path: '*.apk'
+          name: release
+          path: '*-release-*.apk'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: debug
+          path: '*-debug-*.apk'
 
