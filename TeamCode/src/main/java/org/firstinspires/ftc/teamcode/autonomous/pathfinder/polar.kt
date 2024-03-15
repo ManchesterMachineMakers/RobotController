@@ -19,7 +19,7 @@ fun encodersFromPolar(l: Double, theta: Double) =
                 cos(theta) + sin(theta),
                 cos(theta) - sin(theta)
         )
-                .map { it * l*motorEncoderEventsPerMM }
+                .map { ((l * it) / wheelCircumference) * motorEncoderEventsPerRevolution }
                 .toTypedArray()
 
 fun DriveBase.runPolar(telemetry: Telemetry, power: Double, l: Double, theta: Double) =
