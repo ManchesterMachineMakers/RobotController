@@ -21,20 +21,24 @@ open class AutoStage1(alliance: CenterStageAutonomous.Alliance, startPosition: C
         telemetry.addData("Motors-Target", driveBase.motors.map { it.targetPosition })
         telemetry.addData("Motors-Actual", driveBase.motors.map { it.currentPosition })
         telemetry.update()
+        idle()
         while (opModeIsActive() || driveBase.motors.any {it.isBusy}) {
             telemetry.addData("Motors-Target", driveBase.motors.map { it.targetPosition })
             telemetry.addData("Motors-Actual", driveBase.motors.map { it.currentPosition })
             telemetry.update()
+            idle()
         }
     }
 
     override fun runOpMode() {
         driveBase = DriveBase(this)
 
+        telemetry.isAutoClear = false
+
         waitForStart()
 
         // Run to backdrop
-        drivePolarAndWait(0.7, 0.00, 3*PI/8)
+        drivePolarAndWait(0.7, 50.00, 3*PI/8)
 
 //        driveBase.yaw(leftTurn, 0.7)
     }
