@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous.pathfinder
 
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorEx
 import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import kotlin.math.PI
@@ -44,7 +45,22 @@ fun DriveBase.runPolar(telemetry: Telemetry, power: Double, l: Double, theta: Do
             setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER)
             Thread.yield()
             val ticks = it.map { it.roundToInt() }
+            motors.forEach { (it as DcMotorEx).targetPositionTolerance = 6 }
             setTargetPositions(ticks[0], ticks[1], ticks[2], ticks[3])
             setMode(DcMotor.RunMode.RUN_TO_POSITION)
             setPower(powerLevels)
         }
+
+fun DriveBase.runPolarAndWait(opModeIsActive: () -> Boolean, telemetry: Telemetry, power: Double, l: Double, theta: Double) {
+    runPolar(telemetry, power, l, theta)
+    telemetry.addData("Motors-Target", motors.map { it.targetPosition })
+    telemetry.addData("Motors-Actual", motors.map { it.currentPosition })
+    telemetry.update()
+    Thread.yield()
+    while (opModeIsActive() && motors.any {it.isBusy}) {
+        telemetry.addData("Motors-Target", motors.map { it.targetPosition })
+        telemetry.addData("Motors-Actual", motors.map { it.currentPosition })
+        telemetry.update()
+        Thread.yield()
+    }
+}

@@ -3,9 +3,4 @@ package org.firstinspires.ftc.teamcode.autonomous
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 
 @Autonomous(name = "Autonomous (Parking Only) (Blue, Backstage)")
-class AutoParkBB : CenterStageAutonomous(Alliance.BLUE, StartPosition.BACKSTAGE) {
-    override fun runOpMode() {
-        initTelemetry()
-        runParkOnly()
-    }
-}
+class AutoParkBB : AutoPark(CenterStageAutonomous.Alliance.BLUE, CenterStageAutonomous.StartPosition.BACKSTAGE)
