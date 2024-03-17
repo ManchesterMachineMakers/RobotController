@@ -111,7 +111,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     fun autoCalibrate(abortCondition: () -> Boolean = { false }) {
         opMode.log("Attempting to automatically calibrate the arm motor")
         wrist.position = relativeWristPosition(0, WristAlignment.FLOOR)
-        while(distanceSensor.getDistance(DistanceUnit.CM) > ARM_HEIGHT && armMotor.isBusy || abortCondition()) {
+        while(distanceSensor.getDistance(DistanceUnit.CM) > ARM_HEIGHT && armMotor.isBusy || abortCondition()) { // TODO: FIND THE REAL ARM_HEIGHT_VALUE
             armMotor.power = -0.2
             telemetry.addData("Distance Sensor", distanceSensor.getDistance(DistanceUnit.CM))
             telemetry.addData("Arm Motor", armMotor.currentPosition)
@@ -125,7 +125,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         opMode.log("Arm motor successfully calibrated")
     }
 
-    fun drop() { // TODO: ALEKS PLEASE MAKE THIS WORK WITH DISTANCE SENSOR
+    fun drop() { // TODO: NEEDS TESTING
         opMode.log("Attempting to drop the arm")
         autoCalibrate()
         armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
@@ -133,10 +133,11 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         armMotor.targetPosition = degreesToEncoderPosition(130.0, ARM_ENCODER_RES)
         armMotor.power = 0.2
         while(armMotor.isBusy) {
-
+            Thread.sleep(10)
         }
         armMotor.power = 0.0
         telemetry.update()
+        opMode.log("Arm motor successfully dropped?")
     }
 
     fun raise() = armMotor.moveTo(200)
