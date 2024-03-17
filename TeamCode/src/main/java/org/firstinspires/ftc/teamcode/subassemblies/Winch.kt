@@ -14,7 +14,7 @@ class Winch(opMode: OpMode): Subassembly(opMode, "Winch") {
     init {
         winchMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER // NOTE: encoders on winch motor are damaged
         winchMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        winchMotor.direction = DcMotorSimple.Direction.FORWARD // TODO: double check this is the optimal direction
+        winchMotor.direction = DcMotorSimple.Direction.FORWARD
 
         opMode.log("Winch successfully initialized")
     }

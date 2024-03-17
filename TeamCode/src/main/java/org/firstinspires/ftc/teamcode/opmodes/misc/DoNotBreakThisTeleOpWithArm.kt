@@ -19,10 +19,10 @@ class DoNotBreakThisTeleOpWithArm : LinearOpMode() {
         val rightRear = hardwareMap.dcMotor.get("right_rear")
 
 
-        leftFront.configure(DcMotorSimple.Direction.FORWARD)
-        rightFront.configure(DcMotorSimple.Direction.REVERSE)
-        leftRear.configure(DcMotorSimple.Direction.REVERSE)
-        rightRear.configure(DcMotorSimple.Direction.FORWARD)
+        leftFront.configure(DcMotorSimple.Direction.REVERSE)
+        rightFront.configure(DcMotorSimple.Direction.FORWARD)
+        leftRear.configure(DcMotorSimple.Direction.FORWARD)
+        rightRear.configure(DcMotorSimple.Direction.REVERSE)
 
         waitForStart()
 
@@ -30,8 +30,8 @@ class DoNotBreakThisTeleOpWithArm : LinearOpMode() {
             while (opModeIsActive()) {
                 // from https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
                 val leftX = gamepad1.left_stick_x.toDouble()
-                val leftY = gamepad1.left_stick_y.toDouble()
-                val rightX = -gamepad1.right_stick_x.toDouble()
+                val leftY = -gamepad1.left_stick_y.toDouble()
+                val rightX = gamepad1.right_stick_x.toDouble()
 
                 // Denominator is the largest motor power (absolute value) or 1
                 // This ensures all the powers maintain the same ratio,

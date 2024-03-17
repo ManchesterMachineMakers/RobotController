@@ -59,7 +59,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
     fun control(gamepad: Gamepad) {
         if (!armMotor.isOverCurrent) // lock out controls if overcurrent
-            armMotor.power = powerCurve(gamepad.left_stick_y.toDouble())
+            armMotor.power = powerCurve(-gamepad.left_stick_y.toDouble())
 
         armMotor.mode = // arm calibration
             if (gamepad.b) DcMotor.RunMode.STOP_AND_RESET_ENCODER
@@ -156,7 +156,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     companion object {
         // config values
         val WRIST_SCALE_RANGE = Pair(0.25, 0.78)
-        val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
+        const val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
         // constants
         const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
         // math
