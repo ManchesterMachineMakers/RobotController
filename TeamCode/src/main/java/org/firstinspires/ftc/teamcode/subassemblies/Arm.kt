@@ -109,7 +109,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
             WristAlignment.FLOOR -> 0.0
         }
         val armAngle = encoderPositionToDegrees(armPosition, ARM_ENCODER_RES) // in degrees
-        val servoAngle = PI / 2 + theta - GAMMA - armAngle.toRadians() // radians
+        val servoAngle = 11*PI/16 + theta - GAMMA - armAngle.toRadians() // radians
         opMode.log("servoAngle: ${servoAngle.toDegrees()}")
         return degreesToServoPosition(servoAngle.toDegrees(), WRIST_SCALE_RANGE) // servo position value
     }
