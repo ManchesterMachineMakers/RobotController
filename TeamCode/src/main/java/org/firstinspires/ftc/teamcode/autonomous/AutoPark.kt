@@ -12,7 +12,7 @@ open class AutoPark(val alliance: CenterStageAutonomous.Alliance, val startPosit
 
         waitForStart()
 
-        polar(10.0, 0.0)
+        polar(15.0, 0.0)
         if(startPosition == CenterStageAutonomous.StartPosition.BACKSTAGE) {
             polar(
                 1.5 * squareSize/5, when (alliance) {
@@ -21,8 +21,12 @@ open class AutoPark(val alliance: CenterStageAutonomous.Alliance, val startPosit
                 }
             )
         } else {
-            telemetry.addLine("This autonomous does not support front start positions yet.")
-            telemetry.update()
+            polar(
+                3.5 * squareSize/5, when (alliance) {
+                    CenterStageAutonomous.Alliance.BLUE -> PI / 2
+                    CenterStageAutonomous.Alliance.RED -> -PI / 2
+                }
+            )
         }
     }
 }
