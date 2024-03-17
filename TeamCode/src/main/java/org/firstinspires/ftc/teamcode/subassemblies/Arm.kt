@@ -110,7 +110,6 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         }
         val armAngle = encoderPositionToDegrees(armPosition, ARM_ENCODER_RES) // in degrees
         val servoAngle = PI / 2 + theta - GAMMA - armAngle.toRadians() // radians
-        opMode.log("servoAngle: ${servoAngle.toDegrees()}")
         return degreesToServoPosition(servoAngle.toDegrees(), WRIST_SCALE_RANGE) // servo position value
     }
 
@@ -157,7 +156,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     companion object {
         // config values
         val WRIST_SCALE_RANGE = Pair(0.25, 0.78)
-        val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
+        const val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
         // constants
         const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
         // math
