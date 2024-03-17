@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
 import com.farthergate.ctrlcurve.PID
-import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.teamcode.util.powerCurve
 import kotlin.math.*
 
-class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
+class DriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Drive Base") {
 
     private val leftFront = hardwareMap.dcMotor.get("left_front")
     private val rightFront = hardwareMap.dcMotor.get("right_front")

@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
 import com.farthergate.ctrlcurve.PID
-import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DistanceSensor
@@ -21,16 +21,11 @@ import org.firstinspires.ftc.teamcode.util.powerCurve
 import kotlin.math.*
 
 // Arm subassembly control
-class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
+class Arm(opMode: LinearOpMode) : Subject, Subassembly(opMode, "Arm") {
     val armMotor = hardwareMap.dcMotor.get("arm") as DcMotorEx
     val distanceSensor = hardwareMap.get(DistanceSensor::class.java, "intake_distance")
     val wrist = hardwareMap.servo.get("wrist")
     var wristAlignment: WristAlignment? = null
-
-    @Deprecated("This is now deprecated, use the Subassembly `PixelReleases.kt`")
-    val rightRelease = hardwareMap.servo.get("right_release")
-    @Deprecated("This is now deprecated, use the Subassembly `PixelReleases.kt`")
-    val leftRelease = hardwareMap.servo.get("left_release")
 
     init {
         armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER // Resets the encoder (distance tracking)
@@ -132,8 +127,8 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
         armMotor.targetPosition = degreesToEncoderPosition(130.0, ARM_ENCODER_RES)
         armMotor.power = 0.2
-        while(armMotor.isBusy) {
-            Thread.sleep(10)
+        while(armMotor.isBusy && opMode.opModeIsActive()) {
+            opMode.idle()
         }
         armMotor.power = 0.0
         telemetry.update()

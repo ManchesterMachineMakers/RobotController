@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot
-import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.IMU
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.log
 
-class IMUManager(opMode: OpMode) : Subassembly(opMode, "IMU Manager") {
+class IMUManager(opMode: LinearOpMode) : Subassembly(opMode, "IMU Manager") {
     val imuParameters =
             IMU.Parameters(
                     RevHubOrientationOnRobot(
