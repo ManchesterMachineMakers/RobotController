@@ -24,11 +24,10 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
 
     init {
         // direction = FORWARD by default
-
-//        leftFront.direction = DcMotorSimple.Direction.REVERSE
-        rightFront.direction = DcMotorSimple.Direction.REVERSE
-        leftRear.direction = DcMotorSimple.Direction.REVERSE
-//        rightRear.direction = DcMotorSimple.Direction.REVERSE
+        leftFront.direction = DcMotorSimple.Direction.REVERSE
+//        rightFront.direction = DcMotorSimple.Direction.REVERSE
+//        leftRear.direction = DcMotorSimple.Direction.REVERSE
+        rightRear.direction = DcMotorSimple.Direction.REVERSE
 
         opMode.log("DriveBase successfully initialized")
     }
@@ -40,9 +39,9 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
 
     fun control(gamepad: Gamepad) {
         // from https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html
-        val leftX: Double = -gamepad.left_stick_x.toDouble()
-        val leftY: Double = gamepad.left_stick_y.toDouble()
-        val rightX: Double = -gamepad.right_stick_x.toDouble()
+        val leftX: Double = gamepad.left_stick_x.toDouble()
+        val leftY: Double = -gamepad.left_stick_y.toDouble()
+        val rightX: Double = gamepad.right_stick_x.toDouble()
 
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio,
