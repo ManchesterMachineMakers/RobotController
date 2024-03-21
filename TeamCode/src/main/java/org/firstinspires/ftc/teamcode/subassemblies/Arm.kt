@@ -161,7 +161,7 @@ class Arm(opMode: LinearOpMode) : Subject, Subassembly(opMode, "Arm") {
         val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
         // constants
         const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
-        const val ARM_HEIGHT = 10.0 // in CM
+        const val ARM_HEIGHT = 24.0 // in CM
         // math
         val GAMMA = atan2(16.0, 283.0)
         const val L2 = 67.88
