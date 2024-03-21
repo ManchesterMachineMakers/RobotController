@@ -120,14 +120,13 @@ class Arm(opMode: LinearOpMode) : Subject, Subassembly(opMode, "Arm") {
         opMode.log("Arm motor successfully calibrated")
     }
 
-    fun drop() { // TODO: NEEDS TESTING
+    fun drop(target: WristAlignment) {
         opMode.log("Attempting to drop the arm")
-        autoCalibrate()
-        armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
+        armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
-        armMotor.targetPosition = degreesToEncoderPosition(130.0, ARM_ENCODER_RES)
         armMotor.power = 0.2
-        while(armMotor.isBusy && opMode.opModeIsActive()) {
+        while(distanceSensor.getDistance(DistanceUnit.CM) > 1.5 && opMode.opModeIsActive()) {
+            wrist.position = relativeWristPosition(armMotor.currentPosition, target)
             opMode.idle()
         }
         armMotor.power = 0.0
