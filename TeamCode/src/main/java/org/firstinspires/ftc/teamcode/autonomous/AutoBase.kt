@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.autonomous
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 import org.firstinspires.ftc.teamcode.autonomous.pathfinder.runPolarAndWait
 import org.firstinspires.ftc.teamcode.autonomous.pathfinder.squareSize
 import org.firstinspires.ftc.teamcode.subassemblies.Arm
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.PixelReleases
+import org.firstinspires.ftc.teamcode.subassemblies.Vision
 import org.firstinspires.ftc.teamcode.util.ReleaseServo
 import org.firstinspires.ftc.teamcode.util.log
 import kotlin.math.PI
@@ -74,6 +76,33 @@ abstract class AutoBase(alliance: CenterStageAutonomous.Alliance, startPosition:
 
     //endregion
     //region Vision
+    var vision: Vision? = null
+
+    fun useVision() {
+        vision = Vision(this)
+    }
+
+    /** Detect a [Recognition] with a [label][Recognition.getLabel] of "duck" and a [confidence][Recognition.getConfidence] greater than 75% (takes the most confident one). THIS FUNCTION WILL CONTINUE TO RUN FOREVER IF NOTHING IS DETECTED. */
+    fun detect(): Recognition? {
+        ensure(vision, "Vision")
+        return detect(vision!!)
+    }
+    private fun detect(vision: Vision) = detect(vision, 0)
+    private fun detect(vision: Vision, iteration: Int): Recognition? =
+            vision.tfod.recognitions
+                    .filter { r ->
+                        r.label == "duck" && r.confidence > 0.75
+                    }
+                    .sortedBy(Recognition::getConfidence)
+                    .reversed()
+                    .firstOrNull()
+                    ?: if (opModeIsActive() && !isStopRequested && iteration < 100 /* approx. 2 seconds */) { run {
+                        sleep(20)
+                        detect(vision, iteration + 1)
+                    } } else { null }
+
+    val Recognition.centerX: Float
+        get() = (left + right) / 2
     //endregion
 
     //region Extensions
