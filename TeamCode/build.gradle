@@ -18,15 +18,11 @@ buildscript {
             url "https://plugins.gradle.org/m2/"
         }
     }
-    dependencies {
-        classpath "io.github.0ffz:gpr-for-gradle:1.2.1"
-    }
 }
 
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
 apply plugin: 'org.jetbrains.kotlin.android'
-apply plugin: "io.github.0ffz.github-packages"
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
@@ -36,14 +32,10 @@ android {
     }
 }
 
-repositories {
-    maven githubPackage.invoke("aleksrutins/ctrlcurve")
-}
-
 dependencies {
     implementation project(':FtcRobotController')
     implementation 'androidx.core:core-ktx:1.2.0'
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.9.10"
-    implementation "com.farthergate:ctrlcurve:0.1.5"
+    implementation "com.farthergate:ctrlcurve:0.2.1"
 }

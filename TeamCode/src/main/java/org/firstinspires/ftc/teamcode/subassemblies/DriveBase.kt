@@ -192,11 +192,12 @@ class DriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Drive Base") {
                     arrayOf(1.0, -1.0, 1.0, -1.0)
                 }
 
-        PID.runPID(0.0, degrees, 5.0, 1.0, 0.9, 0.9) { pid, initial, current, target, error ->
-            setPower(corrections.map { it * pid.calculateCorrection() }.toTypedArray())
+        val pid = PID(0.75, 50.0, 50.0, 10.0, 5.0, 0.0, degrees)
+        while(pid.shouldContinue()) {
+            setPower(corrections.map { it * pid.correction() }.toTypedArray())
             opMode.idle()
             telemetry.update()
-            imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
+            pid.update(imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES))
         }
 
         setPower(0.0, 0.0, 0.0, 0.0)
