@@ -22,6 +22,11 @@ class DriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Drive Base") {
     private val rightRear = hardwareMap.dcMotor.get("right_rear")
     private val imu = IMUManager(opMode)
 
+    enum class TurnDirection {
+        LEFT,
+        RIGHT
+    }
+
     init {
         // direction = FORWARD by default
 
@@ -180,24 +185,49 @@ class DriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Drive Base") {
         return power
     }
 
-    fun yaw(degrees: Double, power: Double) {
+    fun yaw(degrees: Double, direction: TurnDirection) {
         val telemetryYaw = telemetry.addData("Yaw", imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES))
-        setMode(RunMode.RUN_WITHOUT_ENCODER)
+        setMode(RunMode.RUN_USING_ENCODER)
         imu.imu.resetYaw()
 
-        val corrections =
-                if (-degrees < 0) {
-                    arrayOf(-1.0, 1.0, -1.0, 1.0)
-                } else {
-                    arrayOf(1.0, -1.0, 1.0, -1.0)
-                }
+        val turnCorrections = arrayOf(1.0, -1.0, 1.0, -1.0)
 
-        val pid = PID(0.75, 50.0, 50.0, 10.0, 5.0, 0.0, degrees)
-        while(pid.shouldContinue()) {
-            setPower(corrections.map { it * pid.correction() }.toTypedArray())
+        opMode.log("current,target,proportional,integral,derivative,correction")
+
+        val pid = PID(0.01, 100.0, 100.0, 10.0, 5.0, when(direction) {
+            TurnDirection.LEFT -> imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
+            TurnDirection.RIGHT -> -imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
+        }, when(direction) {
+            TurnDirection.LEFT -> degrees
+            TurnDirection.RIGHT -> -degrees
+        })
+        while(pid.shouldContinue() && opMode.opModeIsActive()) {
+            setPower(turnCorrections.map { it * pid.correction() * when(direction) {
+                TurnDirection.LEFT -> 1
+                TurnDirection.RIGHT -> -1
+            } }.toTypedArray())
             opMode.idle()
             telemetry.update()
-            pid.update(imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES))
+            pid.sync()
+            val newOrientation = imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES).let {
+                when(direction) {
+                    // The IMU returns values between -180 and 180, so we have to absolute value stuff in order to get there
+                    TurnDirection.LEFT ->
+                        if(degrees == 180.0)
+                            if(it < 0)
+                                180.0 + (180.0 - abs(it))
+                            else it
+                        else it
+                    TurnDirection.RIGHT ->
+                        if(degrees == 180.0)
+                            if(it < 0)
+                                180.0 + (180.0 - abs(it))
+                            else it
+                        else it
+                }
+            }
+            opMode.log("${pid.current},$degrees,${pid.proportional()},${pid.integral()},${pid.derivative()},${pid.correction()}")
+            pid.update(newOrientation)
         }
 
         setPower(0.0, 0.0, 0.0, 0.0)

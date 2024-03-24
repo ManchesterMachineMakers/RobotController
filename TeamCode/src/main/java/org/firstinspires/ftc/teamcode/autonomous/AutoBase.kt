@@ -30,17 +30,21 @@ abstract class AutoBase(alliance: CenterStageAutonomous.Alliance, startPosition:
         driveBase?.runPolarAndWait(this::opModeIsActive, telemetry, 0.7, l, theta)
     }
 
-    fun turn(degrees: Double) {
+    fun turn(degrees: Double, direction: DriveBase.TurnDirection) {
         ensure(driveBase, "DriveBase")
-        driveBase?.yaw(degrees, 0.7)
+        driveBase?.yaw(degrees, direction)
     }
 
+    // allow people to write the autonomous as if we're blue
     val left = when(alliance) {
-        CenterStageAutonomous.Alliance.RED -> -90.0
-        CenterStageAutonomous.Alliance.BLUE -> 90.0
+        CenterStageAutonomous.Alliance.RED -> DriveBase.TurnDirection.RIGHT
+        CenterStageAutonomous.Alliance.BLUE -> DriveBase.TurnDirection.LEFT
     }
 
-    val right = -left
+    val right = when(left) {
+        DriveBase.TurnDirection.LEFT -> DriveBase.TurnDirection.RIGHT
+        DriveBase.TurnDirection.RIGHT -> DriveBase.TurnDirection.LEFT
+    }
     //endregion
     //region Arm & Pixel Releases
     var arm: Arm? = null
