@@ -37,17 +37,17 @@ class DoNotBreakThisArm(private val opMode: OpMode, private val gamepad: Gamepad
         arm.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
 
         // Configuring servos with appropriate ranges and directions
-        leftRelease.scaleRange(0.175, 0.4) // 22.5% of 300 degree range
+        leftRelease.scaleRange(0.15, 0.40) // 22.5% of 300 degree range
         leftRelease.direction = Servo.Direction.FORWARD
 
-        rightRelease.scaleRange(0.6, 0.825) // 22.5% of 300 degree range
+        rightRelease.scaleRange(0.4, 0.85) // 22.5% of 300 degree range
         rightRelease.direction = Servo.Direction.REVERSE
 
         wrist.scaleRange(0.25, 0.78) // // 53% of 300 degree range
         wrist.direction = Servo.Direction.FORWARD
 
-        airplaneLauncher.scaleRange(0.0, 1.0) // 1 should be open, 0 should be closed; TODO: Get these values
-        airplaneLauncher.direction = Servo.Direction.FORWARD // TODO: Get ideal direction
+        airplaneLauncher.scaleRange(0.7, 0.78) // 1 should be open, 0 should be closed
+        airplaneLauncher.direction = Servo.Direction.REVERSE
 
         // Initializing variables
         buttonWasPressed = false
@@ -76,8 +76,8 @@ class DoNotBreakThisArm(private val opMode: OpMode, private val gamepad: Gamepad
             wristPosition += when {
                 gamepad.dpad_up -> -0.05
                 gamepad.dpad_down -> 0.05
-                gamepad.dpad_left -> 0.2
-                gamepad.dpad_right -> -0.2
+                gamepad.a -> 0.2
+                gamepad.y -> -0.2
                 else -> 0.0
             }
         }
