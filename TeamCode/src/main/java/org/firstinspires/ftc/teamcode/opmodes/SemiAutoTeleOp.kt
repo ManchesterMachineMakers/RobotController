@@ -43,7 +43,7 @@ class SemiAutoTeleOp: LinearOpMode() {
                 droneLauncher.control(gamepad2.x)
                 arm.control(gamepad2)
 
-                runAllTelemetries()
+                arm.telemetry()
                 telemetry.update()
             }
         }

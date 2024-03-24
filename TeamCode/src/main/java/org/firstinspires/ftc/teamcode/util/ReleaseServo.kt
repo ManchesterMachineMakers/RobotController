@@ -1,35 +1,31 @@
 package org.firstinspires.ftc.teamcode.util
 
 import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.util.RobotLog
 
-class ReleaseServo(val servo: Servo) {
+class ReleaseServo(val servo: Servo, val scaleRange: Pair<Double, Double>, val direction: Servo.Direction = Servo.Direction.FORWARD) {
 
     var isOpen = servo.position > 0.5
         private set
 
-    var scaleRange = Pair(0.0, 1.0)
-        set(value) {
-            servo.scaleRange(field.first, field.second)
-            field = value
-        }
-
-    var direction = Servo.Direction.FORWARD
-        set(value) {
-            servo.direction = value
-            field = value
-        }
+    init {
+        servo.direction = direction
+        servo.scaleRange(scaleRange.first, scaleRange.second)
+    }
 
     fun open() {
+        RobotLog.i("${this::class.simpleName} opened")
         servo.position = 1.0
         isOpen = true
     }
     fun close() {
+        RobotLog.i("${this::class.simpleName} closed")
         servo.position = 0.0
         isOpen = false
     }
     fun toggle() {
         if (isOpen) close()
         else open()
-        isOpen = !isOpen
+        RobotLog.i("${this::class.simpleName} toggled, isOpen=$isOpen")
     }
 }
