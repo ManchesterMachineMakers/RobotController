@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo
 import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerRevolution
+import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.OvercurrentProtection
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.clamp
@@ -60,29 +61,31 @@ class Arm(opMode: LinearOpMode) : Subject, Subassembly(opMode, "Arm") {
         armMotor.mode = DcMotor.RunMode.RUN_TO_POSITION
     }, { armMotor.setMotorDisable() })
 
-    fun control(gamepad: Gamepad) {
+    fun control(gamepad: GamepadManager) {
         if (!armMotor.isOverCurrent) // lock out controls if overcurrent
-            armMotor.power = powerCurve(-gamepad.left_stick_y.toDouble())
+            armMotor.power = powerCurve(-gamepad.gamepad.left_stick_y.toDouble())
 
         armMotor.mode = // arm calibration
-            if (gamepad.b) DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            if (gamepad.gamepad.b) DcMotor.RunMode.STOP_AND_RESET_ENCODER
             else DcMotor.RunMode.RUN_USING_ENCODER
 
-        if (gamepad.a) wristAlignment = WristAlignment.FLOOR
-        if (gamepad.y) wristAlignment = WristAlignment.EASEL
-        if (gamepad.back) {}
+        if (gamepad.gamepad.a) wristAlignment = WristAlignment.FLOOR
+        if (gamepad.gamepad.y) wristAlignment = WristAlignment.EASEL
+        if (gamepad.gamepad.back) wristAlignment = null
+
+        gamepad.once("dpad_up") { wrist.position -= 0.02 }
+        gamepad.once("dpad_down") { wrist.position += 0.02 }
+        gamepad.once("dpad_right") { wrist.position -= 0.02 }
+        gamepad.once("dpad_left") { wrist.position += 0.02 }
 
         val oldWristPosition = wrist.position
-        val wristTargetPosition =
-            if (wristAlignment != null) relativeWristPosition(armMotor.currentPosition, wristAlignment!!)
-            else wrist.position
 
-        wrist.position = wristTargetPosition
+        if(wristAlignment != null) wrist.position = relativeWristPosition(armMotor.currentPosition, wristAlignment!!)
 
         telemetry.addData("Arm angle (degrees)", encoderPositionToDegrees(armMotor.currentPosition, ARM_ENCODER_RES))
         telemetry.addData("Arm encoder position", armMotor.currentPosition)
         telemetry.addData("Wrist alignment", wristAlignment ?: "null")
-        telemetry.addData("Wrist position", "actual %.2f, target %.2f, old %.2f", wrist.position, wristTargetPosition, oldWristPosition)
+//        telemetry.addData("Wrist position", "actual %.2f, target %.2f, old %.2f", wrist.position, wristTargetPosition, oldWristPosition)
     }
 
     fun getPlacementInfo(pixelRow: Int): PlacementInfo {
@@ -137,8 +140,8 @@ class Arm(opMode: LinearOpMode) : Subject, Subassembly(opMode, "Arm") {
         opMode.log("Attempting to drop the arm")
         armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
-        armMotor.power = 0.2
-        while(distanceSensor.getDistance(DistanceUnit.CM) > 1.5 && opMode.opModeIsActive()) {
+        armMotor.power = -0.2
+        while(distanceSensor.getDistance(DistanceUnit.CM) > 6 && opMode.opModeIsActive()) {
             wrist.position = relativeWristPosition(armMotor.currentPosition, target)
             opMode.idle()
         }
@@ -152,7 +155,7 @@ class Arm(opMode: LinearOpMode) : Subject, Subassembly(opMode, "Arm") {
     override fun telemetry() {
         super.telemetry()
         telemetry.addData("Distance Sensor", distanceSensor.getDistance(DistanceUnit.CM))
-        telemetry.addData("Arm Motor","target %.2f, actual %.2f", armMotor.targetPosition, armMotor.currentPosition)
+        telemetry.addData("Arm Motor","target %d, actual %d", armMotor.targetPosition, armMotor.currentPosition)
         telemetry.addData("Wrist Servo", wrist.position)
     }
 

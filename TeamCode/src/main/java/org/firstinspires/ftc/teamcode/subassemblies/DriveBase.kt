@@ -22,6 +22,13 @@ class DriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Drive Base") {
     private val rightRear = hardwareMap.dcMotor.get("right_rear")
     private val imu = IMUManager(opMode)
 
+    companion object {
+        const val wheelBaseWidth = 420.0 // mm
+        const val motorEncoderEventsPerRevolution = 537.7
+        const val wheelCircumference = 310.0 // mm
+        const val motorEncoderEventsPerMM = motorEncoderEventsPerRevolution / wheelCircumference
+    }
+
     enum class TurnDirection {
         LEFT,
         RIGHT
@@ -29,10 +36,10 @@ class DriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Drive Base") {
 
     init {
         // direction = FORWARD by default
-        leftFront.direction = DcMotorSimple.Direction.REVERSE
-//        rightFront.direction = DcMotorSimple.Direction.REVERSE
-//        leftRear.direction = DcMotorSimple.Direction.REVERSE
-        rightRear.direction = DcMotorSimple.Direction.REVERSE
+        //leftFront.direction = DcMotorSimple.Direction.REVERSE
+        rightFront.direction = DcMotorSimple.Direction.REVERSE
+        leftRear.direction = DcMotorSimple.Direction.REVERSE
+        //rightRear.direction = DcMotorSimple.Direction.REVERSE
 
         opMode.log("DriveBase successfully initialized")
     }
@@ -184,8 +191,22 @@ class DriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Drive Base") {
         return power
     }
 
-    fun yaw(degrees: Double, direction: TurnDirection) {
-        val telemetryYaw = telemetry.addData("Yaw", imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES))
+    fun yaw(radians: Double, direction: TurnDirection) {
+        setMode(RunMode.STOP_AND_RESET_ENCODER)
+        val angle = when(direction) {
+            TurnDirection.LEFT -> radians
+            TurnDirection.RIGHT -> -radians
+        }
+
+        val ticks = angle * wheelBaseWidth/2 * motorEncoderEventsPerMM
+        setTargetPositions(ticks.roundToInt(), -ticks.roundToInt(), ticks.roundToInt(), -ticks.roundToInt())
+        setMode(RunMode.RUN_TO_POSITION)
+        setPower(0.7, 0.7, 0.7, 0.7)
+        while(motors.any { it.isBusy }) opMode.idle()
+    }
+
+    fun yawIMU(radians: Double, direction: TurnDirection) {
+        val telemetryYaw = telemetry.addData("Yaw", imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.RADIANS))
         setMode(RunMode.RUN_USING_ENCODER)
         imu.imu.resetYaw()
 
@@ -194,11 +215,11 @@ class DriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Drive Base") {
         opMode.log("current,target,proportional,integral,derivative,correction")
 
         val pid = PID(0.01, 100.0, 100.0, 10.0, 5.0, when(direction) {
-            TurnDirection.LEFT -> imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
-            TurnDirection.RIGHT -> -imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES)
+            TurnDirection.LEFT -> imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.RADIANS)
+            TurnDirection.RIGHT -> -imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.RADIANS)
         }, when(direction) {
-            TurnDirection.LEFT -> degrees
-            TurnDirection.RIGHT -> -degrees
+            TurnDirection.LEFT -> radians
+            TurnDirection.RIGHT -> -radians
         })
         while(pid.shouldContinue() && opMode.opModeIsActive()) {
             setPower(turnCorrections.map { it * pid.correction() * when(direction) {
@@ -208,24 +229,24 @@ class DriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Drive Base") {
             opMode.idle()
             telemetry.update()
             pid.sync()
-            val newOrientation = imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.DEGREES).let {
+            val newOrientation = imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.RADIANS).let {
                 when(direction) {
                     // The IMU returns values between -180 and 180, so we have to absolute value stuff in order to get there
                     TurnDirection.LEFT ->
-                        if(degrees == 180.0)
+                        if(radians == PI)
                             if(it < 0)
-                                180.0 + (180.0 - abs(it))
+                                PI + (PI - abs(it))
                             else it
                         else it
                     TurnDirection.RIGHT ->
-                        if(degrees == 180.0)
+                        if(radians == PI)
                             if(it < 0)
-                                180.0 + (180.0 - abs(it))
+                                PI + (PI - abs(it))
                             else it
                         else it
                 }
             }
-            opMode.log("${pid.current},$degrees,${pid.proportional()},${pid.integral()},${pid.derivative()},${pid.correction()}")
+            opMode.log("${pid.current},$radians,${pid.proportional()},${pid.integral()},${pid.derivative()},${pid.correction()}")
             pid.update(newOrientation)
         }
 
