@@ -8,13 +8,10 @@ import org.firstinspires.ftc.teamcode.util.log
 
 class DroneLauncher(opMode: OpMode): Subassembly(opMode, "Drone Launcher") {
 
-    val launcher = ReleaseServo(hardwareMap.servo.get("airplane_launcher"))
+    val launcher = ReleaseServo(hardwareMap.servo.get("airplane_launcher"), Pair(0.6, 0.72), Servo.Direction.REVERSE)
     var buttonWasPressed = false
 
     init {
-        launcher.scaleRange = Pair(0.7, 0.78)
-        launcher.direction = Servo.Direction.REVERSE
-
         opMode.log("DroneLauncher successfully initialized")
     }
     

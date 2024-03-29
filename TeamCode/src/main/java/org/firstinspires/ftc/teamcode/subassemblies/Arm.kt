@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.ElapsedTime
+import com.qualcomm.robotcore.util.RobotLog
 import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
@@ -18,6 +19,8 @@ import org.firstinspires.ftc.teamcode.util.degreesToServoPosition
 import org.firstinspires.ftc.teamcode.util.encoderPositionToDegrees
 import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.teamcode.util.powerCurve
+import org.firstinspires.ftc.teamcode.util.toDegrees
+import org.firstinspires.ftc.teamcode.util.toRadians
 import kotlin.math.*
 
 // Arm subassembly control
@@ -25,12 +28,9 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     val armMotor = hardwareMap.dcMotor.get("arm") as DcMotorEx
     val distanceSensor = hardwareMap.get(DistanceSensor::class.java, "intake_distance")
     val wrist = hardwareMap.servo.get("wrist")
-    var wristAlignment: WristAlignment? = null
-
-    @Deprecated("This is now deprecated, use the Subassembly `PixelReleases.kt`")
-    val rightRelease = hardwareMap.servo.get("right_release")
-    @Deprecated("This is now deprecated, use the Subassembly `PixelReleases.kt`")
-    val leftRelease = hardwareMap.servo.get("left_release")
+    var wristAlignment: WristAlignment? = WristAlignment.EASEL
+    var wristOffset = 0.0 // in degrees
+    var dpadWasUsed = false
 
     val slowCoefficient: Double
         get() {
@@ -54,7 +54,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
 
         // Wrist servo configuration
         wrist.scaleRange(WRIST_SCALE_RANGE.first, WRIST_SCALE_RANGE.second) // 53% of 300-degree range
-        wrist.direction = Servo.Direction.FORWARD
+        wrist.direction = Servo.Direction.REVERSE
 
         opMode.log("Arm successfully initialized")
     }
@@ -93,11 +93,51 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
             if (gamepad.b) DcMotor.RunMode.STOP_AND_RESET_ENCODER
             else DcMotor.RunMode.RUN_USING_ENCODER
 
-        if (gamepad.a) wristAlignment = WristAlignment.FLOOR
-        if (gamepad.y) wristAlignment = WristAlignment.EASEL
+        if (gamepad.a) {
+            wristAlignment = WristAlignment.FLOOR
+            RobotLog.i("wrist aligned with FLOOR")
+        }
+        if (gamepad.y) {
+            wristAlignment = WristAlignment.EASEL
+            RobotLog.i("wrist aligned with EASEL")
+        }
+        if (gamepad.b) {
+            armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+            wristOffset = 0.0
+            RobotLog.i("arm position reset, wrist offset reset")
+        } else armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
         if (gamepad.back) stow { !gamepad.atRest() }
 
-        if (wristAlignment != null) wrist.position = relativeWristPosition(armMotor.currentPosition, wristAlignment!!)
+        if (!dpadWasUsed) {
+            wristOffset += when {
+                gamepad.dpad_up -> WRIST_LARGE_INCREMENT
+                gamepad.dpad_down -> -WRIST_LARGE_INCREMENT
+                gamepad.dpad_left -> -WRIST_SMALL_INCREMENT
+                gamepad.dpad_right -> WRIST_SMALL_INCREMENT
+                else -> 0.0
+            }
+        }
+
+        dpadWasUsed = gamepad.dpad_up || gamepad.dpad_down || gamepad.dpad_left || gamepad.dpad_right
+
+        /*
+        if (button && !buttonWasPressed) {
+            buttonWasPressed = true
+            launcher.toggle()
+        }
+        else if (!button) buttonWasPressed = false
+         */
+
+        val wristTargetPosition =
+            if (wristAlignment != null) relativeWristPosition(armMotor.currentPosition, wristAlignment!!, wristOffset.toRadians())
+            else wrist.position
+
+        wrist.position = wristTargetPosition
+
+        telemetry.addData("Arm angle (degrees)", encoderPositionToDegrees(armMotor.currentPosition, ARM_ENCODER_RES))
+        telemetry.addData("Arm encoder position", armMotor.currentPosition)
+        telemetry.addData("Wrist alignment", wristAlignment ?: "null")
+        telemetry.addData("Wrist position", "actual %.2f, target %.2f", wrist.position, wristTargetPosition)
     }
 
     fun getPlacementInfo(pixelRow: Int): PlacementInfo {
@@ -120,15 +160,15 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         wrist.position = servoDegrees
     }
 
-    fun relativeWristPosition(armPosition: Int, target: WristAlignment): Double {
+    fun relativeWristPosition(armPosition: Int, target: WristAlignment, manualOffset: Double = 0.0): Double {
         wristAlignment ?: return wrist.position
         val theta = when(target) {
-            WristAlignment.EASEL -> 60
-            WristAlignment.FLOOR -> 120
+            WristAlignment.EASEL -> PI / 3
+            WristAlignment.FLOOR -> 0.0
         }
         val armAngle = encoderPositionToDegrees(armPosition, ARM_ENCODER_RES) // in degrees
-        val servoAngle = theta - GAMMA - armAngle // degrees
-        return degreesToServoPosition(servoAngle, WRIST_SCALE_RANGE) // servo position value
+        val servoAngle = 11*PI/16 + theta - GAMMA - armAngle.toRadians() + manualOffset // radians
+        return degreesToServoPosition(servoAngle.toDegrees(), WRIST_SCALE_RANGE) // servo position value
     }
 
     fun drop() { // TODO: ALEKS PLEASE MAKE THIS WORK WITH DISTANCE SENSOR
@@ -209,6 +249,8 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     }
 
     companion object {
+        const val WRIST_LARGE_INCREMENT = 15.0 // degrees
+        const val WRIST_SMALL_INCREMENT = 7.5 // degrees
         // config values
         val WRIST_SCALE_RANGE = Pair(0.25, 0.78)
         const val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
