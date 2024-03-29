@@ -116,7 +116,7 @@ class DriveBase(opMode: OpMode) : Subassembly(opMode, "Drive Base") {
     }
 
     fun setMode(mode: RunMode) {
-//        motors.setMode(mode)
+        motors.setMode(mode)
     }
 
     fun setTargetPositions(lf: Int, rf: Int, lr: Int, rr: Int) {

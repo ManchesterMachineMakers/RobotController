@@ -78,14 +78,14 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     }, { armMotor.setMotorDisable() })
 
     fun control(gamepad: Gamepad) {
-        val leftY = gamepad.left_stick_y
+        val leftY = gamepad.left_stick_y.toDouble()
 
         if (!armMotor.isOverCurrent) // lock out controls if overcurrent
             armMotor.power = powerCurve(
                     if(leftY < 0) { // down
-                        leftY * slowCoefficient
+                        leftY * clamp(getSlowCoefficient(20.0), 0.2, 1.0)
                     } else { // up/rest
-                        leftY.toDouble()
+                        leftY
                     }
             )
 
@@ -119,14 +119,6 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         }
 
         dpadWasUsed = gamepad.dpad_up || gamepad.dpad_down || gamepad.dpad_left || gamepad.dpad_right
-
-        /*
-        if (button && !buttonWasPressed) {
-            buttonWasPressed = true
-            launcher.toggle()
-        }
-        else if (!button) buttonWasPressed = false
-         */
 
         val wristTargetPosition =
             if (wristAlignment != null) relativeWristPosition(armMotor.currentPosition, wristAlignment!!, wristOffset.toRadians())
@@ -169,6 +161,29 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         val armAngle = encoderPositionToDegrees(armPosition, ARM_ENCODER_RES) // in degrees
         val servoAngle = 11*PI/16 + theta - GAMMA - armAngle.toRadians() + manualOffset // radians
         return degreesToServoPosition(servoAngle.toDegrees(), WRIST_SCALE_RANGE) // servo position value
+    }
+
+    /**
+     * @return the coefficient to slow down the arm, based on the distance sensor's value
+     * @param distanceThreshold the distance when the arm will start slowing down
+     * @param distanceUnit the unit distanceThreshold uses
+     */
+    fun getSlowCoefficient(distanceThreshold: Double, distanceUnit: DistanceUnit = DistanceUnit.CM): Double {
+        wristAlignment ?: return 1.0
+        val distance = distanceSensor.getDistance(distanceUnit)
+        if(distance == 6553.5) {
+            opMode.log("WARNING: Issue with distance sensor, arm-auto-slowing is not operational")
+            return 1.0
+        }
+        return if(distance < distanceThreshold) {
+            opMode.log(
+                "Distance from object is less that %.1f at %.1f"
+                    .format(distanceThreshold, distance)
+            )
+            distance / distanceThreshold
+        } else {
+            1.0
+        }
     }
 
     fun drop() { // TODO: ALEKS PLEASE MAKE THIS WORK WITH DISTANCE SENSOR
