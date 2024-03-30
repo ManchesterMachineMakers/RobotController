@@ -78,16 +78,16 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     }, { armMotor.setMotorDisable() })
 
     fun control(gamepad: Gamepad) {
-        val leftY = gamepad.left_stick_y.toDouble()
+        val leftY = powerCurve(-gamepad.left_stick_y.toDouble())
 
         if (!armMotor.isOverCurrent) // lock out controls if overcurrent
-            armMotor.power = powerCurve(
+            armMotor.power =
                     if(leftY < 0) { // down
-                        leftY * clamp(getSlowCoefficient(20.0), 0.2, 1.0)
+                        leftY * clamp(getSlowCoefficient(30.0), 0.2, 1.0)
                     } else { // up/rest
                         leftY
                     }
-            )
+
 
         armMotor.mode = // arm calibration
             if (gamepad.b) DcMotor.RunMode.STOP_AND_RESET_ENCODER
