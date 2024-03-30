@@ -36,6 +36,10 @@ class SemiAutoTeleOp: LinearOpMode() {
             telemetry.clear()
             while (opModeIsActive()) {
                 loopTime.reset()
+                telemetry.addData("G1 Left X", gamepad1.left_stick_x);
+                telemetry.addData("G1 Left Y", gamepad1.left_stick_y);
+                telemetry.addData("G1 Right X", gamepad1.right_stick_x);
+                telemetry.addData("G1 Right XY", gamepad1.right_stick_y);
 
                 // Subassembly control
                 driveBase.control(gamepad1)
@@ -45,6 +49,7 @@ class SemiAutoTeleOp: LinearOpMode() {
                 arm.control(gamepad2)
 
                 arm.telemetry()
+                telemetry.addData("Loop Time", loopTime.time())
                 telemetry.update()
             }
         }
