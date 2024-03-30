@@ -218,7 +218,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     override fun telemetry() {
         super.telemetry()
         telemetry.addData("Distance Sensor", distanceSensor.getDistance(DistanceUnit.CM))
-        telemetry.addData("Arm Motor","target %.2f, actual %.2f", armMotor.targetPosition, armMotor.currentPosition)
+        telemetry.addData("Arm Motor","target %d, actual %d", armMotor.targetPosition, armMotor.currentPosition)
         telemetry.addData("Wrist Servo", wrist.position)
     }
 
