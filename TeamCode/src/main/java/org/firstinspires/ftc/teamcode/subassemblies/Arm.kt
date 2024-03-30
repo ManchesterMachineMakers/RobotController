@@ -32,20 +32,6 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
     var wristOffset = 0.0 // in degrees
     var dpadWasUsed = false
 
-    val slowCoefficient: Double
-        get() {
-            val distance = distanceSensor.getDistance(DistanceUnit.CM)
-            return if(distance < ARM_SLOW_DISTANCE_THRESHOLD) {
-                opMode.log(
-                    "Distance from object is less that %.1f at %.1f"
-                        .format( ARM_SLOW_DISTANCE_THRESHOLD, distance)
-                )
-                distance / ARM_SLOW_DISTANCE_THRESHOLD
-            } else {
-                1.0
-            }
-        }
-
     init {
         armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER // Resets the encoder (distance tracking)
         Thread.sleep(10)
@@ -246,9 +232,9 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
                 )
                 break
             }
-            if(timer.seconds() >= 5.0) {
+            if(timer.seconds() >= 10.0) {
                 armMotor.power = 0.0
-                opMode.log("Aborting arm auto-stow; time exceeded 5.0 seconds")
+                opMode.log("Aborting arm auto-stow; time exceeded 10.0 seconds")
                 break
             }
             Thread.sleep(100)
@@ -268,8 +254,8 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         const val WRIST_SMALL_INCREMENT = 7.5 // degrees
         // config values
         val WRIST_SCALE_RANGE = Pair(0.25, 0.78)
-        const val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
-        const val ARM_AUTOSTOW_CURRENT = 2.0
+        const val WRIST_STOW_POSITION = 0.0
+        const val ARM_AUTOSTOW_CURRENT = 3.0
         const val ARM_SLOW_DISTANCE_THRESHOLD = 30 // CM at which the arm will begin to slow down
         // constants
         const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
