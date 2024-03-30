@@ -23,4 +23,13 @@ jobs:
         run: chmod +x gradlew
       - name: Build
         uses: aleksrutins/matrix@v2.0.1
+      
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release
+          path: '*-release-*.apk'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: debug
+          path: '*-debug-*.apk'
 

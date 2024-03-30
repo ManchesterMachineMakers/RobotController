@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.DroneLauncher
 import org.firstinspires.ftc.teamcode.subassemblies.PixelReleases
 import org.firstinspires.ftc.teamcode.subassemblies.Winch
+import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.log
 
 @TeleOp(name = "Semi-Automatic TeleOp (preferred)", group = "arm")

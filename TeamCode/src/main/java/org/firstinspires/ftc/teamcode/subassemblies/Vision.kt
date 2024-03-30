@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName
 import org.firstinspires.ftc.vision.VisionPortal
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor
@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.vision.tfod.TfodProcessor
 
-class Vision(opMode: OpMode) : Subject {
+class Vision(opMode: LinearOpMode) : Subject {
     private val hardwareMap = opMode.hardwareMap
     private val webcam = hardwareMap.get(WebcamName::class.java, "Webcam 1")
 

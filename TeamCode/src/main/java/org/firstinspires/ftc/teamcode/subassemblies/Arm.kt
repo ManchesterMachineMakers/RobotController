@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.farthergate.ctrlcurve.PID
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DistanceSensor
@@ -8,10 +9,13 @@ import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.RobotLog
 import com.rutins.aleks.diagonal.Subject
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerRevolution
+import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.OvercurrentProtection
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.clamp
+import org.firstinspires.ftc.teamcode.util.degreesToEncoderPosition
 import org.firstinspires.ftc.teamcode.util.degreesToServoPosition
 import org.firstinspires.ftc.teamcode.util.encoderPositionToDegrees
 import org.firstinspires.ftc.teamcode.util.log
@@ -21,7 +25,7 @@ import org.firstinspires.ftc.teamcode.util.toRadians
 import kotlin.math.*
 
 // Arm subassembly control
-class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
+class Arm(opMode: LinearOpMode) : Subject, Subassembly(opMode, "Arm") {
     val armMotor = hardwareMap.dcMotor.get("arm") as DcMotorEx
     val distanceSensor = hardwareMap.get(DistanceSensor::class.java, "intake_distance")
     val wrist = hardwareMap.servo.get("wrist")
@@ -67,7 +71,6 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         armMotor.mode = // arm calibration
             if (gamepad.b) DcMotor.RunMode.STOP_AND_RESET_ENCODER
             else DcMotor.RunMode.RUN_USING_ENCODER
-
         if (gamepad.a) {
             wristAlignment = WristAlignment.FLOOR
             RobotLog.i("wrist aligned with FLOOR")
@@ -107,7 +110,7 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
             if (wristAlignment != null) relativeWristPosition(armMotor.currentPosition, wristAlignment!!, wristOffset.toRadians())
             else wrist.position
 
-        wrist.position = wristTargetPosition
+        if(wristAlignment != null) wrist.position = relativeWristPosition(armMotor.currentPosition, wristAlignment!!)
 
         telemetry.addData("Arm angle (degrees)", encoderPositionToDegrees(armMotor.currentPosition, ARM_ENCODER_RES))
         telemetry.addData("Arm encoder position", armMotor.currentPosition)
@@ -146,34 +149,45 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         return degreesToServoPosition(servoAngle.toDegrees(), WRIST_SCALE_RANGE) // servo position value
     }
 
-    fun drop() { // TODO: ALEKS PLEASE MAKE THIS WORK WITH DISTANCE SENSOR
-//        while(!touchSensor.isPressed && armMotor.isBusy) {
-//            armMotor.power = -0.2
-//            telemetry.addData("Touch Sensor", touchSensor.isPressed)
-//            telemetry.addData("Arm Motor", armMotor.currentPosition)
-//            telemetry.addData("Wrist Servo", wrist.position)
-//            telemetry.update()
-//        }
-//        armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-//        armMotor.power = 0.0
-//        // go again, zeroed so the wrist position calculates correctly
-//        telemetry.addLine("Zeroed the Arm Motor")
-//        telemetry.log()
-//        Thread.sleep(10)
-//
-//        armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
-//        armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
-//
-//        while(!touchSensor.isPressed) {
-//            armMotor.power = -0.2
-//            wrist.position = relativeWristPosition(armMotor.currentPosition, WristAlignment.FLOOR)
-//            Thread.sleep(10)
-//        }
-//        armMotor.power = 0.0
-//        telemetry.update()
+    fun autoCalibrate(abortCondition: () -> Boolean = { false }) {
+        opMode.log("Attempting to automatically calibrate the arm motor")
+        wrist.position = relativeWristPosition(0, WristAlignment.FLOOR)
+        while(distanceSensor.getDistance(DistanceUnit.CM) > ARM_HEIGHT && armMotor.isBusy || abortCondition()) { // TODO: FIND THE REAL ARM_HEIGHT_VALUE
+            armMotor.power = -0.2
+            telemetry.addData("Distance Sensor", distanceSensor.getDistance(DistanceUnit.CM))
+            telemetry.addData("Arm Motor", armMotor.currentPosition)
+            telemetry.addData("Wrist Servo", wrist.position)
+            telemetry.update()
+        }
+        armMotor.power = 0.0
+        armMotor.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        Thread.sleep(10)
+        armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        opMode.log("Arm motor successfully calibrated")
+    }
+
+    fun drop(target: WristAlignment) {
+        opMode.log("Attempting to drop the arm")
+        armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+        armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.FLOAT
+        armMotor.power = -0.2
+        while(distanceSensor.getDistance(DistanceUnit.CM) > 6 && opMode.opModeIsActive()) {
+            wrist.position = relativeWristPosition(armMotor.currentPosition, target)
+            opMode.idle()
+        }
+        armMotor.power = 0.0
+        telemetry.update()
+        opMode.log("Arm motor successfully dropped?")
     }
 
     fun raise() = armMotor.moveTo(200)
+
+    override fun telemetry() {
+        super.telemetry()
+        telemetry.addData("Distance Sensor", distanceSensor.getDistance(DistanceUnit.CM))
+        telemetry.addData("Arm Motor","target %d, actual %d", armMotor.targetPosition, armMotor.currentPosition)
+        telemetry.addData("Wrist Servo", wrist.position)
+    }
 
     fun stow() {
         wristAlignment = null
@@ -194,8 +208,9 @@ class Arm(opMode: OpMode) : Subject, Subassembly(opMode, "Arm") {
         const val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
         // constants
         const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
+        const val ARM_HEIGHT = 24.0 // in CM
         // math
-        val GAMMA = atan2(16.0,283.0)
+        val GAMMA = atan2(16.0, 283.0)
         const val L2 = 67.88
         const val L3 = 59.56
         const val R = 336.0

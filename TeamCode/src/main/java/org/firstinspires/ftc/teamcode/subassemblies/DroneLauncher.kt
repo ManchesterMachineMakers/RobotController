@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.util.ReleaseServo
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.log
 
-class DroneLauncher(opMode: OpMode): Subassembly(opMode, "Drone Launcher") {
+class DroneLauncher(opMode: LinearOpMode): Subassembly(opMode, "Drone Launcher") {
 
     val launcher = ReleaseServo(hardwareMap.servo.get("airplane_launcher"), Pair(0.6, 0.72), Servo.Direction.REVERSE)
     var buttonWasPressed = false

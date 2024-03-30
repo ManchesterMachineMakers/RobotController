@@ -11,6 +11,9 @@ fun equalsTolerance(a: Double, b: Double, tolerance: Double)
 fun encoderPositionToDegrees(encoderPosition: Int, encoderResolution: Double)
     = 360 * encoderPosition / encoderResolution
 
+fun degreesToEncoderPosition(degrees: Double, encoderResolution: Double)
+    = (degrees / 360.0 * encoderResolution).toInt()
+
 /** Assumes use of a 300 degree non-continuous servo */
 fun degreesToServoPosition(degrees: Double, scaleRange: Pair<Double, Double>): Double {
     val scale = abs(scaleRange.first - scaleRange.second)

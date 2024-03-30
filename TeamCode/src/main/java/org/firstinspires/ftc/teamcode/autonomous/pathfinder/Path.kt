@@ -63,7 +63,7 @@ interface Segment<I, R> {
     object Yaw : Segment<Double, Unit> {
         override val name = "Yaw"
         override fun run(driveBase: DriveBase, input: Double) {
-            driveBase.yaw(input, 0.2)
+            driveBase.yaw(input, TurnDirection.LEFT)
         }
     }
 

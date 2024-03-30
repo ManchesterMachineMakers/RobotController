@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.Telemetry
@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.util.ReleaseServo
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.log
 
-class PixelReleases(opMode: OpMode): Subassembly(opMode, "Pixel Droppers") {
+class PixelReleases(opMode: LinearOpMode): Subassembly(opMode, "Pixel Droppers") {
 
     val left = ReleaseServo(
         hardwareMap.servo.get("left_release"),

@@ -99,7 +99,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.BLUE, val sta
         // drop the arm
         telemetryActionLine.setValue("Placing on the floor")
         telemetry.update()
-        arm.drop()
+//        arm.drop()
         // place the pixel
         telemetryActionLine.setValue("Releasing the left pixel")
         telemetry.update()
@@ -235,7 +235,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.BLUE, val sta
                 telemetryActionLine.setValue("Dropping a pixel where we are.")
                 telemetry.update()
                 // drop the pixel where we are, it will likely end up backstage which is 3 points.
-                arm.drop()
+//                arm.drop()
                 pixelReleases.right.open()
                 arm.raise()
             }
