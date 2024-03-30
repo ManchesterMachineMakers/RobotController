@@ -18,8 +18,6 @@ class SemiAutoTeleOp: LinearOpMode() {
         // init, no movement allowed
         telemetry.isAutoClear = false
 
-        val gamepad2Manager = GamepadManager(gamepad2)
-
         val driveBase = DriveBase(this)
         val arm = Arm(this)
         val pixelReleases = PixelReleases(this)
@@ -44,7 +42,7 @@ class SemiAutoTeleOp: LinearOpMode() {
                 pixelReleases.control(gamepad2)
                 winch.control(gamepad2.right_stick_y)
                 droneLauncher.control(gamepad2.x)
-                arm.control(gamepad2Manager)
+                arm.control(gamepad2)
 
                 arm.telemetry()
                 telemetry.update()
