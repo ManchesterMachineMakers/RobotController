@@ -277,6 +277,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.BLUE, val sta
 
         waitForStart()
 
+        vision.ptzControl?.setZoom(150)
         arm.overcurrentProtection.start()
         telemetryActionLine.setValue("detecting a duck")
         telemetry.update()
