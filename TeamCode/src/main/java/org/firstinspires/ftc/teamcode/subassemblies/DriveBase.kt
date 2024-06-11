@@ -1,18 +1,18 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
-import com.farthergate.ctrlcurve.PID
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode
 import com.qualcomm.robotcore.hardware.DcMotorEx
-import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Gamepad
 import com.qualcomm.robotcore.util.RobotLog
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
+import org.firstinspires.ftc.teamcode.util.MotorDirections
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.teamcode.util.powerCurve
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.roundToInt
 
 class DriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Drive Base") {
 
@@ -36,10 +36,10 @@ class DriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Drive Base") {
 
     init {
         // direction = FORWARD by default
-        //leftFront.direction = DcMotorSimple.Direction.REVERSE
-        rightFront.direction = DcMotorSimple.Direction.REVERSE
-        leftRear.direction = DcMotorSimple.Direction.REVERSE
-        //rightRear.direction = DcMotorSimple.Direction.REVERSE
+        leftFront.direction = MotorDirections.LEFT_FRONT
+        rightFront.direction = MotorDirections.RIGHT_FRONT
+        leftRear.direction = MotorDirections.LEFT_REAR
+        rightRear.direction = MotorDirections.RIGHT_REAR
 
         opMode.log("DriveBase successfully initialized")
     }
@@ -76,7 +76,10 @@ class DriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Drive Base") {
 
     override fun telemetry() {
         super.telemetry()
-        telemetry.addLine()
+        telemetry.addData("LF power", leftFront.power)
+        telemetry.addData("RF power", rightFront.power)
+        telemetry.addData("LR power", leftRear.power)
+        telemetry.addData("RR power", rightRear.power)
     }
 
     data class MoveRobotCalculations(

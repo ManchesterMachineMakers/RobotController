@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes
 
+import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.util.ElapsedTime
@@ -7,39 +9,42 @@ import org.firstinspires.ftc.teamcode.subassemblies.Arm
 import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.DroneLauncher
 import org.firstinspires.ftc.teamcode.subassemblies.PixelReleases
+import org.firstinspires.ftc.teamcode.subassemblies.Vision
 import org.firstinspires.ftc.teamcode.subassemblies.Winch
-import org.firstinspires.ftc.teamcode.util.GamepadManager
+import org.firstinspires.ftc.teamcode.util.DashOpMode
+import org.firstinspires.ftc.teamcode.util.ShowTelemetry
 import org.firstinspires.ftc.teamcode.util.log
 
 @TeleOp(name = "Semi-Automatic TeleOp (preferred)", group = "arm")
-class SemiAutoTeleOp: LinearOpMode() {
+class SemiAutoTeleOp: LinearOpMode(), DashOpMode {
 
     override fun runOpMode() {
         // init, no movement allowed
-        telemetry.isAutoClear = false
+        telemetry = MultipleTelemetry(DashOpMode.Static.telemetry, telemetry)
+//        telemetry.isAutoClear = false
 
         val driveBase = DriveBase(this)
         val arm = Arm(this)
         val pixelReleases = PixelReleases(this)
         val winch = Winch(this)
         val droneLauncher = DroneLauncher(this)
+        val vision = Vision(this)
+
+        vision.visionPortal
 
         val loopTime = ElapsedTime()
-        val subassemblyList = listOf(driveBase, arm, pixelReleases, winch, droneLauncher)
+        val subassemblyList = listOf(driveBase, arm, pixelReleases, winch, droneLauncher, vision)
         driveBase.opInit()
 
         waitForStart()
 
         if (opModeIsActive()) {
+            FtcDashboard.getInstance().startCameraStream(vision.dash, 0.0)
             log("Starting OpMode loop")
-            telemetry.isAutoClear = true
+//            telemetry.isAutoClear = true
             telemetry.clear()
             while (opModeIsActive()) {
                 loopTime.reset()
-                telemetry.addData("G1 Left X", gamepad1.left_stick_x);
-                telemetry.addData("G1 Left Y", gamepad1.left_stick_y);
-                telemetry.addData("G1 Right X", gamepad1.right_stick_x);
-                telemetry.addData("G1 Right XY", gamepad1.right_stick_y);
 
                 // Subassembly control
                 driveBase.control(gamepad1)
@@ -48,21 +53,15 @@ class SemiAutoTeleOp: LinearOpMode() {
                 droneLauncher.control(gamepad2.x)
                 arm.control(gamepad2)
 
-                arm.telemetry()
+                if (ShowTelemetry.JOYSTICK) joystickTelemetry(this)
+                if (ShowTelemetry.ARM) arm.telemetry()
+                if (ShowTelemetry.DRIVE_BASE) driveBase.telemetry()
+                if (ShowTelemetry.DRONE_LAUNCHER) droneLauncher.telemetry()
+                if (ShowTelemetry.PIXEL_RELEASES) pixelReleases.telemetry()
+                if (ShowTelemetry.WINCH) winch.telemetry()
                 telemetry.addData("Loop Time", loopTime.time())
                 telemetry.update()
             }
         }
-    }
-
-    fun telemetry() {
-//        telemetry.addData("runtime (s)", runtime)
-//        telemetry.addData("looptime (ms)", loopTime.milliseconds())
-//        runAllTelemetries()
-    }
-
-    fun runAllTelemetries() {
-//        for (subassembly in subassemblyList) subassembly?.telemetry()
-//        telemetry.update()
     }
 }

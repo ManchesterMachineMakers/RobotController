@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
-import com.farthergate.ctrlcurve.PID
+import com.acmerobotics.dashboard.config.Config
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -11,18 +11,22 @@ import com.qualcomm.robotcore.util.RobotLog
 import com.rutins.aleks.diagonal.Subject
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.autonomous.path.motorEncoderEventsPerRevolution
-import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.OvercurrentProtection
+import org.firstinspires.ftc.teamcode.util.ServoRanges
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.clamp
-import org.firstinspires.ftc.teamcode.util.degreesToEncoderPosition
 import org.firstinspires.ftc.teamcode.util.degreesToServoPosition
 import org.firstinspires.ftc.teamcode.util.encoderPositionToDegrees
 import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.teamcode.util.powerCurve
 import org.firstinspires.ftc.teamcode.util.toDegrees
 import org.firstinspires.ftc.teamcode.util.toRadians
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.asin
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.roundToInt
+import kotlin.math.sin
 
 // Arm subassembly control
 class Arm(opMode: LinearOpMode) : Subject, Subassembly(opMode, "Arm") {
@@ -40,7 +44,7 @@ class Arm(opMode: LinearOpMode) : Subject, Subassembly(opMode, "Arm") {
         armMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         // Wrist servo configuration
-        wrist.scaleRange(WRIST_SCALE_RANGE.first, WRIST_SCALE_RANGE.second) // 53% of 300-degree range
+        wrist.scaleRange(ServoRanges.WRIST.first, ServoRanges.WRIST.second) // 53% of 300-degree range
         wrist.direction = Servo.Direction.REVERSE
 
         opMode.log("Arm successfully initialized")
@@ -111,17 +115,22 @@ class Arm(opMode: LinearOpMode) : Subject, Subassembly(opMode, "Arm") {
             else wrist.position
 
         if(wristAlignment != null) wrist.position = relativeWristPosition(armMotor.currentPosition, wristAlignment!!)
+    }
 
-        telemetry.addData("Arm angle (degrees)", encoderPositionToDegrees(armMotor.currentPosition, ARM_ENCODER_RES))
-        telemetry.addData("Arm encoder position", armMotor.currentPosition)
-        telemetry.addData("Wrist alignment", wristAlignment ?: "null")
-        telemetry.addData("Wrist position", "actual %.2f, target %.2f", wrist.position, wristTargetPosition)
+    override fun telemetry() {
+        super.telemetry()
+        telemetry.addData("Distance Sensor", distanceSensor.getDistance(DistanceUnit.CM))
+        telemetry.addData("Arm Motor Target (PPR)", armMotor.targetPosition)
+        telemetry.addData("Arm Motor Actual (PPR)", armMotor.currentPosition)
+        telemetry.addData("Arm Angle (degrees)", encoderPositionToDegrees(armMotor.currentPosition, ARM_ENCODER_RES))
+        telemetry.addData("Wrist Position", wrist.position)
+        telemetry.addData("Wrist Alignment", wristAlignment ?: "null")
     }
 
     fun getPlacementInfo(pixelRow: Int): PlacementInfo {
-        val beta = asin(((D1 + pixelRow * D2 - L3) * sin(Math.PI / 3) + L2 * cos(Math.PI / 3) - H) / R)
-        val alpha = Math.PI / 2 + Math.PI / 3 - GAMMA - beta
-        val distToBase = R * cos(beta) + L2 * sin(Math.PI / 3) + cos(Math.PI / 3) * (L3 - D1 - pixelRow * D2)
+        val beta = asin(((D1 + pixelRow * D2 - L3) * sin(PI / 3) + L2 * cos(PI / 3) - H) / R)
+        val alpha = PI / 2 + PI / 3 - GAMMA - beta
+        val distToBase = R * cos(beta) + L2 * sin(PI / 3) + cos(PI / 3) * (L3 - D1 - pixelRow * D2)
         return PlacementInfo(distToBase, alpha, beta)
     }
 
@@ -146,7 +155,7 @@ class Arm(opMode: LinearOpMode) : Subject, Subassembly(opMode, "Arm") {
         }
         val armAngle = encoderPositionToDegrees(armPosition, ARM_ENCODER_RES) // in degrees
         val servoAngle = 11*PI/16 + theta - GAMMA - armAngle.toRadians() + manualOffset // radians
-        return degreesToServoPosition(servoAngle.toDegrees(), WRIST_SCALE_RANGE) // servo position value
+        return degreesToServoPosition(servoAngle.toDegrees(), ServoRanges.WRIST) // servo position value
     }
 
     fun autoCalibrate(abortCondition: () -> Boolean = { false }) {
@@ -182,16 +191,10 @@ class Arm(opMode: LinearOpMode) : Subject, Subassembly(opMode, "Arm") {
 
     fun raise() = armMotor.moveTo(200)
 
-    override fun telemetry() {
-        super.telemetry()
-        telemetry.addData("Distance Sensor", distanceSensor.getDistance(DistanceUnit.CM))
-        telemetry.addData("Arm Motor","target %d, actual %d", armMotor.targetPosition, armMotor.currentPosition)
-        telemetry.addData("Wrist Servo", wrist.position)
-    }
 
     fun stow() {
         wristAlignment = null
-        wrist.position = WRIST_STOW_POSITION
+        wrist.position = ArmConfig.WRIST_STOW_POSITION
     }
 
     fun DcMotor.moveTo(encoderPosition: Int) {
@@ -201,12 +204,6 @@ class Arm(opMode: LinearOpMode) : Subject, Subassembly(opMode, "Arm") {
     }
 
     companion object {
-        const val WRIST_LARGE_INCREMENT = 15.0 // degrees
-        const val WRIST_SMALL_INCREMENT = 7.5 // degrees
-        // config values
-        val WRIST_SCALE_RANGE = Pair(0.25, 0.78)
-        const val WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
-        // constants
         const val ARM_ENCODER_RES = 2786.2 * 2 // PPR of motor * 2:1 gearing ratio
         const val ARM_HEIGHT = 24.0 // in CM
         // math
@@ -217,5 +214,13 @@ class Arm(opMode: LinearOpMode) : Subject, Subassembly(opMode, "Arm") {
         const val H = 287.75
         const val D1 = 220.0
         const val D2 = 88.9
+        // control
+        const val WRIST_LARGE_INCREMENT = 15.0 // degrees
+        const val WRIST_SMALL_INCREMENT = 7.5 // degrees
+    }
+
+    @Config
+    object ArmConfig {
+        @JvmField var WRIST_STOW_POSITION = 0.0 // TODO: FIND VALUE
     }
 }

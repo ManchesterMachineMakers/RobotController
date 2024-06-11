@@ -2,9 +2,9 @@ package org.firstinspires.ftc.teamcode.subassemblies
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.Gamepad
-import com.qualcomm.robotcore.hardware.Servo
-import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.util.ReleaseServo
+import org.firstinspires.ftc.teamcode.util.ServoDirections
+import org.firstinspires.ftc.teamcode.util.ServoRanges
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.log
 
@@ -12,16 +12,14 @@ class PixelReleases(opMode: LinearOpMode): Subassembly(opMode, "Pixel Droppers")
 
     val left = ReleaseServo(
         hardwareMap.servo.get("left_release"),
-        Pair(0.15, 0.40),
-        Servo.Direction.FORWARD
+        ServoRanges.LEFT_RELEASE,
+        ServoDirections.LEFT_RELEASE
     )
     val right = ReleaseServo(
         hardwareMap.servo.get("right_release"),
-        Pair(0.4, 0.85),
-        Servo.Direction.REVERSE
+        ServoRanges.RIGHT_RELEASE,
+        ServoDirections.RIGHT_RELEASE
     )
-
-    val telemetryData: Telemetry.Item = telemetry.addData("isOpen", "%b, %b", left.isOpen, right.isOpen)
 
     init {
         opMode.log("PixelReleases successfully initialized")
@@ -33,5 +31,11 @@ class PixelReleases(opMode: LinearOpMode): Subassembly(opMode, "Pixel Droppers")
 
         if (gamepad.right_bumper) right.open()
         else if (gamepad.right_trigger > 0.05) right.close()
+    }
+
+    override fun telemetry() {
+        super.telemetry()
+        telemetry.addData("Left", left.isOpen)
+        telemetry.addData("Right", right.isOpen)
     }
 }

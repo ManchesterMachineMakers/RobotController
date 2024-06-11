@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.util
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import com.acmerobotics.dashboard.FtcDashboard
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import org.firstinspires.ftc.robotcore.external.function.Consumer
 import org.firstinspires.ftc.robotcore.external.function.Continuation
 import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource
@@ -11,7 +12,6 @@ import org.firstinspires.ftc.vision.VisionProcessor
 import org.opencv.android.Utils
 import org.opencv.core.Mat
 import java.util.concurrent.atomic.AtomicReference
-
 
 interface DashOpMode {
 
@@ -46,5 +46,20 @@ interface DashOpMode {
     object Static {
         @JvmStatic val dashboard = FtcDashboard.getInstance()
         @JvmStatic val telemetry = dashboard.telemetry
+    }
+
+    fun joystickTelemetry(opMode: OpMode) {
+        val telemetry = opMode.telemetry
+        val g1 = opMode.gamepad1
+        val g2 = opMode.gamepad2
+        telemetry.addLine("Joystick Values")
+        telemetry.addData("G1 Left X", g1.left_stick_x)
+        telemetry.addData("G1 Left Y", g1.left_stick_y)
+        telemetry.addData("G1 Right X", g1.right_stick_x)
+        telemetry.addData("G1 Right Y", g1.right_stick_x)
+        telemetry.addData("G2 Left X", g2.left_stick_x)
+        telemetry.addData("G2 Left Y", g2.left_stick_y)
+        telemetry.addData("G2 Right X", g2.right_stick_x)
+        telemetry.addData("G2 Right Y", g2.right_stick_y)
     }
 }

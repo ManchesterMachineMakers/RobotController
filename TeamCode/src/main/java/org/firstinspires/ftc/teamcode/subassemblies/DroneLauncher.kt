@@ -1,14 +1,19 @@
 package org.firstinspires.ftc.teamcode.subassemblies
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.teamcode.util.ReleaseServo
+import org.firstinspires.ftc.teamcode.util.ServoDirections
+import org.firstinspires.ftc.teamcode.util.ServoRanges
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.log
 
 class DroneLauncher(opMode: LinearOpMode): Subassembly(opMode, "Drone Launcher") {
 
-    val launcher = ReleaseServo(hardwareMap.servo.get("airplane_launcher"), Pair(0.6, 0.72), Servo.Direction.REVERSE)
+    val launcher = ReleaseServo(
+        hardwareMap.servo.get("airplane_launcher"),
+        ServoRanges.DRONE_LAUNCHER,
+        ServoDirections.DRONE_LAUNCHER
+    )
     var buttonWasPressed = false
 
     init {
@@ -21,5 +26,10 @@ class DroneLauncher(opMode: LinearOpMode): Subassembly(opMode, "Drone Launcher")
             launcher.toggle()
         }
         else if (!button) buttonWasPressed = false
+    }
+
+    override fun telemetry() {
+        super.telemetry()
+        telemetry.addData("isOpen", launcher.isOpen)
     }
 }
