@@ -14,6 +14,7 @@ class MainTeleOp: LinearOpMode() {
         telemetry.isAutoClear = false
 
         val driveBase = DriveBase(this)
+        // add other subassemblies here
 
         val loopTime = ElapsedTime()
         val subassemblyList = listOf(driveBase)
@@ -27,13 +28,14 @@ class MainTeleOp: LinearOpMode() {
             telemetry.clear()
             while (opModeIsActive()) {
                 loopTime.reset()
-                telemetry.addData("G1 Left X", gamepad1.left_stick_x);
-                telemetry.addData("G1 Left Y", gamepad1.left_stick_y);
-                telemetry.addData("G1 Right X", gamepad1.right_stick_x);
-                telemetry.addData("G1 Right XY", gamepad1.right_stick_y);
+                telemetry.addData("G1 Left X", gamepad1.left_stick_x)
+                telemetry.addData("G1 Left Y", gamepad1.left_stick_y)
+                telemetry.addData("G1 Right X", gamepad1.right_stick_x)
+                telemetry.addData("G1 Right XY", gamepad1.right_stick_y)
 
                 // Subassembly control
                 driveBase.control(gamepad1)
+                // control other subassemblies here
 
                 telemetry.addData("Loop Time", loopTime.time())
                 telemetry.update()
@@ -41,14 +43,14 @@ class MainTeleOp: LinearOpMode() {
         }
     }
 
-    fun telemetry() {
+//    fun telemetry() {
 //        telemetry.addData("runtime (s)", runtime)
 //        telemetry.addData("looptime (ms)", loopTime.milliseconds())
 //        runAllTelemetries()
-    }
+//    }
 
-    fun runAllTelemetries() {
+//    fun runAllTelemetries() {
 //        for (subassembly in subassemblyList) subassembly?.telemetry()
 //        telemetry.update()
-    }
+//    }
 }
