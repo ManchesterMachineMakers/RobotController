@@ -4,11 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.subassemblies.Arm
-import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
+import org.firstinspires.ftc.teamcode.subassemblies.MecDriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.DroneLauncher
 import org.firstinspires.ftc.teamcode.subassemblies.PixelReleases
 import org.firstinspires.ftc.teamcode.subassemblies.Winch
-import org.firstinspires.ftc.teamcode.util.GamepadManager
 import org.firstinspires.ftc.teamcode.util.log
 
 @TeleOp(name = "Semi-Automatic TeleOp (preferred)", group = "arm")
@@ -18,15 +17,15 @@ class SemiAutoTeleOp: LinearOpMode() {
         // init, no movement allowed
         telemetry.isAutoClear = false
 
-        val driveBase = DriveBase(this)
+        val mecDriveBase = MecDriveBase(this)
         val arm = Arm(this)
         val pixelReleases = PixelReleases(this)
         val winch = Winch(this)
         val droneLauncher = DroneLauncher(this)
 
         val loopTime = ElapsedTime()
-        val subassemblyList = listOf(driveBase, arm, pixelReleases, winch, droneLauncher)
-        driveBase.opInit()
+        val subassemblyList = listOf(mecDriveBase, arm, pixelReleases, winch, droneLauncher)
+        mecDriveBase.opInit()
 
         waitForStart()
 
@@ -42,7 +41,7 @@ class SemiAutoTeleOp: LinearOpMode() {
                 telemetry.addData("G1 Right XY", gamepad1.right_stick_y);
 
                 // Subassembly control
-                driveBase.control(gamepad1)
+                mecDriveBase.control(gamepad1)
                 pixelReleases.control(gamepad2)
                 winch.control(gamepad2.right_stick_y)
                 droneLauncher.control(gamepad2.x)

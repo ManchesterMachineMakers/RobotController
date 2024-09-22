@@ -4,18 +4,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.Range
 import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition
-import org.firstinspires.ftc.teamcode.autonomous.pathfinder.Segment
-import org.firstinspires.ftc.teamcode.autonomous.pathfinder.div
 import org.firstinspires.ftc.teamcode.autonomous.pathfinder.runPolarAndWait
 import org.firstinspires.ftc.teamcode.autonomous.pathfinder.squareSize
 import org.firstinspires.ftc.teamcode.subassemblies.Arm
-import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
+import org.firstinspires.ftc.teamcode.subassemblies.MecDriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.PixelReleases
 import org.firstinspires.ftc.teamcode.subassemblies.Vision
 import org.firstinspires.ftc.teamcode.util.ReleaseServo
 import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection
-import java.util.ArrayList
 import kotlin.math.PI
 
 abstract class AutoBase(alliance: CenterStageAutonomous.Alliance, startPosition: CenterStageAutonomous.StartPosition) : LinearOpMode() {
@@ -24,31 +21,31 @@ abstract class AutoBase(alliance: CenterStageAutonomous.Alliance, startPosition:
     }
     //region Drive Base
 
-    var driveBase: DriveBase? = null
+    var mecDriveBase: MecDriveBase? = null
 
     fun useDriveBase() {
-        driveBase = DriveBase(this)
+        mecDriveBase = MecDriveBase(this)
     }
 
     fun polar(l: Double, theta: Double) {
-        ensure(driveBase, "DriveBase")
-        driveBase?.runPolarAndWait(this::opModeIsActive, telemetry, 0.7, l, theta)
+        ensure(mecDriveBase, "DriveBase")
+        mecDriveBase?.runPolarAndWait(this::opModeIsActive, telemetry, 0.7, l, theta)
     }
 
-    fun turn(radians: Double, direction: DriveBase.TurnDirection) {
-        ensure(driveBase, "DriveBase")
-        driveBase?.yaw(radians, direction)
+    fun turn(radians: Double, direction: MecDriveBase.TurnDirection) {
+        ensure(mecDriveBase, "DriveBase")
+        mecDriveBase?.yaw(radians, direction)
     }
 
     // allow people to write the autonomous as if we're blue
     val left = when(alliance) {
-        CenterStageAutonomous.Alliance.RED -> DriveBase.TurnDirection.RIGHT
-        CenterStageAutonomous.Alliance.BLUE -> DriveBase.TurnDirection.LEFT
+        CenterStageAutonomous.Alliance.RED -> MecDriveBase.TurnDirection.RIGHT
+        CenterStageAutonomous.Alliance.BLUE -> MecDriveBase.TurnDirection.LEFT
     }
 
     val right = when(left) {
-        DriveBase.TurnDirection.LEFT -> DriveBase.TurnDirection.RIGHT
-        DriveBase.TurnDirection.RIGHT -> DriveBase.TurnDirection.LEFT
+        MecDriveBase.TurnDirection.LEFT -> MecDriveBase.TurnDirection.RIGHT
+        MecDriveBase.TurnDirection.RIGHT -> MecDriveBase.TurnDirection.LEFT
     }
     //endregion
     //region Arm & Pixel Releases
@@ -127,7 +124,7 @@ abstract class AutoBase(alliance: CenterStageAutonomous.Alliance, startPosition:
      * @return true if the robot is within tolerance of the desired position
      */
     private fun driveToAprilTag(desiredTag: AprilTagDetection, desiredDistance: Double): Boolean {
-        ensure(driveBase, "DriveBase")
+        ensure(mecDriveBase, "DriveBase")
         //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
         //  applied to the drive motors to correct the error.
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
@@ -150,7 +147,7 @@ abstract class AutoBase(alliance: CenterStageAutonomous.Alliance, startPosition:
         val strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE)
 
         telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-        driveBase?.moveRobot(drive, strafe, turn)
+        mecDriveBase?.moveRobot(drive, strafe, turn)
         sleep(10)
 
         return (rangeError < ACCEPTABLE_ERROR && headingError < ACCEPTABLE_ERROR && yawError < ACCEPTABLE_ERROR)
@@ -158,7 +155,7 @@ abstract class AutoBase(alliance: CenterStageAutonomous.Alliance, startPosition:
 
     fun placeRightOnBackdropAprilTag(pixelPlacement: AutoReal.PixelPlacement) {
         ensure(vision, "Vision")
-        ensure(driveBase, "DriveBase")
+        ensure(mecDriveBase, "DriveBase")
         ensure(arm, "Arm")
         log("looking for AprilTags on the backdrop")
 

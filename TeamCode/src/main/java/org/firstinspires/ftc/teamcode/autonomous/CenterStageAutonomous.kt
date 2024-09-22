@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.autonomous.pathfinder.Segment.*
 import org.firstinspires.ftc.teamcode.autonomous.pathfinder.div
 import org.firstinspires.ftc.teamcode.autonomous.pathfinder.rangeTo
 import org.firstinspires.ftc.teamcode.subassemblies.Arm
-import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
+import org.firstinspires.ftc.teamcode.subassemblies.MecDriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.PixelReleases
 import org.firstinspires.ftc.teamcode.subassemblies.Vision
 import org.firstinspires.ftc.teamcode.util.log
@@ -116,7 +116,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.BLUE, val sta
      * @param desiredDistance The desired final distance from the AprilTag in millimetres.
      * @return true if the robot is within tolerance of the desired position
      */
-    private fun driveToAprilTag(driveBase: DriveBase, desiredTag: AprilTagDetection, desiredDistance: Double): Boolean {
+    private fun driveToAprilTag(mecDriveBase: MecDriveBase, desiredTag: AprilTagDetection, desiredDistance: Double): Boolean {
         //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
         //  applied to the drive motors to correct the error.
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
@@ -139,7 +139,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.BLUE, val sta
         val strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE)
 
         telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-        driveBase.moveRobot(drive, strafe, turn)
+        mecDriveBase.moveRobot(drive, strafe, turn)
         sleep(10)
 
         return (rangeError < ACCEPTABLE_ERROR && headingError < ACCEPTABLE_ERROR && yawError < ACCEPTABLE_ERROR)
@@ -256,7 +256,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.BLUE, val sta
         (0f to 0.5f) / Grid
 
     fun runParkOnly() {
-        val driveBase = DriveBase(this)
+        val mecDriveBase = MecDriveBase(this)
         waitForStart()
         (
                 (0f to 0.2f) / Grid ..
@@ -265,12 +265,12 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.BLUE, val sta
                     StartPosition.BACKSTAGE -> 2f
                     StartPosition.FRONT -> 5f
                 }) / Grid
-        ).run(driveBase, Unit)
+        ).run(mecDriveBase, Unit)
     }
 
     fun runFull() {
         val vision = Vision(this)
-        val driveBase = DriveBase(this)
+        val mecDriveBase = MecDriveBase(this)
         val arm = Arm(this)
         telemetryActionLine.setValue("Initialized")
         telemetry.update()
@@ -281,7 +281,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.BLUE, val sta
         telemetryActionLine.setValue("detecting a duck")
         telemetry.update()
 
-        val duckPosition = runDetection(vision).run(driveBase, Unit)
+        val duckPosition = runDetection(vision).run(mecDriveBase, Unit)
 
         telemetryDuckPosition.setValue(duckPosition)
         telemetryPixelLine.setValue("Purple")
@@ -294,7 +294,7 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.BLUE, val sta
                 DuckPosition.CENTER -> 0.0
                 DuckPosition.RIGHT -> 0.0
             } / Yaw
-        ).run(driveBase, Unit)
+        ).run(mecDriveBase, Unit)
 
         arm.run {
             armMotor.mode = DcMotor.RunMode.RUN_USING_ENCODER
@@ -321,14 +321,14 @@ open class CenterStageAutonomous(val alliance: Alliance = Alliance.BLUE, val sta
                 DuckPosition.CENTER -> 45.0
                 DuckPosition.RIGHT -> 135.0
             })) / Yaw
-        ).run(driveBase, Unit)
+        ).run(mecDriveBase, Unit)
         telemetryActionLine.setValue("oriented toward the backdrop, now driving to it")
         telemetry.update()
 
         // placeYellowPixel drives most of the way to the backdrop,
         // then looks for AprilTags in order to place the pixel correctly.
         // if none are found, it drops the pixel on the floor.
-        placeYellowPixel(arm, vision, duckPosition).run(driveBase, Unit)
+        placeYellowPixel(arm, vision, duckPosition).run(mecDriveBase, Unit)
 
         telemetryActionLine.setValue("parking in the parking area")
         telemetry.update()

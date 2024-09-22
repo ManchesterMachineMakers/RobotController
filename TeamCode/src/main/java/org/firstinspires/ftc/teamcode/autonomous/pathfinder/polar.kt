@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.autonomous.pathfinder
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import org.firstinspires.ftc.robotcore.external.Telemetry
-import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
+import org.firstinspires.ftc.teamcode.subassemblies.MecDriveBase
 import kotlin.math.PI
 import kotlin.math.absoluteValue
 import kotlin.math.cos
@@ -27,7 +27,7 @@ fun encodersFromPolar(l: Double, theta: Double): Array<Double> {
         .toTypedArray()
 }
 
-fun DriveBase.runPolar(telemetry: Telemetry, power: Double, l: Double, theta: Double) =
+fun MecDriveBase.runPolar(telemetry: Telemetry, power: Double, l: Double, theta: Double) =
         encodersFromPolar(l, theta).let {
             it.forEachIndexed { index, ticks -> telemetry.addData("Ticks $index", ticks) }
             val absValues = it.map { it.absoluteValue }
@@ -51,7 +51,7 @@ fun DriveBase.runPolar(telemetry: Telemetry, power: Double, l: Double, theta: Do
             setPower(powerLevels)
         }
 
-fun DriveBase.runPolarAndWait(opModeIsActive: () -> Boolean, telemetry: Telemetry, power: Double, l: Double, theta: Double) {
+fun MecDriveBase.runPolarAndWait(opModeIsActive: () -> Boolean, telemetry: Telemetry, power: Double, l: Double, theta: Double) {
     runPolar(telemetry, power, l, theta)
     telemetry.addData("Motors-Target", motors.map { it.targetPosition })
     telemetry.addData("Motors-Actual", motors.map { it.currentPosition })

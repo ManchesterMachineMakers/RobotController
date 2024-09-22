@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.autonomous
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import org.firstinspires.ftc.teamcode.autonomous.pathfinder.runPolarAndWait
-import org.firstinspires.ftc.teamcode.autonomous.pathfinder.squareSize
-import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
 import kotlin.math.PI
 
 open class AutoPark(val alliance: CenterStageAutonomous.Alliance, val startPosition: CenterStageAutonomous.StartPosition) : AutoBase(alliance, startPosition) {

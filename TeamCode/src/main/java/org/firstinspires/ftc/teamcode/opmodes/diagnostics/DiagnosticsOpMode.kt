@@ -7,7 +7,7 @@ import com.rutins.aleks.diagonal.Runner
 import com.rutins.aleks.diagonal.Subject
 import com.rutins.aleks.diagonal.Test
 import org.firstinspires.ftc.teamcode.subassemblies.Arm
-import org.firstinspires.ftc.teamcode.subassemblies.DriveBase
+import org.firstinspires.ftc.teamcode.subassemblies.MecDriveBase
 import org.firstinspires.ftc.teamcode.subassemblies.Vision
 import org.firstinspires.ftc.teamcode.tests.visionTest
 import kotlin.reflect.KFunction1
@@ -19,7 +19,7 @@ abstract class DiagnosticsOpMode(
         )
 ) : LinearOpMode() {
     // Get all the subassemblies currently on the robot.
-    open fun provides(): Array<Subject> = (arrayOf(Arm::class, DriveBase::class, Vision::class)
+    open fun provides(): Array<Subject> = (arrayOf(Arm::class, MecDriveBase::class, Vision::class)
             .mapNotNull { it.constructors.find { it.parameters.firstOrNull()?.type == HardwareMap::class }?.call(hardwareMap) }
             as List<Subject>)
             .toTypedArray()
