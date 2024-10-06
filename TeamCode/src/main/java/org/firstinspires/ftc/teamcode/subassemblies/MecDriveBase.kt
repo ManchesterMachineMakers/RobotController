@@ -10,7 +10,9 @@ import com.qualcomm.robotcore.util.RobotLog
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.log
 import org.firstinspires.ftc.teamcode.util.powerCurve
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.roundToInt
 
 class MecDriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Mecanum Drive Base") {
 
@@ -18,7 +20,6 @@ class MecDriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Mecanum Drive Ba
     private val rightFront = hardwareMap.dcMotor.get("right_front")
     private val leftRear = hardwareMap.dcMotor.get("left_rear")
     private val rightRear = hardwareMap.dcMotor.get("right_rear")
-    private val imu = IMUManager(opMode)
 
     companion object {
         const val wheelBaseWidth = 420.0 // mm
@@ -202,55 +203,6 @@ class MecDriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Mecanum Drive Ba
         setPower(0.7, 0.7, 0.7, 0.7)
         while(motors.any { it.isBusy }) opMode.idle()
     }
-
-//    fun yawIMU(radians: Double, direction: TurnDirection) {
-//        val telemetryYaw = telemetry.addData("Yaw", imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.RADIANS))
-//        setMode(RunMode.RUN_USING_ENCODER)
-//        imu.imu.resetYaw()
-//
-//        val turnCorrections = arrayOf(1.0, -1.0, 1.0, -1.0)
-//
-//        opMode.log("current,target,proportional,integral,derivative,correction")
-//
-//        val pid = PID(0.01, 100.0, 100.0, 10.0, 5.0, when(direction) {
-//            TurnDirection.LEFT -> imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.RADIANS)
-//            TurnDirection.RIGHT -> -imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.RADIANS)
-//        }, when(direction) {
-//            TurnDirection.LEFT -> radians
-//            TurnDirection.RIGHT -> -radians
-//        })
-//        while(pid.shouldContinue() && opMode.opModeIsActive()) {
-//            setPower(turnCorrections.map { it * pid.correction() * when(direction) {
-//                TurnDirection.LEFT -> 1
-//                TurnDirection.RIGHT -> -1
-//            } }.toTypedArray())
-//            opMode.idle()
-//            telemetry.update()
-//            pid.sync()
-//            val newOrientation = imu.imu.robotYawPitchRollAngles.getYaw(AngleUnit.RADIANS).let {
-//                when(direction) {
-//                    // The IMU returns values between -180 and 180, so we have to absolute value stuff in order to get there
-//                    TurnDirection.LEFT ->
-//                        if(radians == PI)
-//                            if(it < 0)
-//                                PI + (PI - abs(it))
-//                            else it
-//                        else it
-//                    TurnDirection.RIGHT ->
-//                        if(radians == PI)
-//                            if(it < 0)
-//                                PI + (PI - abs(it))
-//                            else it
-//                        else it
-//                }
-//            }
-//            opMode.log("${pid.current},$radians,${pid.proportional()},${pid.integral()},${pid.derivative()},${pid.correction()}")
-//            pid.update(newOrientation)
-//        }
-//
-//        setPower(0.0, 0.0, 0.0, 0.0)
-//        telemetry.update()
-//    }
 
     enum class TravelDirection { // see this link on enum naming convention: https://kotlinlang.org/docs/coding-conventions.html#names-for-backing-properties
         BASE,
