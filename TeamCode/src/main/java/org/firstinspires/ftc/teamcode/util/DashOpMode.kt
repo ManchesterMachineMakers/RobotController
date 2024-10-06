@@ -12,7 +12,23 @@ import org.opencv.android.Utils
 import org.opencv.core.Mat
 import java.util.concurrent.atomic.AtomicReference
 
-
+/**
+ * To use DashOpMode, simply add it in your implementation clause
+ *
+ * #### TO USE VISION:
+ * Add "vision.visionportal" to your initialization
+ *
+ * After start, but before the loop, add "FtcDashboard.getInstance().startCameraStream(vision.dash, 0.0)"
+ *
+ * You can now view your camera stream on the dashboard
+ *
+ * #### TO USE TELEMETRY:
+ * **TELEMETRY WILL AUTOMATICALLY BE REROUTED TO THE DASHBOARD BY SUBASSEMBLY.KT**
+ *
+ * **You must inherit Subassembly.kt in your subassemblies.**
+ * If you'd like to use it in your OpMode, then create your own instance of
+ * MultipleTelemetry via "MultipleTelemetry(this.telemetry, dashboard.telemetry)"
+ */
 interface DashOpMode {
 
     //Talk Volatile vs AtomicReference, final to make sure it is only initialized once, etc.
