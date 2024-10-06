@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.util
 
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.robotcore.external.Telemetry
 
@@ -8,7 +9,7 @@ abstract class Subassembly(protected val opMode: LinearOpMode, protected val nam
     var status = "unknown"
     protected val telemetry: Telemetry
         get() { // reroute telemetry to dashboard if supported
-            return if (this.javaClass.interfaces.contains(DashOpMode::class.java)) DashOpMode.Static.telemetry
+            return if (this.javaClass.interfaces.contains(DashOpMode::class.java)) MultipleTelemetry(DashOpMode.Static.telemetry, opMode.telemetry)
             else opMode.telemetry
         }
     protected val hardwareMap = opMode.hardwareMap
