@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Gamepad
 import org.firstinspires.ftc.teamcode.util.Subassembly
 import org.firstinspires.ftc.teamcode.util.log
-import org.firstinspires.ftc.teamcode.util.powerCurve
 
 class TankDriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Tank Drive Base") {
 
@@ -24,10 +23,15 @@ class TankDriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Tank Drive Base
     }
 
     fun control(gamepad: Gamepad) {
-        val leftY = -gamepad.left_stick_y.toDouble() // negative because for our joysticks up is negative
-        val rightY = -gamepad.right_stick_y.toDouble()
+        val leftY: Double = -gamepad.left_stick_y.toDouble()
+        val rightX: Double = gamepad.right_stick_x.toDouble()
 
-        leftDrive.power = powerCurve(leftY)
-        rightDrive.power = powerCurve(rightY)
+        // Calculate motor powers
+        val leftPower = leftY + rightX
+        val rightPower = leftY - rightX
+
+        // Set motor powers
+        leftDrive.power = leftPower
+        rightDrive.power = rightPower
     }
 }

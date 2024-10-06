@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp(name = "Do Not Break This TeleOp", group = "do not break")
+@TeleOp(name = "Mec Do Not Break This TeleOp", group = "do not break")
 public class MecDoNotBreakThisTeleOp extends LinearOpMode {
 
     @Override
@@ -17,9 +17,9 @@ public class MecDoNotBreakThisTeleOp extends LinearOpMode {
         DcMotor rightRear = hardwareMap.dcMotor.get("right_rear");
 
         configMotor(leftFront, DcMotorSimple.Direction.REVERSE);
-        configMotor(rightFront, DcMotorSimple.Direction.FORWARD);
-        configMotor(leftRear, DcMotorSimple.Direction.FORWARD);
-        configMotor(rightRear, DcMotorSimple.Direction.REVERSE);
+//        configMotor(rightFront, DcMotorSimple.Direction.REVERSE);
+        configMotor(leftRear, DcMotorSimple.Direction.REVERSE);
+//        configMotor(rightRear, DcMotorSimple.Direction.REVERSE);
 
         waitForStart();
 
