@@ -16,10 +16,10 @@ import kotlin.math.roundToInt
 
 class DriveBase(opMode: LinearOpMode) : Subassembly(opMode, "Drive Base") {
 
-    private val leftFront = hardwareMap.dcMotor.get("left_front")
-    private val rightFront = hardwareMap.dcMotor.get("right_front")
-    private val leftRear = hardwareMap.dcMotor.get("left_rear")
-    private val rightRear = hardwareMap.dcMotor.get("right_rear")
+    val leftFront = hardwareMap.dcMotor.get("left_front")
+    val rightFront = hardwareMap.dcMotor.get("right_front")
+    val leftRear = hardwareMap.dcMotor.get("left_rear")
+    val rightRear = hardwareMap.dcMotor.get("right_rear")
 
     companion object {
         const val wheelBaseWidth = 420.0 // mm
